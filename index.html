@@ -742,6 +742,66 @@ header p  { font-size: 0.68em; opacity: 0.82; }
   transition: all 0.15s;
 }
 .btn-line-sel:active { background: #c5cae9; }
+
+@media (min-width: 768px) {
+  .side-book-btn,
+  .side-action-btn {
+    padding: 13px 4px;
+    border-radius: 15px;
+  }
+  .side-book-btn .btn-icon,
+  .side-action-btn .btn-icon {
+    font-size: 1.95em;
+  }
+  .side-book-btn .btn-label,
+  .side-action-btn .btn-label {
+    font-size: 0.74em;
+    line-height: 1.5;
+  }
+  .nme-btn {
+    font-size: 0.9em;
+    min-height: 36px;
+    padding: 7px 10px;
+  }
+  #nme-title,
+  #nme-ref-query {
+    font-size: 0.95em !important;
+  }
+  #nme-content {
+    font-size: 1.08em !important;
+  }
+  .mpm-adj-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 1.08em;
+  }
+}
+
+@media (min-width: 1024px) {
+  .side-book-btn,
+  .side-action-btn {
+    padding: 15px 6px;
+    border-radius: 16px;
+  }
+  .side-book-btn .btn-icon,
+  .side-action-btn .btn-icon {
+    font-size: 2.1em;
+  }
+  .side-book-btn .btn-label,
+  .side-action-btn .btn-label {
+    font-size: 0.8em;
+  }
+  .nme-btn {
+    font-size: 0.95em;
+    min-height: 38px;
+  }
+  #nme-content {
+    font-size: 1.13em !important;
+  }
+  #memo-preview-modal > div {
+    max-width: 620px !important;
+  }
+}
 </style>
 </head>
 <body>
