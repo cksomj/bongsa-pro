@@ -925,26 +925,35 @@ header p  { font-size: 0.68em; opacity: 0.82; }
     <!-- STEP 1: 미리보기 -->
     <div id="mpm-step1" style="flex:1;overflow:auto;display:flex;flex-direction:column;">
       <!-- 간격 조정 툴바 -->
-      <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;
+      <div style="display:flex;align-items:stretch;gap:8px;padding:10px 16px;
                   background:#f8f0ff;border-bottom:1px solid #e8dff5;flex-shrink:0;flex-wrap:wrap;">
-        <span style="font-size:0.78em;color:#666;font-weight:600;">글자크기</span>
-        <div style="display:flex;align-items:center;gap:6px;">
+        <div style="flex:1 1 120px;display:flex;align-items:center;justify-content:center;gap:6px;background:#fff;border:1px solid #e8dff5;
+                    border-radius:12px;padding:6px 8px;min-height:36px;">
+          <span style="font-size:0.78em;color:#666;font-weight:800;">글자크기</span>
           <button onclick="mpmAdjust('fs',-1)" class="mpm-adj-btn">－</button>
-          <span id="mpm-fs-val" style="font-size:0.8em;color:#333;min-width:30px;text-align:center;">11pt</span>
+          <span id="mpm-fs-val" style="font-size:0.8em;color:#333;min-width:30px;text-align:center;">8pt</span>
           <button onclick="mpmAdjust('fs',1)"  class="mpm-adj-btn">＋</button>
         </div>
-        <span style="font-size:0.78em;color:#666;font-weight:600;">줄간격</span>
-        <div style="display:flex;align-items:center;gap:6px;">
+        <div style="flex:1 1 120px;display:flex;align-items:center;justify-content:center;gap:6px;background:#fff;border:1px solid #e8dff5;
+                    border-radius:12px;padding:6px 8px;min-height:36px;">
+          <span style="font-size:0.78em;color:#666;font-weight:800;">줄간격</span>
           <button onclick="mpmAdjust('lh',-0.1)" class="mpm-adj-btn">－</button>
           <span id="mpm-lh-val" style="font-size:0.8em;color:#333;min-width:30px;text-align:center;">1.8</span>
           <button onclick="mpmAdjust('lh',0.1)"  class="mpm-adj-btn">＋</button>
         </div>
-        <span style="font-size:0.78em;color:#666;font-weight:600;">여백</span>
-        <div style="display:flex;align-items:center;gap:6px;">
+        <div style="flex:1 1 120px;display:flex;align-items:center;justify-content:center;gap:6px;background:#fff;border:1px solid #e8dff5;
+                    border-radius:12px;padding:6px 8px;min-height:36px;">
+          <span style="font-size:0.78em;color:#666;font-weight:800;">여백</span>
           <button onclick="mpmAdjust('mg',-5)" class="mpm-adj-btn">－</button>
-          <span id="mpm-mg-val" style="font-size:0.8em;color:#333;min-width:30px;text-align:center;">20mm</span>
+          <span id="mpm-mg-val" style="font-size:0.8em;color:#333;min-width:30px;text-align:center;">15mm</span>
           <button onclick="mpmAdjust('mg',5)"  class="mpm-adj-btn">＋</button>
         </div>
+        <button onclick="mpmGoStep(2)"
+          style="flex:1 1 120px;min-height:50px;border:none;border-radius:12px;
+                 background:linear-gradient(135deg,#6a1b9a,#9c27b0);
+                 color:#fff;font-size:0.86em;font-weight:900;cursor:pointer;font-family:inherit;">
+          저장 방식 선택
+        </button>
       </div>
       <!-- 미리보기 내용 - A4 용지 모양 -->
       <div style="flex:1;overflow:auto;padding:16px 10px;background:#888;display:flex;justify-content:center;align-items:flex-start;">
@@ -955,9 +964,9 @@ header p  { font-size: 0.68em; opacity: 0.82; }
           <div id="mpm-preview-paper"
             style="position:relative;background:#fff;border-radius:2px;
                    box-shadow:0 0 0 1px rgba(0,0,0,0.1);
-                   padding:20mm;
+                   padding:15mm;
                    font-family:'맑은 고딕','Malgun Gothic',sans-serif;
-                   font-size:11pt;line-height:1.8;color:#222;
+                   font-size:8pt;line-height:1.8;color:#222;
                    min-height:0;
                    height:min(66vh,680px);
                    overflow:hidden;
@@ -965,15 +974,6 @@ header p  { font-size: 0.68em; opacity: 0.82; }
                    aspect-ratio:210/297;">
           </div>
         </div>
-      </div>
-      <!-- 다음 버튼 -->
-      <div style="padding:12px 16px;border-top:1px solid #eee;flex-shrink:0;">
-        <button onclick="mpmGoStep(2)"
-          style="width:100%;padding:14px;border:none;border-radius:12px;
-                 background:linear-gradient(135deg,#6a1b9a,#9c27b0);
-                 color:#fff;font-size:0.95em;font-weight:800;cursor:pointer;font-family:inherit;">
-          저장 방식 선택 →
-        </button>
       </div>
     </div>
 
@@ -2031,9 +2031,9 @@ var memoOverlayId = null;
 var mpmState = {
   sourceId: null,   // null=개인성서연구, 숫자=골자메모
   type: '',         // txt/doc/pdf
-  fs: 11,           // 글자크기 pt
+  fs: 8,            // 글자크기 pt
   lh: 1.8,          // 줄간격
-  mg: 20            // 여백 mm
+  mg: 15            // 여백 mm
 };
 
 function openMemoPreview(sourceId) {
