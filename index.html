@@ -6,9 +6,9 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="봉사모임 골자 PRO v2">
+<meta name="apple-mobile-web-app-title" content="봉사골자100">
 <meta name="theme-color" content="#3a0068">
-<title>봉사모임을 위한 골자 PRO ver.2</title>
+<title>봉사모임 사회 골자 100</title>
 
 <!-- PWA 아이콘 (SVG 인라인 dataURL) -->
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%233a0068'/%3E%3Ctext x='256' y='320' font-size='280' text-anchor='middle' fill='white'%3E📖%3C/text%3E%3C/svg%3E">
@@ -571,7 +571,7 @@ header p  { font-size: 0.68em; opacity: 0.82; }
 
 /* ── 참조 드로어 (우측/하단 슬라이드) ── */
 #ref-drawer {
-  position: fixed; inset: 0; z-index: 600;
+  position: fixed; inset: 0; z-index: 950;
   display: none;
 }
 #ref-drawer.open { display: block; }
@@ -697,6 +697,8 @@ header p  { font-size: 0.68em; opacity: 0.82; }
   flex-shrink: 0; white-space: nowrap; min-height: 36px;
 }
 #ref-go-btn:active { opacity: 0.8; }
+#nme-ref-query::placeholder { color: #8aa28c; }
+#nme-ref-query::-webkit-search-cancel-button { display: none; }
 
 /* ── 메모 선택 삭제 ── */
 .memo-line {
@@ -776,12 +778,12 @@ header p  { font-size: 0.68em; opacity: 0.82; }
 </div>
 
 
-<!-- 메모보기 오버레이 -->
-<div id="memo-viewer" style="display:none;position:fixed;inset:0;z-index:600;background:#fff;flex-direction:column;">
+<!-- 개인연구목록 오버레이 -->
+<div id="memo-viewer" style="display:none;position:fixed;inset:0;z-index:700;background:#fff;flex-direction:column;">
   <div style="background:linear-gradient(135deg,#1a3d6e,#2471a3);color:#fff;
               padding:calc(10px + var(--safe-top)) 16px 10px;
               display:flex;align-items:center;gap:10px;flex-shrink:0;">
-    <div style="flex:1;font-size:0.95em;font-weight:800;">📋 저장된 메모 목록</div>
+    <div style="flex:1;font-size:0.95em;font-weight:800;">📋 개인연구목록</div>
     <button onclick="closeMemoViewer()"
       style="background:rgba(255,255,255,0.2);border:none;color:#fff;
              border-radius:20px;padding:7px 16px;font-size:0.85em;font-weight:700;cursor:pointer;">✕ 닫기</button>
@@ -789,25 +791,44 @@ header p  { font-size: 0.68em; opacity: 0.82; }
   <div id="memo-viewer-body" style="flex:1;overflow:auto;padding:14px;"></div>
 </div>
 
-<!-- 새 메모 워드 편집기 오버레이 -->
+<!-- 개인성서연구 워드 편집기 오버레이 -->
 <div id="new-memo-editor" style="display:none;position:fixed;inset:0;z-index:600;background:#fff;flex-direction:column;">
   <!-- 헤더 -->
   <div style="background:linear-gradient(135deg,#27500a,#4caf50);color:#fff;
               padding:calc(10px + var(--safe-top)) 16px 10px;
               display:flex;align-items:center;gap:8px;flex-shrink:0;">
-    <div style="flex:1;font-size:0.9em;font-weight:800;">✏️ 새 메모</div>
+    <div style="flex:1;font-size:0.9em;font-weight:800;">✏️ 개인성서연구</div>
     <button onclick="closeNewMemo()"
       style="background:rgba(255,255,255,0.2);border:none;color:#fff;
              border-radius:20px;padding:7px 14px;font-size:0.82em;font-weight:700;cursor:pointer;">✕ 닫기</button>
   </div>
   <!-- 제목 입력란 -->
-  <div style="padding:8px 12px;background:#f0f8f0;border-bottom:1px solid #c8e6c9;flex-shrink:0;">
-    <input id="nme-title" type="text" placeholder="📌 메모 제목을 입력하세요..."
-      style="width:100%;padding:9px 14px;border:1.5px solid #c8e6c9;border-radius:10px;
+  <div style="padding:8px 12px;background:#f0f8f0;border-bottom:1px solid #c8e6c9;flex-shrink:0;
+              display:flex;align-items:center;gap:7px;flex-wrap:wrap;">
+    <input id="nme-title" type="text" placeholder="제목입력"
+      style="flex:1;min-width:160px;padding:9px 14px;border:1.5px solid #c8e6c9;border-radius:10px;
              font-family:inherit;font-size:0.92em;font-weight:600;color:#222;
              background:#fff;outline:none;box-sizing:border-box;"
       onfocus="this.style.borderColor='#4caf50'"
       onblur="this.style.borderColor='#c8e6c9'">
+    <button onclick="openMemoViewer()"
+      style="padding:9px 11px;border:1.5px solid #c8e6c9;border-radius:10px;background:#fff;
+             color:#27500a;font-size:0.78em;font-weight:800;cursor:pointer;font-family:inherit;white-space:nowrap;">
+      📋 개인연구목록
+    </button>
+    <div style="display:flex;align-items:center;border:1.5px solid #c8e6c9;border-radius:10px;background:#fff;
+                overflow:hidden;min-width:180px;flex:0 1 260px;">
+      <input id="nme-ref-query" type="search" placeholder="검색어"
+        autocomplete="off" autocorrect="off" spellcheck="false"
+        onkeydown="if(event.key==='Enter')openNmeRefSearch()"
+        style="flex:1;min-width:0;padding:9px 10px;border:none;background:#fff;color:#222;outline:none;
+               font-family:inherit;font-size:0.82em;font-weight:600;box-sizing:border-box;">
+      <button onclick="openNmeRefSearch()"
+        style="padding:9px 11px;border:none;border-left:1px solid #c8e6c9;background:#e8f5e9;color:#27500a;
+               font-size:0.78em;font-weight:900;cursor:pointer;font-family:inherit;white-space:nowrap;">
+        🔎 통합검색
+      </button>
+    </div>
   </div>
   <!-- 워드 툴바 -->
   <div style="display:flex;gap:5px;padding:8px 12px;background:#f0f8f0;
@@ -819,12 +840,48 @@ header p  { font-size: 0.68em; opacity: 0.82; }
     <button onclick="nmeExec('formatBlock','h2')" class="nme-btn">제목</button>
     <button onclick="nmeExec('formatBlock','p')"  class="nme-btn">본문</button>
     <div style="width:1px;background:#c8e6c9;margin:0 2px;"></div>
-    <button onclick="nmeExec('insertUnorderedList')" class="nme-btn">•목록</button>
+    <select onchange="nmeSetList(this.value);this.selectedIndex=0;" class="nme-btn"
+      style="min-width:98px;height:34px;padding:0 8px;">
+      <option value="">목록</option>
+      <option value="ul:disc">• 글머리</option>
+      <option value="ul:circle">○ 원형</option>
+      <option value="ul:square">▪ 사각</option>
+      <option value="ol:decimal">1. 번호</option>
+      <option value="ol:lower-alpha">a. 영문</option>
+      <option value="ol:lower-roman">i. 로마자</option>
+    </select>
+    <button onclick="nmeExec('outdent')" class="nme-btn">내어쓰기</button>
+    <button onclick="nmeExec('indent')" class="nme-btn">들여쓰기</button>
     <button onclick="nmeExec('justifyLeft')"   class="nme-btn">≡</button>
     <button onclick="nmeExec('justifyCenter')" class="nme-btn">☰</button>
     <div style="width:1px;background:#c8e6c9;margin:0 2px;"></div>
+    <select onchange="nmeSetFont(this.value);this.selectedIndex=0;" class="nme-btn"
+      style="min-width:92px;height:34px;padding:0 8px;">
+      <option value="">글씨체</option>
+      <option value="'맑은 고딕','Malgun Gothic',sans-serif">맑은 고딕</option>
+      <option value="'Malgun Gothic Semilight','맑은 고딕',sans-serif">맑은 고딕 Light</option>
+      <option value="'굴림','Gulim',sans-serif">굴림</option>
+      <option value="'돋움','Dotum',sans-serif">돋움</option>
+      <option value="'바탕','Batang',serif">바탕</option>
+      <option value="'바탕체','BatangChe',serif">바탕체</option>
+      <option value="'궁서','Gungsuh',serif">궁서</option>
+      <option value="'궁서체','GungsuhChe',serif">궁서체</option>
+      <option value="'Georgia',serif">Georgia</option>
+      <option value="'Times New Roman',serif">Times New Roman</option>
+      <option value="Arial,sans-serif">Arial</option>
+      <option value="'Arial Black',Arial,sans-serif">Arial Black</option>
+      <option value="'Segoe UI',Arial,sans-serif">Segoe UI</option>
+      <option value="'Tahoma',sans-serif">Tahoma</option>
+      <option value="'Verdana',sans-serif">Verdana</option>
+      <option value="'Trebuchet MS',sans-serif">Trebuchet MS</option>
+      <option value="'Courier New',monospace">Courier New</option>
+      <option value="'Consolas',monospace">Consolas</option>
+      <option value="serif">기본 명조</option>
+      <option value="sans-serif">기본 고딕</option>
+      <option value="monospace">고정폭</option>
+    </select>
+    <div style="width:1px;background:#c8e6c9;margin:0 2px;"></div>
     <button onclick="nmeExec('hiliteColor','#fff3b0')" class="nme-btn" style="background:#fff3b0;">형광</button>
-    <button onclick="nmeExec('removeFormat')" class="nme-btn" style="font-size:0.8em;">T✕</button>
   </div>
   <!-- 편집 영역 -->
   <div id="nme-content" contenteditable="true"
@@ -845,11 +902,12 @@ header p  { font-size: 0.68em; opacity: 0.82; }
   </div>
 </div>
 
-<!-- 새 메모 미리보기 -->
+<!-- 개인성서연구 미리보기 -->
 <!-- ════ 통합 미리보기/저장 모달 ════ -->
 <div id="memo-preview-modal" style="display:none;position:fixed;inset:0;z-index:900;
-     background:rgba(0,0,0,0.6);flex-direction:column;align-items:center;justify-content:center;padding:10px;">
-  <div style="background:#fff;border-radius:16px;width:100%;max-width:1200px; height:calc(100vh - 20px);max-height:calc(100vh - 20px);display:flex;flex-direction:column;">
+     background:rgba(0,0,0,0.6);flex-direction:column;align-items:center;justify-content:flex-end;">
+  <div style="background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:520px;
+              max-height:92vh;display:flex;flex-direction:column;">
 
     <!-- 모달 헤더 -->
     <div style="display:flex;align-items:center;padding:14px 18px 10px;border-bottom:1px solid #eee;flex-shrink:0;">
@@ -865,7 +923,7 @@ header p  { font-size: 0.68em; opacity: 0.82; }
     </div>
 
     <!-- STEP 1: 미리보기 -->
-    <div id="mpm-step1" style="flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;">
+    <div id="mpm-step1" style="flex:1;overflow:auto;display:flex;flex-direction:column;">
       <!-- 간격 조정 툴바 -->
       <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;
                   background:#f8f0ff;border-bottom:1px solid #e8dff5;flex-shrink:0;flex-wrap:wrap;">
@@ -889,17 +947,22 @@ header p  { font-size: 0.68em; opacity: 0.82; }
         </div>
       </div>
       <!-- 미리보기 내용 - A4 용지 모양 -->
-      <div style="flex:1;min-height:0;overflow:hidden;padding:10px;background:#777;display:flex;justify-content:center;align-items:center;">
-        <div id="mpm-paper-wrap" style="position:relative;width:min(100%, calc((100vh - 190px) * 0.707));max-width:calc((100vh - 190px) * 0.707);aspect-ratio:210/297;flex-shrink:0;">
+      <div style="flex:1;overflow:auto;padding:16px 10px;background:#888;display:flex;justify-content:center;align-items:flex-start;">
+        <div style="position:relative;width:100%;max-width:420px;">
           <!-- A4 용지 그림자 -->
           <div style="position:absolute;top:4px;left:4px;right:-4px;bottom:-4px;background:rgba(0,0,0,0.2);border-radius:2px;"></div>
           <!-- A4 용지 본체 -->
           <div id="mpm-preview-paper"
             style="position:relative;background:#fff;border-radius:2px;
-                   box-shadow:0 0 0 1px rgba(0,0,0,0.1); width:100%;height:100%;overflow:auto; padding:20mm;
+                   box-shadow:0 0 0 1px rgba(0,0,0,0.1);
+                   padding:20mm;
                    font-family:'맑은 고딕','Malgun Gothic',sans-serif;
                    font-size:11pt;line-height:1.8;color:#222;
-                   word-break:break-word;">
+                   min-height:0;
+                   height:min(66vh,680px);
+                   overflow:hidden;
+                   word-break:break-word;
+                   aspect-ratio:210/297;">
           </div>
         </div>
       </div>
@@ -919,12 +982,12 @@ header p  { font-size: 0.68em; opacity: 0.82; }
       <div style="padding:20px 18px 10px;text-align:center;">
         <div style="font-size:0.82em;color:#888;margin-bottom:16px;">원하는 저장 형식을 선택하세요</div>
         <div style="display:flex;gap:10px;justify-content:center;">
-          <button onclick="mpmSelectType('txt')"
+          <button onclick="mpmSelectType('local')"
             style="flex:1;max-width:120px;padding:18px 8px;border:2px solid #ddd;border-radius:14px;
                    background:#fff;cursor:pointer;font-family:inherit;transition:all 0.15s;">
-            <div style="font-size:2em;margin-bottom:6px;">📄</div>
-            <div style="font-size:0.85em;font-weight:800;color:#333;">TXT</div>
-            <div style="font-size:0.7em;color:#888;margin-top:3px;">텍스트 파일</div>
+            <div style="font-size:2em;margin-bottom:6px;">💾</div>
+            <div style="font-size:0.85em;font-weight:800;color:#333;">로컬</div>
+            <div style="font-size:0.7em;color:#888;margin-top:3px;">기기에 저장</div>
           </button>
           <button onclick="mpmSelectType('doc')"
             style="flex:1;max-width:120px;padding:18px 8px;border:2px solid #ddd;border-radius:14px;
@@ -955,15 +1018,21 @@ header p  { font-size: 0.68em; opacity: 0.82; }
       <div id="mpm-type-badge"
         style="text-align:center;font-size:0.82em;color:#888;margin-bottom:14px;"></div>
 
-      <!-- TXT/Word 저장 위치 -->
+      <!-- 로컬/Word 저장 위치 -->
       <div id="mpm-save-actions" style="display:none;gap:8px;flex-direction:column;">
-        <button onclick="mpmDoSave()"
+        <button id="mpm-local-save-btn" onclick="mpmDoLocalSave()"
+          style="width:100%;padding:14px;border:none;border-radius:12px;
+                 background:linear-gradient(135deg,#27500a,#4caf50);
+                 color:#fff;font-size:0.95em;font-weight:800;cursor:pointer;font-family:inherit;display:none;">
+          💾 로컬(기기에) 저장
+        </button>
+        <button id="mpm-download-save-btn" onclick="mpmDoSave()"
           style="width:100%;padding:14px;border:none;border-radius:12px;
                  background:linear-gradient(135deg,#27ae60,#2ecc71);
                  color:#fff;font-size:0.95em;font-weight:800;cursor:pointer;font-family:inherit;">
           💾 기기에 저장 (다운로드)
         </button>
-        <div style="font-size:0.75em;color:#aaa;text-align:center;padding:4px 0;">
+        <div id="mpm-save-help" style="font-size:0.75em;color:#aaa;text-align:center;padding:4px 0;">
           저장 후 카카오톡·메일·드라이브로 공유 가능
         </div>
       </div>
@@ -1038,27 +1107,9 @@ header p  { font-size: 0.68em; opacity: 0.82; }
                font-family:inherit;font-size:0.92em;box-sizing:border-box;outline:none;"
         onfocus="this.style.borderColor='#2471a3'" onblur="this.style.borderColor='#c8ddf0'"
         oninput="autoFetchVerse(this.value)">
-      <!-- VDB에 있을 때: 자동 표시 -->
       <div id="cce-verse-result" style="margin-top:6px;padding:10px 12px;background:#f0f8ff;
            border:1.5px solid #c8ddf0;border-radius:8px;font-size:0.88em;color:#333;
            line-height:1.8;display:none;"></div>
-      <!-- VDB에 없을 때: 직접 입력 박스 -->
-      <div id="cce-verse-manual" style="display:none;margin-top:6px;">
-        <div style="font-size:0.78em;color:#e67e22;font-weight:600;margin-bottom:4px;">
-          ⚠️ VDB에 없는 성구입니다 — 아래에 직접 입력해주세요
-          <a id="cce-verse-wol-link" href="#" target="_blank"
-            style="color:#2471a3;font-weight:700;margin-left:6px;font-size:0.95em;">
-            📖 wol.jw.org에서 찾기 ↗
-          </a>
-        </div>
-        <textarea id="cce-verse-input" rows="3"
-          placeholder="wol.jw.org에서 찾은 성구 내용을 여기에 붙여넣으세요..."
-          style="width:100%;padding:10px 14px;border:1.5px solid #f0a500;border-radius:10px;
-                 font-family:inherit;font-size:0.9em;line-height:1.7;resize:vertical;
-                 box-sizing:border-box;outline:none;background:#fffdf0;"
-          onfocus="this.style.borderColor='#e67e22'"
-          onblur="this.style.borderColor='#f0a500'"></textarea>
-      </div>
     </div>
     <!-- 심층 설명 -->
     <div style="margin-bottom:12px;">
@@ -1119,65 +1170,6 @@ header p  { font-size: 0.68em; opacity: 0.82; }
   </div>
 </div>
 
-<!-- 기본 골자 수정 편집기 -->
-<div id="outline-editor" style="display:none;position:fixed;inset:0;z-index:650;background:#fff;flex-direction:column;">
-  <div style="background:linear-gradient(135deg,#4b007d,#8e24aa);color:#fff;
-              padding:calc(10px + var(--safe-top)) 16px 10px;
-              display:flex;align-items:center;gap:8px;flex-shrink:0;">
-    <div style="flex:1;font-size:0.95em;font-weight:800;">✏️ 기본 골자 수정하기</div>
-    <button onclick="closeOutlineEditor()"
-      style="background:rgba(255,255,255,0.2);border:none;color:#fff;
-             border-radius:20px;padding:7px 14px;font-size:0.82em;font-weight:700;cursor:pointer;">✕ 닫기</button>
-  </div>
-  <div style="flex:1;overflow:auto;padding:14px 16px;">
-    <div style="margin-bottom:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-      <label style="font-size:0.78em;font-weight:800;color:#4b007d;white-space:nowrap;">골자번호</label>
-      <input id="oe-num" type="number" min="1" max="100" inputmode="numeric" placeholder="1-100"
-        onkeydown="if(event.key==='Enter')loadOutlineEditorItem(this.value)"
-        onchange="loadOutlineEditorItem(this.value)"
-        style="width:86px;padding:10px;border:1.5px solid #d8c8ef;border-radius:10px;font-family:inherit;font-size:0.95em;">
-      <select id="oe-select" onchange="loadOutlineEditorItem(this.value)"
-        style="flex:1;min-width:190px;padding:10px;border:1.5px solid #d8c8ef;border-radius:10px;font-family:inherit;font-size:0.95em;"></select>
-    </div>
-    <div style="margin-bottom:12px;">
-      <label style="font-size:0.78em;font-weight:800;color:#4b007d;display:block;margin-bottom:4px;">제목</label>
-      <input id="oe-title" type="text"
-        style="width:100%;padding:12px;border:1.5px solid #d8c8ef;border-radius:10px;font-family:inherit;font-size:1em;">
-    </div>
-    <div style="margin-bottom:12px;">
-      <label style="font-size:0.78em;font-weight:800;color:#4b007d;display:block;margin-bottom:4px;">성구</label>
-      <input id="oe-ref" type="text" placeholder="예: 마태복음 22:39"
-        oninput="autoFetchOutlineVerse(this.value)"
-        style="width:100%;padding:12px;border:1.5px solid #d8c8ef;border-radius:10px;font-family:inherit;font-size:1em;">
-      <div id="oe-verse-result" style="margin-top:6px;padding:10px 12px;background:#f8f0ff;border:1.5px solid #d8c8ef;border-radius:8px;font-size:0.88em;color:#333;line-height:1.8;display:none;"></div>
-      <div id="oe-verse-manual" style="display:block;margin-top:6px;">
-        <div style="font-size:0.78em;color:#e67e22;font-weight:600;margin-bottom:4px;">
-          성구 본문입니다. 자동으로 찾은 내용을 확인하거나 직접 수정해 저장하세요.
-          <a id="oe-verse-wol-link" href="#" target="_blank" style="color:#4b007d;font-weight:800;margin-left:6px;">wol.jw.org 열기 ↗</a>
-        </div>
-        <textarea id="oe-verse-input" rows="3" placeholder="카드에 표시할 성구 본문을 여기에 넣으세요..."
-          style="width:100%;padding:10px 14px;border:1.5px solid #f0a500;border-radius:10px;font-family:inherit;font-size:0.9em;line-height:1.7;resize:vertical;box-sizing:border-box;outline:none;background:#fffdf0;"></textarea>
-      </div>
-      <div style="font-size:0.72em;color:#888;margin-top:5px;">성구 형식이 인식되면 신세계역 연구용 성구 내용을 자동으로 찾습니다.</div>
-    </div>
-    <div style="margin-bottom:12px;">
-      <label style="font-size:0.78em;font-weight:800;color:#4b007d;display:block;margin-bottom:4px;">심층 설명</label>
-      <textarea id="oe-desc"
-        style="width:100%;min-height:120px;padding:12px;border:1.5px solid #d8c8ef;border-radius:10px;font-family:inherit;font-size:1em;line-height:1.6;resize:vertical;"></textarea>
-    </div>
-    <div style="margin-bottom:12px;">
-      <label style="font-size:0.78em;font-weight:800;color:#4b007d;display:block;margin-bottom:4px;">실무 제안</label>
-      <textarea id="oe-sug"
-        style="width:100%;min-height:100px;padding:12px;border:1.5px solid #d8c8ef;border-radius:10px;font-family:inherit;font-size:1em;line-height:1.6;resize:vertical;"></textarea>
-    </div>
-  </div>
-  <div style="padding:10px 16px calc(10px + var(--safe-bot));background:#f8f0ff;border-top:1px solid #e8dff5;display:flex;gap:8px;flex-shrink:0;">
-    <button onclick="saveOutlineEditor()"
-      style="flex:2;padding:12px;border:none;border-radius:12px;background:linear-gradient(135deg,#4b007d,#8e24aa);color:#fff;font-size:0.92em;font-weight:800;cursor:pointer;font-family:inherit;">💾 저장</button>
-    <button onclick="resetOutlineEditorItem()"
-      style="flex:1;padding:12px;border:1.5px solid #d8c8ef;border-radius:12px;background:#fff;color:#4b007d;font-size:0.88em;font-weight:700;cursor:pointer;font-family:inherit;">↩ 원래대로</button>
-  </div>
-</div>
 <!-- 메모 전체화면 오버레이 -->
 <div id="memo-overlay">
   <div id="memo-overlay-header">
@@ -1188,8 +1180,8 @@ header p  { font-size: 0.68em; opacity: 0.82; }
     <textarea id="memo-overlay-ta" placeholder="메모, 경험, 아이디어를 자유롭게…&#10;&#10;빈 줄로 문단을 나누면 인쇄 미리보기에서 보기 좋게 표시됩니다."></textarea>
   </div>
   <div id="memo-overlay-actions">
-    <button style="background:var(--p);color:#fff;" onclick="saveMemoOverlay()">💾 화면저장</button>
-    <button style="background:#f0ebf8;color:var(--p);border:1.5px solid #d8c8ef;" onclick="saveMemoOverlayAndPreview()">🖨 편집/인쇄</button>
+    <button style="background:var(--p);color:#fff;" onclick="saveMemoOverlay()">💾 저장</button>
+    <button style="background:#f0ebf8;color:var(--p);border:1.5px solid #d8c8ef;" onclick="saveMemoOverlayAndPreview()">🖨 인쇄</button>
     <button style="background:#fff0f0;color:#c0392b;border:1.5px solid #fca5a5;" onclick="clearMemoOverlay()">🗑 삭제</button>
   </div>
 </div>
@@ -1202,11 +1194,6 @@ header p  { font-size: 0.68em; opacity: 0.82; }
     <div style="font-size:1em;font-weight:800;color:#3a0068;margin-bottom:4px;">📤 저장 형식 선택</div>
     <div style="font-size:0.78em;color:#888;margin-bottom:14px;" id="memo-save-modal-title"></div>
     <div style="display:flex;gap:8px;margin-bottom:12px;">
-      <button onclick="exportMemoAs('txt')"
-        style="flex:1;padding:14px 4px;border:none;border-radius:12px;background:#4a5568;
-               color:#fff;font-weight:800;cursor:pointer;font-family:inherit;font-size:0.88em;">
-        📄<br><span style="font-size:0.82em;">TXT</span>
-      </button>
       <button onclick="exportMemoAs('doc')"
         style="flex:1;padding:14px 4px;border:none;border-radius:12px;background:#2b5797;
                color:#fff;font-weight:800;cursor:pointer;font-family:inherit;font-size:0.88em;">
@@ -1231,14 +1218,14 @@ header p  { font-size: 0.68em; opacity: 0.82; }
 </div>
 
 <header>
-  <h1>📖 봉사모임을 위한 골자 PRO ver.2</h1>
+  <h1>📖 봉사모임 사회 골자 100</h1>
   <p>매일의 전파 봉사를 위한 영적 격려 · 신세계역</p>
 </header>
 
 <div class="top-bar">
   <input type="search" id="search" oninput="filterCards()"
     onkeydown="if(event.key==='Enter')topSearch()"
-    placeholder="🔍 주제, 성구, 키워드, 골자찾기.. 검색.."
+    placeholder="🔍 주제·성구·키워드 검색…"
     autocomplete="off" autocorrect="off" spellcheck="false">
   <button id="top-ref-btn" onclick="topSearch()" title="jw.org 참조 검색">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -1247,19 +1234,13 @@ header p  { font-size: 0.68em; opacity: 0.82; }
 </div>
 
 <!-- 골자 만들기 / 내 골자 리스트 버튼 -->
-<div id="custom-action-bar" style="display:flex;gap:8px;padding:8px 12px;background:#fff;
-            border-bottom:1px solid #e8dff5;position:sticky;top:130px;z-index:99;">
+<div style="display:flex;gap:8px;padding:8px 12px;background:#fff;
+            border-bottom:1px solid #e8dff5;position:sticky;top:56px;z-index:97;">
   <button onclick="openCustomCard(null)"
     style="flex:1;padding:9px 8px;border:none;border-radius:10px;
            background:linear-gradient(135deg,#1a5276,#2471a3);
            color:#fff;font-size:0.82em;font-weight:800;cursor:pointer;font-family:inherit;">
     ＋ 골자 만들기
-  </button>
-  <button onclick="openOutlineEditor()"
-    style="flex:1;padding:9px 8px;border:1.5px solid #6a1b9a;border-radius:10px;
-           background:#f8f0ff;color:#4b007d;font-size:0.82em;font-weight:800;
-           cursor:pointer;font-family:inherit;">
-    ✏️ 골자 수정하기
   </button>
   <button onclick="openCustomList()"
     style="flex:1;padding:9px 8px;border:1.5px solid #2471a3;border-radius:10px;
@@ -1309,18 +1290,18 @@ header p  { font-size: 0.68em; opacity: 0.82; }
     <!-- 구분선 -->
     <div style="border-top:1px solid #e8dff5;margin:4px 0;"></div>
 
-    <!-- 메모보기 버튼 -->
-    <button onclick="openMemoViewer()" class="side-action-btn"
-      style="background:linear-gradient(135deg,#1a3d6e,#2471a3);">
-      <span class="btn-icon">📋</span>
-      <span class="btn-label">메모<br>보기</span>
-    </button>
-
-    <!-- 새 메모 버튼 -->
+    <!-- 개인성서연구 버튼 -->
     <button onclick="openNewMemo()" class="side-action-btn"
       style="background:linear-gradient(135deg,#27500a,#4caf50);">
       <span class="btn-icon">✏️</span>
-      <span class="btn-label">새<br>메모</span>
+      <span class="btn-label">개인<br>성서<br>연구</span>
+    </button>
+
+    <!-- 개인연구목록 버튼 -->
+    <button onclick="openMemoViewer()" class="side-action-btn"
+      style="background:linear-gradient(135deg,#1a3d6e,#2471a3);">
+      <span class="btn-icon">📋</span>
+      <span class="btn-label">개인<br>연구<br>목록</span>
     </button>
   </div>
 </div>
@@ -1335,12 +1316,10 @@ header p  { font-size: 0.68em; opacity: 0.82; }
     <div class="modal-handle"></div>
     <h3>💾 저장 방식 선택</h3>
     <p>
-      <strong>📄 TXT</strong> — 메모만 텍스트로 저장<br>
       <strong>🌐 HTML</strong> — 전체 앱 (메모 포함) 저장<br>
       저장 후 파일을 카카오톡·드라이브로 공유하세요
     </p>
     <div class="modal-btns">
-      <button class="btn-m-txt"  onclick="doSave('txt')">📄 TXT 메모</button>
       <button class="btn-m-html" onclick="doSave('html')">🌐 HTML 전체</button>
       <button class="btn-m-cancel" onclick="closeModal()">취소</button>
     </div>
@@ -1464,147 +1443,6 @@ const DATA = [
   { id:100,title:"마지막 발걸음도 기쁨으로", ref:"시편 84:7",           bk:"PSA",ch:84,vs:7,  desc:"이미 지쳤더라도 계속 나아가면 힘이 더해집니다.", sug:"오늘 봉사의 마지막 집 앞에서 이 성구를 생각해 보세요." }
 ];
 
-const BASE_DATA = DATA.map(d => Object.assign({}, d));
-const OUTLINE_EDIT_KEY = 'outlineEditsV1';
-let outlineEditorId = 1;
-
-function getOutlineEdits() {
-  try { return JSON.parse(localStorage.getItem(OUTLINE_EDIT_KEY) || '{}') || {}; }
-  catch(e) { return {}; }
-}
-
-function saveOutlineEdits(edits) {
-  localStorage.setItem(OUTLINE_EDIT_KEY, JSON.stringify(edits));
-}
-
-function applyOutlineEdits() {
-  const edits = getOutlineEdits();
-  DATA.forEach(d => {
-    const edit = edits[d.id];
-    if (edit) Object.assign(d, edit);
-  });
-}
-
-function getBaseOutline(id) {
-  return BASE_DATA.find(x => x.id === Number(id));
-}
-
-function getOutline(id) {
-  return DATA.find(x => x.id === Number(id));
-}
-
-function openOutlineEditor(id) {
-  outlineEditorId = Number(id) || outlineEditorId || 1;
-  const sel = document.getElementById('oe-select');
-  sel.innerHTML = DATA.map(d => '<option value="' + d.id + '">[' + d.id + '] ' + escHtml(d.title) + '</option>').join('');
-  sel.value = outlineEditorId;
-  loadOutlineEditorItem(outlineEditorId);
-  document.getElementById('outline-editor').style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
-
-function closeOutlineEditor() {
-  document.getElementById('outline-editor').style.display = 'none';
-  document.body.style.overflow = '';
-}
-
-function loadOutlineEditorItem(id) {
-  outlineEditorId = Math.max(1, Math.min(100, Number(id) || 1));
-  const d = getOutline(outlineEditorId);
-  if (!d) return;
-  document.getElementById('oe-num').value = outlineEditorId;
-  document.getElementById('oe-select').value = outlineEditorId;
-  document.getElementById('oe-title').value = d.title || '';
-  document.getElementById('oe-ref').value = d.ref || '';
-  document.getElementById('oe-desc').value = d.desc || '';
-  document.getElementById('oe-sug').value = d.sug || '';
-  showOutlineVerseState(d.ref || '', d.verse || '');
-}
-
-var outlineFetchTimer = null;
-function autoFetchOutlineVerse(val) {
-  clearTimeout(outlineFetchTimer);
-  var vr = document.getElementById('oe-verse-result');
-  if (!val.match(/[가-힣]+\s*\d+:\d+/)) {
-    if (vr) vr.style.display = 'none';
-    document.getElementById('oe-verse-manual').style.display = 'none';
-    return;
-  }
-  vr.innerHTML = '<span style="color:#888;">찾는 중...</span>';
-  vr.style.display = 'block';
-  outlineFetchTimer = setTimeout(function(){ showOutlineVerseState(val, ''); }, 500);
-}
-
-function showOutlineVerseState(ref, savedVerse) {
-  var vr = document.getElementById('oe-verse-result');
-  var manual = document.getElementById('oe-verse-manual');
-  var input = document.getElementById('oe-verse-input');
-  var wolLink = document.getElementById('oe-verse-wol-link');
-  if (!vr || !manual || !input) return;
-  var found = ref ? searchVerseInVDB(ref) : null;
-  if (found) {
-    vr.innerHTML = '<span style="font-size:0.78em;color:#4b007d;font-weight:800;display:block;margin-bottom:4px;">📖 ' + escHtml(ref) + ' — 연구용 신세계역</span>' + escHtml(found);
-    vr.style.display = 'block';
-    manual.style.display = 'block';
-    input.value = savedVerse || found;
-    var foundParsed = parseRefStr(ref);
-    if (wolLink) wolLink.href = foundParsed ? jwUrl(foundParsed.bk, foundParsed.ch, foundParsed.vs) : ('https://wol.jw.org/ko/wol/s/r8/lp-ko?q=' + encodeURIComponent(ref) + '&p=pub-nwtsty');
-    return;
-  }
-  vr.style.display = 'none';
-  if (ref && ref.match(/[가-힣]+\s*\d+:\d+/)) {
-    manual.style.display = 'block';
-    input.value = savedVerse || '';
-    var parsed = parseRefStr(ref);
-    var url = parsed ? jwUrl(parsed.bk, parsed.ch, parsed.vs) : ('https://wol.jw.org/ko/wol/s/r8/lp-ko?q=' + encodeURIComponent(ref) + '&p=pub-nwtsty');
-    if (wolLink) wolLink.href = url;
-  } else {
-    manual.style.display = 'none';
-    input.value = savedVerse || '';
-  }
-}
-function saveOutlineEditor() {
-  const id = outlineEditorId;
-  const d = getOutline(id);
-  if (!d) return;
-  const next = {
-    title: document.getElementById('oe-title').value.trim() || d.title,
-    ref: document.getElementById('oe-ref').value.trim() || d.ref,
-    desc: document.getElementById('oe-desc').value.trim(),
-    sug: document.getElementById('oe-sug').value.trim()
-  };
-  const parsed = parseRefStr(next.ref);
-  if (parsed) { next.bk = parsed.bk; next.ch = parsed.ch; next.vs = parsed.vs; }
-  const verseEl = document.getElementById('oe-verse-result');
-  const manualEl = document.getElementById('oe-verse-manual');
-  const manualText = (document.getElementById('oe-verse-input').value || '').trim();
-  const vdbText = parsed ? searchVerseInVDB(next.ref) : '';
-  next.verse = manualText || vdbText || '';
-  Object.assign(d, next);
-  const edits = getOutlineEdits();
-  edits[id] = { title:d.title, ref:d.ref, desc:d.desc, sug:d.sug, bk:d.bk, ch:d.ch, vs:d.vs, verse:d.verse || '' };
-  saveOutlineEdits(edits);
-  const toast = document.getElementById('add-toast');
-  if (toast) { toast.textContent='✓ ['+id+'] 골자 수정 저장됨'; toast.classList.add('show'); setTimeout(function(){ toast.classList.remove('show'); },1800); }
-  filterCards();
-  openOutlineEditor(id);
-}
-
-function resetOutlineEditorItem() {
-  const id = outlineEditorId;
-  const base = getBaseOutline(id);
-  const d = getOutline(id);
-  if (!base || !d) return;
-  Object.assign(d, base);
-  const edits = getOutlineEdits();
-  delete edits[id];
-  saveOutlineEdits(edits);
-  filterCards();
-  openOutlineEditor(id);
-}
-
-applyOutlineEdits();
-
 // ════════════════════════════════════════
 // 성구 DB (신세계역)
 // ════════════════════════════════════════
@@ -1716,19 +1554,12 @@ const VDB = {
 function fixBookBtns(){
   var header=document.querySelector('header');
   var topBar=document.querySelector('.top-bar');
-  var actionBar=document.getElementById('custom-action-bar');
   var sideCol=document.getElementById('side-col');
-  if(header&&topBar){
-    var top=header.offsetHeight;
-    topBar.style.top=top+'px';
-    var actionTop=top+topBar.offsetHeight;
-    if(actionBar) actionBar.style.top=actionTop+'px';
-    if(sideCol){
-      var sideTop=actionTop+(actionBar?actionBar.offsetHeight:0);
-      sideCol.style.top=sideTop+'px';
-      sideCol.style.height=(window.innerHeight-sideTop)+'px';
-      sideCol.style.maxHeight=(window.innerHeight-sideTop)+'px';
-    }
+  if(header&&topBar&&sideCol){
+    var top=header.offsetHeight+topBar.offsetHeight;
+    sideCol.style.top=top+'px';
+    sideCol.style.height=(window.innerHeight-top)+'px';
+    sideCol.style.maxHeight=(window.innerHeight-top)+'px';
   }
 }
 window.addEventListener('load',fixBookBtns);
@@ -1774,12 +1605,6 @@ async function fetchVerse(d) {
   const key = d.bk + '-' + d.ch + '-' + d.vs;
   const el  = document.getElementById('vt' + d.id);
   if (!el) return;
-
-  // 수정 화면에서 저장한 성구 본문이 있으면 우선 표시
-  if (d.verse) {
-    showVerse(el, d.verse);
-    return;
-  }
 
   // VDB(하드코딩) 에서 바로 표시
   if (VDB[key]) {
@@ -1851,10 +1676,7 @@ function renderFallback(q) {
   const eq = encodeURIComponent(q);
   const links = [
     { src:'JW.ORG 통합검색',    title:'jw.org에서 "' + q + '" 검색',       snippet:'jw.org 한국어 검색 결과 보기',         url:'https://www.jw.org/ko/검색/?q=' + eq },
-    { src:'워치타워 라이브러리', title:'wol에서 "' + q + '" 검색',           snippet:'파수대·깨어라! 출판물에서 검색',        url:'https://wol.jw.org/ko/wol/s/r8/lp-ko?q=' + eq + '&p=par' },
-    { src:'파수대 연구용',       title:'파수대 연구용에서 "' + q + '" 검색', snippet:'파수대 연구용 기사 검색',               url:'https://wol.jw.org/ko/wol/s/r8/lp-ko?q=' + eq + '&p=pub-mwb' },
-    { src:'성경 검색',           title:'성경에서 "' + q + '" 검색',          snippet:'연구용 신세계역 성경 검색',             url:'https://wol.jw.org/ko/wol/s/r8/lp-ko?q=' + eq + '&p=pub-nwtsty' },
-    { src:'깨어라!',             title:'깨어라!에서 "' + q + '" 검색',       snippet:'깨어라! 잡지에서 관련 기사 검색',      url:'https://wol.jw.org/ko/wol/s/r8/lp-ko?q=' + eq + '&p=pub-g' },
+    { src:'워치타워 라이브러리', title:'wol에서 "' + q + '" 검색',           snippet:'워치타워 온라인 라이브러리 검색',        url:'https://wol.jw.org/ko/wol/s/r8/lp-ko?q=' + eq + '&p=par' },
   ];
   links.forEach((it, i) => { refStore[q + '_' + i] = it; });
   document.getElementById('ref-subtitle').textContent = '"' + q + '" · jw.org 검색 링크';
@@ -1878,10 +1700,12 @@ function renderFallback(q) {
 function tapRef(key) {
   const it = refStore[key];
   if (!it) return;
-  const a = document.createElement('a');
-  a.href = it.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
-  document.body.appendChild(a); a.click();
-  setTimeout(() => a.remove(), 500);
+  openExternalLink(it.url);
+}
+
+function openExternalLink(url) {
+  if (!url) return;
+  window.location.href = url;
 }
 
 function appendMemo(id, text) {
@@ -2107,7 +1931,7 @@ function render(list) {
     <div class="card" id="c${d.id}">
       <div class="card-header">
         <div class="num">${d.id}</div>
-        <div class="card-title">${escHtml(d.title)}</div>
+        <div class="card-title">${d.title}</div>
         <button class="btn-ref" onclick="openRef(${d.id})" title="jw.org 참조 검색">
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           참조
@@ -2115,7 +1939,7 @@ function render(list) {
       </div>
       <div class="scripture-block">
         <div class="ref-row">
-          <span class="v-ref">📖 ${escHtml(d.ref)}</span>
+          <span class="v-ref">📖 ${d.ref}</span>
           <a class="jw-link" href="${url}" target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             JW.ORG
@@ -2126,8 +1950,8 @@ function render(list) {
         </div>
       </div>
       <span class="label">심층 설명</span>
-      <p class="desc">${escHtml(d.desc)}</p>
-      <div class="suggest"><strong>💡 실무 제안:</strong> ${escHtml(d.sug)}</div>
+      <p class="desc">${d.desc}</p>
+      <div class="suggest"><strong>💡 실무 제안:</strong> ${d.sug}</div>
       <div class="memo-section">
         <div style="display:flex;gap:6px;align-items:center;">
           <button class="memo-toggle ${has?'has-memo':''}" id="mt${d.id}"
@@ -2155,20 +1979,36 @@ function render(list) {
 // 상단 검색창 → 카드 필터 + jw.org 참조 패널 열기
 function topSearch() {
   const q = document.getElementById('search').value.trim();
+  openRefSearchPanel(q, '📚 참조');
+}
+
+function openRefSearchPanel(q, titleText) {
   refCurrentId = null;
   document.getElementById('ref-drawer').classList.add('open');
   document.body.style.overflow = 'hidden';
   const inp = document.getElementById('ref-input');
-  inp.value = q;
+  inp.value = q || '';
   if (!q) {
-    document.getElementById('ref-title').textContent = '📚 참조';
+    document.getElementById('ref-title').textContent = titleText || '📚 참조';
     document.getElementById('ref-subtitle').textContent = '검색어를 입력하고 참조 버튼을 누르세요';
     document.getElementById('ref-body').innerHTML = '';
     setTimeout(() => inp.focus(), 250);
     return;
   }
-  document.getElementById('ref-title').textContent = '📚 참조';
+  document.getElementById('ref-title').textContent = titleText || '📚 참조';
   renderFallback(q);
+}
+
+function openGlobalRefSearch() {
+  var search = document.getElementById('search');
+  var q = search ? search.value.trim() : '';
+  openRefSearchPanel(q, '🔎 통합검색');
+}
+
+function openNmeRefSearch() {
+  var field = document.getElementById('nme-ref-query');
+  var q = field ? field.value.trim() : '';
+  openRefSearchPanel(q, '🔎 통합검색');
 }
 
 function filterCards() {
@@ -2189,7 +2029,7 @@ var memoOverlayId = null;
 // 통합 미리보기/저장 모달
 // ════════════════════════════════════════
 var mpmState = {
-  sourceId: null,   // null=새메모, 숫자=골자메모
+  sourceId: null,   // null=개인성서연구, 숫자=골자메모
   type: '',         // txt/doc/pdf
   fs: 11,           // 글자크기 pt
   lh: 1.8,          // 줄간격
@@ -2199,10 +2039,11 @@ var mpmState = {
 function openMemoPreview(sourceId) {
   mpmState.sourceId = sourceId;
   mpmState.type = '';
+  mpmState._nmeKey = null;
   // 내용 준비
   let html = '';
   if (sourceId === null) {
-    // 새 메모 편집기 내용
+    // 개인성서연구 편집기 내용
     saveNewMemo(true);
     html = document.getElementById('nme-content').innerHTML;
   } else {
@@ -2260,20 +2101,67 @@ function mpmUpdateStyles() {
 
 function mpmSelectType(type) {
   mpmState.type = type;
-  const labels = {txt:'📄 TXT 텍스트 파일', doc:'📝 Word 문서 파일', pdf:'📕 PDF / 인쇄'};
+  const labels = {local:'💾 로컬(기기에) 저장', doc:'📝 Word 문서 파일', pdf:'📕 PDF / 인쇄'};
   document.getElementById('mpm-type-badge').textContent = '선택: ' + labels[type];
   document.getElementById('mpm-save-actions').style.display  = type !== 'pdf' ? 'flex' : 'none';
   document.getElementById('mpm-print-actions').style.display = type === 'pdf' ? 'flex' : 'none';
+  var isLocal = type === 'local';
+  document.getElementById('mpm-local-save-btn').style.display = isLocal ? 'block' : 'none';
+  document.getElementById('mpm-download-save-btn').style.display = isLocal ? 'none' : 'block';
+  document.getElementById('mpm-save-help').textContent = isLocal
+    ? '개인연구목록에서 바로 불러올 수 있도록 이 기기에 저장합니다'
+    : '저장 후 카카오톡·메일·드라이브로 공유 가능';
   mpmGoStep(3);
+}
+
+function mpmDoLocalSave() {
+  if (mpmState._nmeKey) {
+    var stored = JSON.parse(localStorage.getItem(mpmState._nmeKey) || 'null');
+    if (stored) {
+      stored.date = Date.now();
+      stored.dateStr = new Date().toLocaleString('ko-KR');
+      localStorage.setItem(mpmState._nmeKey, JSON.stringify(stored));
+    }
+  } else if (mpmState.sourceId === null) {
+    saveNewMemo(true);
+  } else {
+    var d = DATA.find(function(x){ return x.id === mpmState.sourceId; });
+    var title = d ? '[' + mpmState.sourceId + '] ' + d.title : '개인성서연구';
+    var memo = loadMemo(mpmState.sourceId);
+    var html = memo.split(/\n{2,}/)
+      .map(function(p){ return p.trim() ? '<p>' + p.replace(/\n/g,'<br>').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</p>' : ''; })
+      .filter(Boolean).join('');
+    var key = 'nme_' + Date.now();
+    localStorage.setItem(key, JSON.stringify({
+      key: key,
+      title: title,
+      html: html || '<p><br></p>',
+      text: memo,
+      date: Date.now(),
+      dateStr: new Date().toLocaleString('ko-KR')
+    }));
+  }
+  closeMemoPreviewModal();
+  var toast = document.getElementById('add-toast');
+  if (toast) {
+    toast.textContent = '✓ 로컬에 저장됨 · 개인연구목록에서 불러올 수 있습니다';
+    toast.classList.add('show');
+    setTimeout(function(){ toast.classList.remove('show'); }, 2200);
+  }
 }
 
 function mpmDoSave() {
   const date = new Date().toLocaleDateString('ko-KR').replace(/\.\s*/g,'-').replace(/-$/,'');
   let text = '', html = '', fileName = '메모_' + date;
-  if (mpmState.sourceId === null) {
+  if (mpmState._nmeKey) {
+    var savedNme = JSON.parse(localStorage.getItem(mpmState._nmeKey) || 'null') || {};
+    text = savedNme.text || '';
+    html = savedNme.html || '';
+    fileName = (savedNme.title || '개인성서연구') + '_' + date;
+  } else if (mpmState.sourceId === null) {
     text = document.getElementById('nme-content').innerText || '';
     html = document.getElementById('nme-content').innerHTML;
-    var nmeTitle = (document.getElementById('nme-title').value||'').trim() || '새메모';
+    var nmeTitle = (document.getElementById('nme-title').value||'').trim() || '개인성서연구';
     fileName = nmeTitle + '_' + date;
   } else {
     const d = DATA.find(x => x.id === mpmState.sourceId);
@@ -2300,7 +2188,10 @@ function mpmDoSave() {
 
 function mpmDoPrint() {
   let html = '';
-  if (mpmState.sourceId === null) {
+  if (mpmState._nmeKey) {
+    var savedNme = JSON.parse(localStorage.getItem(mpmState._nmeKey) || 'null') || {};
+    html = savedNme.html || '';
+  } else if (mpmState.sourceId === null) {
     html = document.getElementById('nme-content').innerHTML;
   } else {
     const memo = loadMemo(mpmState.sourceId);
@@ -2376,26 +2267,8 @@ function openCustomCard(key) {
       document.getElementById('cce-desc').value = data.desc || '';
       document.getElementById('cce-sug').value = data.sug || '';
       var vr = document.getElementById('cce-verse-result');
-      var manual = document.getElementById('cce-verse-manual');
-      var verseInput = document.getElementById('cce-verse-input');
-      // VDB에서 찾을 수 있으면 자동 표시
-      var found = data.ref ? searchVerseInVDB(data.ref) : null;
-      if (found) {
-        vr.innerHTML = '<span style="font-size:0.78em;color:#2471a3;font-weight:700;display:block;margin-bottom:4px;">'
-          + '📖 ' + data.ref + ' — 연구용 신세계역</span>' + found;
-        vr.style.display = 'block';
-        vr.style.borderColor = '#2471a3';
-        manual.style.display = 'none';
-      } else if (data.verse) {
-        // 직접 입력된 성구
-        vr.style.display = 'none';
-        manual.style.display = 'block';
-        verseInput.value = data.verse;
-      } else {
-        vr.style.display = 'none';
-        manual.style.display = 'none';
-        verseInput.value = '';
-      }
+      if (data.verse) { vr.textContent = data.verse; vr.style.display = 'block'; }
+      else vr.style.display = 'none';
       if (del) del.style.display = 'block';
       if (headerTitle) headerTitle.textContent = '✏️ 골자 수정 [' + data.id + ']';
     } catch(e){}
@@ -2405,8 +2278,6 @@ function openCustomCard(key) {
     document.getElementById('cce-desc').value = '';
     document.getElementById('cce-sug').value = '';
     document.getElementById('cce-verse-result').style.display = 'none';
-    document.getElementById('cce-verse-manual').style.display = 'none';
-    document.getElementById('cce-verse-input').value = '';
     if (del) del.style.display = 'none';
     if (headerTitle) headerTitle.textContent = '＋ 새 골자 만들기';
   }
@@ -2426,16 +2297,10 @@ function saveCustomCard() {
   var desc = (document.getElementById('cce-desc').value || '').trim();
   var sug = (document.getElementById('cce-sug').value || '').trim();
   var verseEl = document.getElementById('cce-verse-result');
-  var manualEl = document.getElementById('cce-verse-manual');
-  var verseInput = document.getElementById('cce-verse-input');
   var verse = '';
-  if (verseEl.style.display !== 'none') {
-    // VDB에서 찾은 성구 — 텍스트만 추출 (첫 줄 제목 제외)
-    var lines = (verseEl.innerText || '').split('\n');
+  if (verseEl.style.display !== 'none' && verseEl.style.borderColor === 'rgb(36, 113, 163)') {
+    var lines = verseEl.innerText.split('\n');
     verse = lines.slice(1).join(' ').trim();
-  } else if (manualEl.style.display !== 'none') {
-    // 직접 입력한 성구
-    verse = (verseInput.value || '').trim();
   }
   // bk/ch/vs 파싱해서 저장
   var parsed = parseRefStr(ref);
@@ -2484,31 +2349,27 @@ function fetchCustomVerse() {
   var ref = (document.getElementById('cce-ref').value || '').trim();
   if (!ref) return;
   var vr = document.getElementById('cce-verse-result');
-  var manual = document.getElementById('cce-verse-manual');
-  var wolLink = document.getElementById('cce-verse-wol-link');
 
   // 1. VDB에서 먼저 찾기
   var found = searchVerseInVDB(ref);
   if (found) {
-    // VDB 성공 — 자동 표시, 직접입력 숨김
     vr.innerHTML = '<span style="font-size:0.78em;color:#2471a3;font-weight:700;display:block;margin-bottom:4px;">'
-      + '📖 ' + ref + ' — 연구용 신세계역</span>' + found;
+      + '📖 ' + ref + ' — 연구용 신세계역</span>'
+      + found;
     vr.style.display = 'block';
     vr.style.borderColor = '#2471a3';
-    manual.style.display = 'none';
     return;
   }
 
-  // 2. VDB에 없으면 직접 입력 박스 표시
-  vr.style.display = 'none';
-  manual.style.display = 'block';
-  // wol.jw.org 직접 링크
+  // 2. VDB에 없으면 wol.jw.org 링크 안내
   var eq = encodeURIComponent(ref);
-  var parsed = parseRefStr(ref);
-  var url = parsed
-    ? jwUrl(parsed.bk, parsed.ch, parsed.vs)
-    : 'https://wol.jw.org/ko/wol/s/r8/lp-ko?q=' + eq + '&p=pub-nwtsty';
-  if (wolLink) wolLink.href = url;
+  vr.innerHTML = '<span style="font-size:0.78em;color:#888;display:block;margin-bottom:6px;">'
+    + '⚠️ VDB에 없는 성구입니다.</span>'
+    + '<a href="https://wol.jw.org/ko/wol/s/r8/lp-ko?q='+eq+'&p=pub-nwtsty" target="_blank" '
+    + 'style="color:#2471a3;font-weight:700;font-size:0.9em;">📖 wol.jw.org 연구용 신세계역에서 "'+ref+'" 찾기 ↗</a><br>'
+    + '<span style="font-size:0.82em;color:#888;">직접 찾은 내용을 심층설명란에 붙여넣어 주세요.</span>';
+  vr.style.display = 'block';
+  vr.style.borderColor = '#f0a500';
 }
 
 function searchVerseInVDB(refStr) {
@@ -2684,20 +2545,16 @@ function closeCustomList() {
 function openMemoViewer() {
   const body = document.getElementById('memo-viewer-body');
 
-  // 새 메모 목록
+  // 개인성서연구 목록만 표시
   const nmeList = getNmeMemoList();
-  // 골자 메모 목록
-  const bonMemos = getAllMemos();
-
   let html = '';
 
-  // ── 새 메모 섹션 ──
   html += '<div style="font-size:0.82em;font-weight:800;color:#27500a;'
     + 'padding:10px 0 6px;border-bottom:2px solid #c8e6c9;margin-bottom:10px;">'
-    + '✏️ 새 메모 (' + nmeList.length + '개)</div>';
+    + '✏️ 개인성서연구 (' + nmeList.length + '개)</div>';
 
   if (!nmeList.length) {
-    html += '<div style="text-align:center;padding:16px;color:#bbb;font-size:0.85em;margin-bottom:14px;">저장된 새 메모가 없습니다</div>';
+    html += '<div style="text-align:center;padding:40px;color:#bbb;font-size:0.9em;">저장된 개인성서연구가 없습니다</div>';
   } else {
     html += nmeList.map(function(m) {
       var preview = (m.text||'').replace(/\n/g,' ').slice(0,60) + ((m.text||'').length>60?'…':'');
@@ -2722,42 +2579,13 @@ function openMemoViewer() {
     }).join('');
   }
 
-  // ── 골자 메모 섹션 ──
-  html += '<div style="font-size:0.82em;font-weight:800;color:#3a0068;'
-    + 'padding:10px 0 6px;border-bottom:2px solid #e8dff5;margin:14px 0 10px;">'
-    + '📝 골자 메모 (' + bonMemos.length + '개)</div>';
-
-  if (!bonMemos.length) {
-    html += '<div style="text-align:center;padding:16px;color:#bbb;font-size:0.85em;">저장된 골자 메모가 없습니다</div>';
-  } else {
-    html += bonMemos.map(function(m) {
-      const date = loadMemoDate(m.id);
-      const preview = m.memo.replace(/\n/g,' ').slice(0,60) + (m.memo.length>60?'…':'');
-      return '<div style="border:1px solid #e8dff5;border-radius:12px;padding:12px 14px;margin-bottom:8px;background:#fdfaff;">'
-        + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">'
-        + '<div style="font-size:0.85em;font-weight:800;color:#3a0068;">[' + m.id + '] ' + (m.title||'').replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</div>'
-        + (date ? '<div style="font-size:0.72em;color:#aaa;white-space:nowrap;margin-left:8px;">🕐 ' + date + '</div>' : '')
-        + '</div>'
-        + '<div style="font-size:0.8em;color:#666;margin-bottom:8px;">' + preview.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</div>'
-        + '<div style="display:flex;gap:6px;">'
-        + '<button onclick="openMemoOverlay(' + m.id + ');closeMemoViewer();" '
-        + 'style="flex:1;padding:7px;border:1px solid #d8c8ef;border-radius:10px;'
-        + 'background:#f0ebf8;color:#6a1b9a;font-size:0.8em;font-weight:700;cursor:pointer;font-family:inherit;">✏️ 편집</button>'
-        + '<button onclick="openMemoPreview(' + m.id + ');closeMemoViewer();" '
-        + 'style="flex:1;padding:7px;border:1px solid #d8c8ef;border-radius:10px;'
-        + 'background:#fff;color:#6a1b9a;font-size:0.8em;font-weight:700;cursor:pointer;font-family:inherit;">👁 미리보기</button>'
-        + '</div>'
-        + '</div>';
-    }).join('');
-  }
-
   body.innerHTML = html;
   const el = document.getElementById('memo-viewer');
   el.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
 
-// 새 메모 목록에서 미리보기
+// 개인성서연구 목록에서 미리보기
 function openMemoPreviewForNme(key) {
   try {
     var data = JSON.parse(localStorage.getItem(key));
@@ -2778,13 +2606,13 @@ function closeMemoViewer() {
   document.body.style.overflow = '';
 }
 
-// 메모보기에서 편집 — 새 메모와 같은 워드 편집기 형식
+// 개인연구목록에서 편집 — 개인성서연구와 같은 워드 편집기 형식
 var memoEditorId = null;
 function openMemoEditorFromViewer(id) {
   memoEditorId = id;
   const d = DATA.find(x => x.id === id);
   const memo = loadMemo(id);
-  // 내용을 nme-content(새 메모 편집기)에 로드
+  // 내용을 nme-content(개인성서연구 편집기)에 로드
   const content = document.getElementById('nme-content');
   // 줄바꿈을 p 태그로 변환
   content.innerHTML = memo
@@ -2803,7 +2631,7 @@ function openMemoEditorFromViewer(id) {
 }
 
 // 내보내기 모달
-var exportMemoTargetId = null; // null = 새 메모, 숫자 = 골자 메모
+var exportMemoTargetId = null; // null = 개인성서연구, 숫자 = 골자 메모
 
 function openMemoSaveModal() {
   // 메모 오버레이에서 호출 (현재 편집 중인 메모)
@@ -2815,7 +2643,7 @@ function openMemoSaveModal() {
 }
 
 function openMemoSaveModalFor(id) {
-  // 메모보기에서 특정 메모 저장
+  // 개인연구목록에서 특정 메모 저장
   exportMemoTargetId = id;
   const d = DATA.find(x => x.id === id);
   document.getElementById('memo-save-modal-title').textContent =
@@ -2832,11 +2660,11 @@ function exportMemoAs(type) {
   let text = '', html = '', fileName = '메모_' + date;
 
   if (exportMemoTargetId === null) {
-    // 새 메모 편집기 내용
+    // 개인성서연구 편집기 내용
     const content = document.getElementById('nme-content');
     text = content.innerText || '';
     html = content.innerHTML;
-    fileName = '새메모_' + date;
+    fileName = '개인성서연구_' + date;
   } else {
     // 골자 메모
     const d = DATA.find(x => x.id === exportMemoTargetId);
@@ -2897,11 +2725,11 @@ function exportMemoAs(type) {
 }
 
 // ════════════════════════════════════════
-// 새 메모 워드 편집기 (제목+날짜별 목록)
+// 개인성서연구 워드 편집기 (제목+날짜별 목록)
 // ════════════════════════════════════════
-var nmeCurrentKey = null; // 현재 편집 중인 메모 키 (null=새 메모)
+var nmeCurrentKey = null; // 현재 편집 중인 메모 키 (null=개인성서연구)
 
-// 새 메모 목록 불러오기
+// 개인성서연구 목록 불러오기
 function getNmeMemoList() {
   var keys = Object.keys(localStorage).filter(function(k){ return k.startsWith('nme_'); });
   return keys.map(function(k){
@@ -2909,7 +2737,7 @@ function getNmeMemoList() {
   }).filter(Boolean).sort(function(a,b){ return b.date - a.date; });
 }
 
-// 새 메모 열기 (신규)
+// 개인성서연구 열기 (신규)
 function openNewMemo() {
   nmeCurrentKey = null;
   document.getElementById('nme-title').value = '';
@@ -2970,21 +2798,22 @@ function saveNewMemo(silent) {
   }
 }
 
-// 새 메모에서 미리보기/저장 열기
+// 개인성서연구에서 미리보기/저장 열기
 function openMemoPreviewFromNew() {
   saveNewMemo(true);
-  var title = (document.getElementById('nme-title').value || '').trim() || '새 메모';
+  var title = (document.getElementById('nme-title').value || '').trim() || '개인성서연구';
   var html = '<div style="font-size:1.05em;font-weight:800;color:#27500a;margin-bottom:10px;">✏️ ' + title + '</div>'
     + document.getElementById('nme-content').innerHTML;
   document.getElementById('mpm-preview-paper').innerHTML = html;
   mpmState.sourceId = null;
   mpmState.type = '';
+  mpmState._nmeKey = null;
   mpmUpdateStyles();
   mpmGoStep(1);
   document.getElementById('memo-preview-modal').style.display = 'flex';
 }
 
-// 새 메모 삭제
+// 개인성서연구 삭제
 function deleteNmeMemo(key) {
   showConfirmToast('이 메모를 삭제할까요?', function(){
     localStorage.removeItem(key);
@@ -2997,6 +2826,43 @@ function nmeExec(cmd, val) {
   document.execCommand(cmd, false, val || null);
   updateNmeCount();
 }
+function nmeSetFont(font) {
+  if (!font) return;
+  document.getElementById('nme-content').focus();
+  document.execCommand('fontName', false, font);
+  updateNmeCount();
+}
+function nmeSetList(value) {
+  if (!value) return;
+  var parts = value.split(':');
+  var tag = parts[0];
+  var styleType = parts[1] || '';
+  var content = document.getElementById('nme-content');
+  content.focus();
+  document.execCommand(tag === 'ol' ? 'insertOrderedList' : 'insertUnorderedList', false, null);
+  var list = nmeGetActiveList();
+  if (list) {
+    list.style.listStyleType = styleType;
+    list.style.margin = '0.45em 0 0.45em 1.6em';
+    list.style.paddingLeft = '1.25em';
+    list.querySelectorAll('li').forEach(function(li){
+      li.style.margin = '0.18em 0';
+      li.style.paddingLeft = '0.15em';
+    });
+  }
+  updateNmeCount();
+}
+function nmeGetActiveList() {
+  var sel = window.getSelection();
+  if (!sel || !sel.rangeCount) return null;
+  var node = sel.anchorNode;
+  if (node && node.nodeType === 3) node = node.parentNode;
+  while (node && node.id !== 'nme-content') {
+    if (node.tagName === 'UL' || node.tagName === 'OL') return node;
+    node = node.parentNode;
+  }
+  return null;
+}
 function updateNmeCount() {
   var text = document.getElementById('nme-content').innerText || '';
   document.getElementById('nme-count').textContent = text.replace(/\s/g,'').length + ' 글자';
@@ -3004,7 +2870,7 @@ function updateNmeCount() {
 function previewNewMemo() {
   saveNewMemo(true);
   document.getElementById('nme-preview-body').innerHTML = document.getElementById('nme-content').innerHTML;
-  exportMemoTargetId = null; // 새 메모
+  exportMemoTargetId = null; // 개인성서연구
   document.getElementById('nme-preview-modal').style.display = 'flex';
 }
 function closeNmePreview() {
@@ -3119,6 +2985,7 @@ function saveMemoOverlayAndPreview(){
   document.getElementById('mpm-preview-paper').innerHTML = html;
   mpmState.sourceId = id;
   mpmState.type = '';
+  mpmState._nmeKey = null;
   mpmUpdateStyles();
   mpmGoStep(1);
   document.getElementById('memo-preview-modal').style.display = 'flex';
@@ -3261,24 +3128,16 @@ if (isIOS && !isInStandalone && !localStorage.getItem('ios_hint_shown')) {
 // ════════════════════════════════════════
 // 초기 실행
 // ════════════════════════════════════════
+document.addEventListener('click', function(e) {
+  var a = e.target.closest('a[href^="http"]');
+  if (!a) return;
+  e.preventDefault();
+  openExternalLink(a.href);
+});
+
 render(DATA);
 renderCustomCards();
 updateCustomCount();
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
