@@ -608,6 +608,14 @@ header p  { font-size: 0.68em; opacity: 0.82; }
 
 #ref-body { flex: 1; overflow-y: auto; padding: 14px 14px 100px; }
 
+#ref-body,
+#memo-viewer-body,
+#custom-list-body,
+#base-edit-list-body {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
 /* 검색 상태 */
 .ref-loading {
   text-align: center; padding: 40px 20px; color: #7b68ae;
@@ -1230,6 +1238,25 @@ header p  { font-size: 0.68em; opacity: 0.82; }
   </div>
 </div>
 
+<!-- ════ 기본 골자 수정 리스트 ════ -->
+<div id="base-edit-list-panel" style="display:none;position:fixed;inset:0;z-index:600;background:#fff;flex-direction:column;">
+  <div style="background:linear-gradient(135deg,#5d4037,#8d6e63);color:#fff;
+              padding:calc(10px + var(--safe-top)) 16px 10px;
+              display:flex;align-items:center;gap:8px;flex-shrink:0;">
+    <div style="flex:1;font-size:0.95em;font-weight:800;">✏️ 기본 골자 수정하기</div>
+    <button onclick="closeBaseEditList()"
+      style="background:rgba(255,255,255,0.2);border:none;color:#fff;
+             border-radius:20px;padding:7px 14px;font-size:0.82em;font-weight:700;cursor:pointer;">✕ 닫기</button>
+  </div>
+  <div style="padding:10px 14px;background:#fff8f0;border-bottom:1px solid #ead7c5;flex-shrink:0;">
+    <input id="base-edit-search" type="search" placeholder="수정할 골자 검색..."
+      oninput="renderBaseEditList()"
+      style="width:100%;padding:9px 12px;border:1.5px solid #d7ccc8;border-radius:10px;
+             font-family:inherit;font-size:0.9em;box-sizing:border-box;outline:none;">
+  </div>
+  <div id="base-edit-list-body" style="flex:1;overflow:auto;padding:14px;"></div>
+</div>
+
 <!-- 메모 전체화면 오버레이 -->
 <div id="memo-overlay">
   <div id="memo-overlay-header">
@@ -1278,8 +1305,8 @@ header p  { font-size: 0.68em; opacity: 0.82; }
 </div>
 
 <header>
-  <h1>📖 봉사모임 사회 골자 100</h1>
-  <p>매일의 전파 봉사를 위한 영적 격려 · 신세계역</p>
+  <h1>봉사모임사회 PRO. ver3</h1>
+  <p>전파활동을 위한 영적 격려와 개인연구</p>
 </header>
 
 <div class="top-bar">
@@ -1293,7 +1320,7 @@ header p  { font-size: 0.68em; opacity: 0.82; }
   <span class="count-badge" id="count-badge">100개</span>
 </div>
 
-<!-- 골자 만들기 / 내 골자 리스트 버튼 -->
+<!-- 골자 만들기 / 골자 수정 / 내 골자 리스트 버튼 -->
 <div style="display:flex;gap:8px;padding:8px 12px;background:#fff;
             border-bottom:1px solid #e8dff5;position:sticky;top:56px;z-index:97;">
   <button onclick="openCustomCard(null)"
@@ -1301,6 +1328,12 @@ header p  { font-size: 0.68em; opacity: 0.82; }
            background:linear-gradient(135deg,#1a5276,#2471a3);
            color:#fff;font-size:0.82em;font-weight:800;cursor:pointer;font-family:inherit;">
     ＋ 골자 만들기
+  </button>
+  <button onclick="openBaseEditList()"
+    style="flex:1;padding:9px 8px;border:1.5px solid #8d6e63;border-radius:10px;
+           background:#fff8f0;color:#5d4037;font-size:0.82em;font-weight:800;
+           cursor:pointer;font-family:inherit;">
+    ✏️ 골자수정하기
   </button>
   <button onclick="openCustomList()"
     style="flex:1;padding:9px 8px;border:1.5px solid #2471a3;border-radius:10px;
@@ -1672,6 +1705,11 @@ async function fetchVerse(d) {
     return;
   }
 
+  if (d.verse) {
+    showVerse(el, d.verse);
+    return;
+  }
+
   // VDB에 없으면 jw.org 링크 표시
   const n   = BOOK_NUM[d.bk] || 40;
   const url = 'https://wol.jw.org/ko/wol/b/r8/lp-ko/nwtsty/' + n + '/' + d.ch + '#v=' + n + ':' + d.ch + ':' + d.vs;
@@ -1711,7 +1749,7 @@ const refStore = {};
 
 function openRef(id) {
   refCurrentId = id;
-  const d = DATA.find(x => x.id === id);
+  const d = getBaseCard(DATA.find(x => x.id === id));
   if (!d) return;
   document.getElementById('ref-input').value = d.title;
   document.getElementById('ref-title').textContent = '📚 참조';
@@ -1981,8 +2019,27 @@ function escAttr(s) {
 // ════════════════════════════════════════
 const cont = document.getElementById('card-container');
 
+function getBaseEdit(id) {
+  try { return JSON.parse(localStorage.getItem('ed_' + id)); } catch(e) { return null; }
+}
+
+function getBaseCard(orig) {
+  if (!orig) return null;
+  var edit = getBaseEdit(orig.id);
+  if (!edit) return orig;
+  var parsed = parseRefStr(edit.ref || orig.ref);
+  return Object.assign({}, orig, edit, {
+    id: orig.id,
+    bk: (parsed && parsed.bk) || edit.bk || orig.bk,
+    ch: (parsed && parsed.ch) || edit.ch || orig.ch,
+    vs: (parsed && parsed.vs) || edit.vs || orig.vs,
+    edited: true
+  });
+}
+
 function render(list) {
-  cont.innerHTML = list.map(d => {
+  const viewList = list.map(d => getBaseCard(d));
+  cont.innerHTML = viewList.map(d => {
     const memo = loadMemo(d.id);
     const has  = memo.trim() !== '';
     const url  = jwUrl(d.bk, d.ch, d.vs);
@@ -1991,7 +2048,7 @@ function render(list) {
     <div class="card" id="c${d.id}">
       <div class="card-header">
         <div class="num">${d.id}</div>
-        <div class="card-title">${d.title}</div>
+        <div class="card-title">${escHtml(d.title)}${d.edited ? ' <span style="font-size:0.72em;color:#8d6e63;">수정됨</span>' : ''}</div>
         <button class="btn-ref" onclick="openRef(${d.id})" title="jw.org 참조 검색">
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           참조
@@ -1999,7 +2056,7 @@ function render(list) {
       </div>
       <div class="scripture-block">
         <div class="ref-row">
-          <span class="v-ref">📖 ${d.ref}</span>
+          <span class="v-ref">📖 ${escHtml(d.ref)}</span>
           <a class="jw-link" href="${url}" target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             JW.ORG
@@ -2010,8 +2067,8 @@ function render(list) {
         </div>
       </div>
       <span class="label">심층 설명</span>
-      <p class="desc">${d.desc}</p>
-      <div class="suggest"><strong>💡 실무 제안:</strong> ${d.sug}</div>
+      <p class="desc">${escHtml(d.desc)}</p>
+      <div class="suggest"><strong>💡 실무 제안:</strong> ${escHtml(d.sug)}</div>
       <div class="memo-section">
         <div style="display:flex;gap:6px;align-items:center;">
           <button class="memo-toggle ${has?'has-memo':''}" id="mt${d.id}"
@@ -2023,14 +2080,14 @@ function render(list) {
         <div class="memo-box ${has?'open':''}" id="mb${d.id}">
           <textarea class="memo-textarea" id="ta${d.id}"
             placeholder="메모, 경험, 아이디어를 자유롭게…"
-            oninput="onMemoInput(${d.id})">${memo}</textarea>
+            oninput="onMemoInput(${d.id})">${escHtml(memo)}</textarea>
         </div>
       </div>
     </div>`;
   }).join('');
   document.getElementById('count-badge').textContent = list.length + '개';
   // 성구 비동기 로드 (처음 화면에 보이는 카드부터 순차적으로)
-  loadVersesFor(list);
+  loadVersesFor(viewList);
 }
 
 // ════════════════════════════════════════
@@ -2074,10 +2131,11 @@ function openNmeRefSearch() {
 function filterCards() {
   const v = document.getElementById('search').value.toLowerCase().trim();
   if (!v) { render(DATA); return; }
-  render(DATA.filter(d =>
-    d.title.includes(v) || d.ref.includes(v) ||
-    d.desc.includes(v)  || d.sug.includes(v) || String(d.id) === v
-  ));
+  render(DATA.filter(orig => {
+    const d = getBaseCard(orig);
+    return (d.title||'').toLowerCase().includes(v) || (d.ref||'').toLowerCase().includes(v) ||
+      (d.desc||'').toLowerCase().includes(v) || (d.sug||'').toLowerCase().includes(v) || String(d.id) === v;
+  }));
 }
 
 // ════════════════════════════════════════
@@ -2109,7 +2167,7 @@ function openMemoPreview(sourceId) {
   } else {
     // 골자 메모
     const memo = loadMemo(sourceId);
-    const d = DATA.find(x => x.id === sourceId);
+    const d = getBaseCard(DATA.find(x => x.id === sourceId));
     const title = d ? '<h3 style="margin-bottom:8px;color:#3a0068;">[' + sourceId + '] ' + (d.title||'') + '</h3>' : '';
     html = title + memo.split(/\n{2,}/)
       .map(p => p.trim() ? '<p>' + p.replace(/\n/g,'<br>').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</p>' : '')
@@ -2185,7 +2243,7 @@ function mpmDoLocalSave() {
   } else if (mpmState.sourceId === null) {
     saveNewMemo(true);
   } else {
-    var d = DATA.find(function(x){ return x.id === mpmState.sourceId; });
+    var d = getBaseCard(DATA.find(function(x){ return x.id === mpmState.sourceId; }));
     var title = d ? '[' + mpmState.sourceId + '] ' + d.title : '개인성서연구';
     var memo = loadMemo(mpmState.sourceId);
     var html = memo.split(/\n{2,}/)
@@ -2224,7 +2282,7 @@ function mpmDoSave() {
     var nmeTitle = (document.getElementById('nme-title').value||'').trim() || '개인성서연구';
     fileName = nmeTitle + '_' + date;
   } else {
-    const d = DATA.find(x => x.id === mpmState.sourceId);
+    const d = getBaseCard(DATA.find(x => x.id === mpmState.sourceId));
     text = loadMemo(mpmState.sourceId);
     html = text.split(/\n{2,}/).map(p=>p.trim()?'<p>'+p.replace(/\n/g,'<br>')+'</p>':'').join('');
     fileName = (d ? '['+mpmState.sourceId+']'+d.title : '메모') + '_' + date;
@@ -2291,6 +2349,8 @@ function mpmDoPrint() {
 // 골자 만들기
 // ════════════════════════════════════════
 var cceCurrentKey = null;
+var cceMode = 'custom';
+var cceBaseId = null;
 var CUSTOM_CARD_START_ID = 101;
 
 function getCustomCards() {
@@ -2316,6 +2376,8 @@ function updateCustomCount() {
 }
 
 function openCustomCard(key) {
+  cceMode = 'custom';
+  cceBaseId = null;
   cceCurrentKey = key;
   var del = document.getElementById('cce-del-btn');
   var headerTitle = document.getElementById('cce-header-title');
@@ -2330,6 +2392,7 @@ function openCustomCard(key) {
       if (data.verse) { vr.textContent = data.verse; vr.style.display = 'block'; }
       else vr.style.display = 'none';
       if (del) del.style.display = 'block';
+      if (del) del.textContent = '🗑 삭제';
       if (headerTitle) headerTitle.textContent = '✏️ 골자 수정 [' + data.id + ']';
     } catch(e){}
   } else {
@@ -2339,6 +2402,7 @@ function openCustomCard(key) {
     document.getElementById('cce-sug').value = '';
     document.getElementById('cce-verse-result').style.display = 'none';
     if (del) del.style.display = 'none';
+    if (del) del.textContent = '🗑 삭제';
     if (headerTitle) headerTitle.textContent = '＋ 새 골자 만들기';
   }
   document.getElementById('custom-card-editor').style.display = 'flex';
@@ -2364,6 +2428,31 @@ function saveCustomCard() {
   }
   // bk/ch/vs 파싱해서 저장
   var parsed = parseRefStr(ref);
+  if (cceMode === 'base' && cceBaseId) {
+    var orig = DATA.find(function(x){ return x.id === cceBaseId; });
+    var data = {
+      key: 'ed_' + cceBaseId,
+      id: cceBaseId,
+      title: title,
+      ref: ref,
+      desc: desc,
+      sug: sug,
+      verse: verse,
+      bk: parsed ? parsed.bk : (orig ? orig.bk : ''),
+      ch: parsed ? parsed.ch : (orig ? orig.ch : 0),
+      vs: parsed ? parsed.vs : (orig ? orig.vs : 0),
+      date: Date.now(),
+      dateStr: new Date().toLocaleString('ko-KR')
+    };
+    localStorage.setItem('ed_' + cceBaseId, JSON.stringify(data));
+    filterCards();
+    renderCustomCards();
+    renderBaseEditList();
+    var toastBase = document.getElementById('add-toast');
+    if (toastBase) { toastBase.textContent='✓ ['+cceBaseId+'] 기본 골자 수정됨'; toastBase.classList.add('show'); setTimeout(function(){ toastBase.classList.remove('show'); },1800); }
+    closeCustomCard();
+    return;
+  }
   var key = cceCurrentKey || ('cc_' + Date.now());
   var existing = cceCurrentKey ? (JSON.parse(localStorage.getItem(cceCurrentKey)||'null')||{}) : {};
   var id = existing.id || getNextCustomId();
@@ -2380,6 +2469,11 @@ function saveCustomCard() {
 }
 
 function deleteCustomCard() {
+  if (cceMode === 'base' && cceBaseId) {
+    restoreBaseCard(cceBaseId, true);
+    closeCustomCard();
+    return;
+  }
   if (!cceCurrentKey) return;
   showConfirmToast('이 골자를 삭제할까요?', function(){
     localStorage.removeItem(cceCurrentKey);
@@ -2602,6 +2696,84 @@ function closeCustomList() {
   document.body.style.overflow = '';
 }
 
+function openBaseEditList() {
+  renderBaseEditList();
+  document.getElementById('base-edit-list-panel').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeBaseEditList() {
+  document.getElementById('base-edit-list-panel').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function renderBaseEditList() {
+  var body = document.getElementById('base-edit-list-body');
+  if (!body) return;
+  var qEl = document.getElementById('base-edit-search');
+  var q = qEl ? qEl.value.toLowerCase().trim() : '';
+  var list = DATA.map(function(orig){ return getBaseCard(orig); }).filter(function(d){
+    if (!q) return true;
+    return (d.title||'').toLowerCase().includes(q) || (d.ref||'').toLowerCase().includes(q) ||
+      (d.desc||'').toLowerCase().includes(q) || (d.sug||'').toLowerCase().includes(q) || String(d.id) === q;
+  });
+  body.innerHTML = list.map(function(d){
+    return '<div style="border:1px solid #d7ccc8;border-radius:12px;padding:12px 14px;margin-bottom:8px;background:'+(d.edited?'#fff8e1':'#fff8f0')+';">'
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;gap:8px;">'
+      +'<div style="font-size:0.88em;font-weight:800;color:#5d4037;flex:1;">['+d.id+'] '+escH(d.title||'')+(d.edited?' <span style="font-size:0.76em;color:#c07b00;">수정됨</span>':'')+'</div>'
+      +'<div style="font-size:0.72em;color:#aaa;white-space:nowrap;">'+(d.dateStr?'🕐 '+escH(d.dateStr):'원본')+'</div>'
+      +'</div>'
+      +'<div style="font-size:0.8em;color:#666;margin-bottom:8px;">📖 '+escH(d.ref||'')+'</div>'
+      +'<div style="display:flex;gap:6px;">'
+      +'<button onclick="editBaseCard('+d.id+')" '
+      +'style="flex:1;padding:7px;border:1px solid #d7ccc8;border-radius:10px;'
+      +'background:#fff;color:#5d4037;font-size:0.8em;font-weight:800;cursor:pointer;font-family:inherit;">✏️ 수정</button>'
+      +(d.edited?'<button onclick="restoreBaseCard('+d.id+')" '
+      +'style="padding:7px 12px;border:1px solid #f0b36a;border-radius:10px;'
+      +'background:#fffaf0;color:#9a5a00;font-size:0.8em;font-weight:800;cursor:pointer;font-family:inherit;">↩ 원본복구</button>':'')
+      +'</div></div>';
+  }).join('') || '<div style="text-align:center;padding:40px;color:#bbb;font-size:0.9em;">검색 결과가 없습니다</div>';
+}
+
+function editBaseCard(id) {
+  var orig = DATA.find(function(x){ return x.id === id; });
+  var data = getBaseCard(orig);
+  if (!data) return;
+  cceMode = 'base';
+  cceBaseId = id;
+  cceCurrentKey = null;
+  document.getElementById('cce-title').value = data.title || '';
+  document.getElementById('cce-ref').value = data.ref || '';
+  document.getElementById('cce-desc').value = data.desc || '';
+  document.getElementById('cce-sug').value = data.sug || '';
+  var vr = document.getElementById('cce-verse-result');
+  if (data.verse) { vr.textContent = data.verse; vr.style.display = 'block'; }
+  else vr.style.display = 'none';
+  var del = document.getElementById('cce-del-btn');
+  if (del) {
+    del.style.display = getBaseEdit(id) ? 'block' : 'none';
+    del.textContent = '↩ 원본복구';
+  }
+  var headerTitle = document.getElementById('cce-header-title');
+  if (headerTitle) headerTitle.textContent = '✏️ 기본 골자 수정 [' + id + ']';
+  closeBaseEditList();
+  document.getElementById('custom-card-editor').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function restoreBaseCard(id, skipConfirm) {
+  var run = function(){
+    localStorage.removeItem('ed_' + id);
+    filterCards();
+    renderCustomCards();
+    renderBaseEditList();
+    var toast = document.getElementById('add-toast');
+    if (toast) { toast.textContent='✓ ['+id+'] 원본으로 복구됨'; toast.classList.add('show'); setTimeout(function(){ toast.classList.remove('show'); },1800); }
+  };
+  if (skipConfirm) run();
+  else showConfirmToast('원본으로 복구할까요?', run);
+}
+
 function openMemoViewer() {
   const body = document.getElementById('memo-viewer-body');
 
@@ -2670,7 +2842,7 @@ function closeMemoViewer() {
 var memoEditorId = null;
 function openMemoEditorFromViewer(id) {
   memoEditorId = id;
-  const d = DATA.find(x => x.id === id);
+  const d = getBaseCard(DATA.find(x => x.id === id));
   const memo = loadMemo(id);
   // 내용을 nme-content(개인성서연구 편집기)에 로드
   const content = document.getElementById('nme-content');
@@ -2696,7 +2868,7 @@ var exportMemoTargetId = null; // null = 개인성서연구, 숫자 = 골자 메
 function openMemoSaveModal() {
   // 메모 오버레이에서 호출 (현재 편집 중인 메모)
   exportMemoTargetId = memoOverlayId;
-  const d = memoOverlayId ? DATA.find(x => x.id === memoOverlayId) : null;
+  const d = memoOverlayId ? getBaseCard(DATA.find(x => x.id === memoOverlayId)) : null;
   document.getElementById('memo-save-modal-title').textContent =
     d ? '[' + memoOverlayId + '] ' + d.title : '현재 메모';
   document.getElementById('memo-save-modal').style.display = 'flex';
@@ -2705,7 +2877,7 @@ function openMemoSaveModal() {
 function openMemoSaveModalFor(id) {
   // 개인연구목록에서 특정 메모 저장
   exportMemoTargetId = id;
-  const d = DATA.find(x => x.id === id);
+  const d = getBaseCard(DATA.find(x => x.id === id));
   document.getElementById('memo-save-modal-title').textContent =
     d ? '[' + id + '] ' + d.title : '메모';
   document.getElementById('memo-save-modal').style.display = 'flex';
@@ -2727,7 +2899,7 @@ function exportMemoAs(type) {
     fileName = '개인성서연구_' + date;
   } else {
     // 골자 메모
-    const d = DATA.find(x => x.id === exportMemoTargetId);
+    const d = getBaseCard(DATA.find(x => x.id === exportMemoTargetId));
     text = loadMemo(exportMemoTargetId);
     html = text.split(/\n{2,}/).map(p => p.trim() ? '<p>' + p.replace(/\n/g,'<br>') + '</p>' : '').join('');
     fileName = (d ? '[' + exportMemoTargetId + ']' + d.title : '메모') + '_' + date;
@@ -2948,7 +3120,7 @@ function toggleMemo(id) {
 
 function openMemoOverlay(id) {
   memoOverlayId = id;
-  const d = DATA.find(x => x.id === id);
+  const d = getBaseCard(DATA.find(x => x.id === id));
   const memo = loadMemo(id);
 
   // 제목 설정
@@ -3037,7 +3209,7 @@ function saveMemoOverlayAndPreview(){
   const id = memoOverlayId;
   const ta = document.getElementById('memo-overlay-ta');
   const text = ta ? ta.value : '';
-  const d = DATA.find(x => x.id === id);
+  const d = getBaseCard(DATA.find(x => x.id === id));
   const title = d ? '<div style="font-size:1.05em;font-weight:800;color:#3a0068;margin-bottom:10px;">['+id+'] '+(d.title||'')+'</div>' : '';
   const html = title + text.split(/\n{2,}/)
     .map(p => p.trim() ? '<p>'+p.replace(/\n/g,'<br>').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</p>' : '')
