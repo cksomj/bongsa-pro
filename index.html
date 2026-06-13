@@ -852,6 +852,12 @@ header p  { font-size: 0.68em; opacity: 0.82; }
               padding:calc(10px + var(--safe-top)) 16px 10px;
               display:flex;align-items:center;gap:10px;flex-shrink:0;">
     <div style="flex:1;font-size:0.95em;font-weight:800;">📋 개인연구목록</div>
+    <button onclick="backupStudyData()"
+      style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.28);color:#fff;
+             border-radius:20px;padding:7px 10px;font-size:0.78em;font-weight:800;cursor:pointer;">백업</button>
+    <button onclick="importStudyData()"
+      style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.28);color:#fff;
+             border-radius:20px;padding:7px 10px;font-size:0.78em;font-weight:800;cursor:pointer;">불러오기</button>
     <button onclick="closeMemoViewer()"
       style="background:rgba(255,255,255,0.2);border:none;color:#fff;
              border-radius:20px;padding:7px 16px;font-size:0.85em;font-weight:700;cursor:pointer;">✕ 닫기</button>
@@ -1222,6 +1228,12 @@ header p  { font-size: 0.68em; opacity: 0.82; }
               padding:calc(10px + var(--safe-top)) 16px 10px;
               display:flex;align-items:center;gap:8px;flex-shrink:0;">
     <div style="flex:1;font-size:0.95em;font-weight:800;">📋 내 골자 리스트</div>
+    <button onclick="backupOutlineData()"
+      style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.28);color:#fff;
+             border-radius:20px;padding:7px 10px;font-size:0.78em;font-weight:800;cursor:pointer;">골자백업</button>
+    <button onclick="importOutlineData()"
+      style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.28);color:#fff;
+             border-radius:20px;padding:7px 10px;font-size:0.78em;font-weight:800;cursor:pointer;">불러오기</button>
     <button onclick="closeCustomList()"
       style="background:rgba(255,255,255,0.2);border:none;color:#fff;
              border-radius:20px;padding:7px 14px;font-size:0.82em;font-weight:700;cursor:pointer;">✕ 닫기</button>
@@ -1256,6 +1268,9 @@ header p  { font-size: 0.68em; opacity: 0.82; }
   </div>
   <div id="base-edit-list-body" style="flex:1;overflow:auto;padding:14px;"></div>
 </div>
+
+<input id="outline-import-file" type="file" accept="application/json,.json" style="display:none" onchange="handleImportFile(event,'outline')">
+<input id="study-import-file" type="file" accept="application/json,.json" style="display:none" onchange="handleImportFile(event,'study')">
 
 <!-- 메모 전체화면 오버레이 -->
 <div id="memo-overlay">
@@ -2694,6 +2709,214 @@ function openCustomList() {
 function closeCustomList() {
   document.getElementById('custom-list-panel').style.display = 'none';
   document.body.style.overflow = '';
+}
+
+var BACKUP_APP_NAME = '봉사모임사회 PRO. ver3';
+var BACKUP_MAIN_DIR = '봉사모임프로';
+var BACKUP_STORE_NAME = 'bongsa_backup_handles';
+var BACKUP_DB_NAME = 'bongsa_pro_backup_db';
+var BACKUP_SPECS = {
+  outline: {
+    type: 'outline',
+    label: '골자',
+    subdir: '봉사모임골자',
+    file: 'bongsa-outlines-backup.json',
+    importInput: 'outline-import-file',
+    keys: function(k){ return k.startsWith('cc_') || k.startsWith('ed_'); }
+  },
+  study: {
+    type: 'study',
+    label: '개인연구',
+    subdir: '개인연구',
+    file: 'bongsa-study-backup.json',
+    importInput: 'study-import-file',
+    keys: function(k){ return k.startsWith('nme_'); }
+  }
+};
+
+function backupOutlineData() { backupData('outline'); }
+function backupStudyData() { backupData('study'); }
+function importOutlineData() { importData('outline'); }
+function importStudyData() { importData('study'); }
+
+async function backupData(type) {
+  var spec = BACKUP_SPECS[type];
+  var payload = buildBackupPayload(type);
+  if (!payload.items.length) { alert('백업할 ' + spec.label + ' 자료가 없습니다.'); return; }
+  try {
+    if (window.showDirectoryPicker) {
+      await saveBackupToFolder(spec, payload);
+    } else {
+      downloadBackupFile(spec, payload);
+    }
+  } catch(e) {
+    if (e && e.name === 'AbortError') return;
+    downloadBackupFile(spec, payload);
+  }
+}
+
+function buildBackupPayload(type) {
+  var spec = BACKUP_SPECS[type];
+  var items = Object.keys(localStorage).filter(spec.keys).map(function(k){
+    var raw = localStorage.getItem(k);
+    var data = raw;
+    try { data = JSON.parse(raw); } catch(e) {}
+    return { key: k, data: data };
+  }).sort(function(a,b){ return a.key.localeCompare(b.key); });
+  return {
+    app: BACKUP_APP_NAME,
+    version: 1,
+    type: type,
+    createdAt: new Date().toISOString(),
+    createdAtKo: new Date().toLocaleString('ko-KR'),
+    items: items
+  };
+}
+
+async function saveBackupToFolder(spec, payload) {
+  var root = await getUsableBackupRoot(spec.type, 'readwrite');
+  if (!root) {
+    root = await window.showDirectoryPicker({
+      id: 'bongsa-' + spec.type + '-backup',
+      mode: 'readwrite',
+      startIn: 'documents'
+    });
+    await saveBackupRootHandle(spec.type, root);
+  }
+  var main = await root.getDirectoryHandle(BACKUP_MAIN_DIR, { create: true });
+  var folder = await main.getDirectoryHandle(spec.subdir, { create: true });
+  var fileHandle = await folder.getFileHandle(spec.file, { create: true });
+  var writable = await fileHandle.createWritable();
+  await writable.write(JSON.stringify(payload, null, 2));
+  await writable.close();
+  showBackupToast('✓ ' + BACKUP_MAIN_DIR + '/' + spec.subdir + '에 백업됨');
+}
+
+function downloadBackupFile(spec, payload) {
+  dlWithBom(JSON.stringify(payload, null, 2), spec.file, 'application/json');
+  showBackupToast('✓ ' + spec.label + ' 백업 파일을 다운로드했습니다');
+}
+
+async function importData(type) {
+  var spec = BACKUP_SPECS[type];
+  try {
+    if (window.showDirectoryPicker) {
+      var root = await window.showDirectoryPicker({
+        id: 'bongsa-' + spec.type + '-import',
+        mode: 'read',
+        startIn: 'documents'
+      });
+      var folder = await findBackupFolder(root, spec);
+      var file = await findBackupFile(folder, spec);
+      if (!file) { alert('백업 파일을 찾지 못했습니다. JSON 파일 선택 방식으로 다시 시도해 주세요.'); return; }
+      await applyBackupPayload(JSON.parse(await file.text()), type);
+    } else {
+      document.getElementById(spec.importInput).click();
+    }
+  } catch(e) {
+    if (e && e.name === 'AbortError') return;
+    document.getElementById(spec.importInput).click();
+  }
+}
+
+async function findBackupFolder(root, spec) {
+  try {
+    var main = await root.getDirectoryHandle(BACKUP_MAIN_DIR);
+    return await main.getDirectoryHandle(spec.subdir);
+  } catch(e) {}
+  try { return await root.getDirectoryHandle(spec.subdir); } catch(e) {}
+  return root;
+}
+
+async function findBackupFile(folder, spec) {
+  try {
+    var exact = await folder.getFileHandle(spec.file);
+    return await exact.getFile();
+  } catch(e) {}
+  var found = [];
+  if (folder.values) {
+    for await (var handle of folder.values()) {
+      if (handle.kind === 'file' && /\.json$/i.test(handle.name)) {
+        var file = await handle.getFile();
+        found.push(file);
+      }
+    }
+  }
+  found.sort(function(a,b){ return b.lastModified - a.lastModified; });
+  return found[0] || null;
+}
+
+function handleImportFile(event, type) {
+  var file = event.target.files && event.target.files[0];
+  event.target.value = '';
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(){
+    try { applyBackupPayload(JSON.parse(reader.result), type); }
+    catch(e) { alert('백업 파일을 읽지 못했습니다.'); }
+  };
+  reader.readAsText(file, 'utf-8');
+}
+
+async function applyBackupPayload(payload, type) {
+  var spec = BACKUP_SPECS[type];
+  if (!payload || !Array.isArray(payload.items)) { alert('올바른 백업 파일이 아닙니다.'); return; }
+  var count = 0;
+  payload.items.forEach(function(item){
+    if (!item || !item.key || !spec.keys(item.key)) return;
+    localStorage.setItem(item.key, typeof item.data === 'string' ? item.data : JSON.stringify(item.data));
+    count++;
+  });
+  if (type === 'outline') {
+    updateCustomCount();
+    filterCards();
+    renderCustomCards();
+    if (document.getElementById('custom-list-panel').style.display !== 'none') openCustomList();
+  } else {
+    if (document.getElementById('memo-viewer').style.display !== 'none') openMemoViewer();
+  }
+  showBackupToast('✓ ' + spec.label + ' ' + count + '개 불러옴');
+}
+
+function openBackupDb() {
+  return new Promise(function(resolve, reject){
+    var req = indexedDB.open(BACKUP_DB_NAME, 1);
+    req.onupgradeneeded = function(){ req.result.createObjectStore(BACKUP_STORE_NAME); };
+    req.onsuccess = function(){ resolve(req.result); };
+    req.onerror = function(){ reject(req.error); };
+  });
+}
+
+async function getBackupRootHandle(type) {
+  var db = await openBackupDb();
+  return new Promise(function(resolve, reject){
+    var req = db.transaction(BACKUP_STORE_NAME, 'readonly').objectStore(BACKUP_STORE_NAME).get(type);
+    req.onsuccess = function(){ resolve(req.result || null); };
+    req.onerror = function(){ reject(req.error); };
+  });
+}
+
+async function saveBackupRootHandle(type, handle) {
+  var db = await openBackupDb();
+  return new Promise(function(resolve, reject){
+    var req = db.transaction(BACKUP_STORE_NAME, 'readwrite').objectStore(BACKUP_STORE_NAME).put(handle, type);
+    req.onsuccess = function(){ resolve(); };
+    req.onerror = function(){ reject(req.error); };
+  });
+}
+
+async function getUsableBackupRoot(type, mode) {
+  var handle = await getBackupRootHandle(type);
+  if (!handle) return null;
+  var opts = { mode: mode || 'read' };
+  if (handle.queryPermission && (await handle.queryPermission(opts)) === 'granted') return handle;
+  if (handle.requestPermission && (await handle.requestPermission(opts)) === 'granted') return handle;
+  return null;
+}
+
+function showBackupToast(msg) {
+  var toast = document.getElementById('add-toast');
+  if (toast) { toast.textContent = msg; toast.classList.add('show'); setTimeout(function(){ toast.classList.remove('show'); }, 2200); }
 }
 
 function openBaseEditList() {
