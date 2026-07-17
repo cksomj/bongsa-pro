@@ -1,0 +1,4650 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="봉사골자100">
+<meta name="theme-color" content="#3a0068">
+<meta name="app-version" content="3.5.8">
+<meta name="app-updated" content="2026-07-17">
+<title>봉사모임 사회 골자 100</title>
+
+<!-- PWA 아이콘 (SVG 인라인 dataURL) -->
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%233a0068'/%3E%3Ctext x='256' y='320' font-size='280' text-anchor='middle' fill='white'%3E📖%3C/text%3E%3C/svg%3E">
+
+<style>
+:root {
+  --p: #3a0068;
+  --s: #6a1b9a;
+  --a: #f59e0b;
+  --bg: #f0ebf8;
+  --card: #ffffff;
+  --text: #2d1b4e;
+  --sub: #6b5c82;
+  --red: #c0392b;
+  --green: #1a7a4a;
+  --border: #d8c8ef;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bot: env(safe-area-inset-bottom, 0px);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { font-size: 16px; }
+body {
+  font-family: -apple-system, 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overscroll-behavior: none;
+}
+
+/* ── 설치 배너 ── */
+#install-banner {
+  display: none;
+  background: linear-gradient(90deg,#3a0068,#6a1b9a);
+  color: white;
+  padding: 10px 16px;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.82em;
+  position: sticky; top: 0; z-index: 300;
+}
+#install-banner.show { display: flex; }
+#install-banner span { flex: 1; }
+#install-banner button {
+  background: white; color: var(--p);
+  border: none; border-radius: 20px;
+  padding: 6px 14px; font-weight: 700;
+  font-size: 0.82em; cursor: pointer;
+  white-space: nowrap;
+}
+#install-banner .close-btn {
+  background: none; color: rgba(255,255,255,0.7);
+  padding: 4px 8px; font-size: 1.1em;
+}
+
+/* 상단 전체 영역 고정 */
+.app-sticky-shell {
+  position: sticky;
+  top: 0;
+  z-index: 400;
+  background: #fff;
+  box-shadow: 0 3px 14px rgba(58,0,104,0.10);
+}
+
+/* ── HEADER ── */
+header {
+  background: linear-gradient(135deg, #3a0068 0%, #6a1b9a 60%, #9c27b0 100%);
+  color: white;
+  padding: calc(10px + var(--safe-top)) 12px 9px;
+  text-align: center;
+  position: relative; top: auto; z-index: auto;
+  box-shadow: 0 2px 12px rgba(58,0,104,0.24);
+}
+header h1 { font-size: 1.08em; font-weight: 800; letter-spacing: 0.02em; margin-bottom: 1px; }
+header p  { font-size: 0.62em; opacity: 0.78; line-height: 1.25; }
+
+header .app-meta {
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  font-size: 0.62em;
+  color: rgba(255,255,255,0.92);
+}
+header .app-meta::-webkit-scrollbar { display: none; }
+header .app-version {
+  padding: 3px 6px;
+  border-radius: 11px;
+  background: rgba(255,255,255,0.16);
+  border: 1px solid rgba(255,255,255,0.24);
+  font-weight: 800;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+header .update-btn {
+  border: 1px solid rgba(255,255,255,0.36);
+  background: rgba(255,255,255,0.18);
+  color: white;
+  border-radius: 11px;
+  padding: 3px 6px;
+  font-size: 0.92em;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+header .update-btn.update-ready {
+  background: #fff;
+  color: #3a0068;
+  animation: updatePulse 1.4s ease-in-out infinite;
+}
+
+
+header .data-tool-btn {
+  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.12);
+  color: white;
+  border-radius: 11px;
+  padding: 3px 6px;
+  font-size: 0.92em;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: inherit;
+  min-height: 22px;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+header .data-tool-btn:active {
+  background: rgba(255,255,255,0.28);
+}
+
+
+
+/* 카드 수정/생성 편집기 반응형 확장 */
+#custom-card-editor .editor-scroll-body{
+  flex:1;
+  overflow:auto;
+  padding:14px 16px;
+  display:flex;
+  flex-direction:column;
+  gap:0;
+}
+#custom-card-editor .editor-field{
+  margin-bottom:12px;
+}
+#custom-card-editor .editor-field.grow-desc,
+#custom-card-editor .editor-field.grow-sug{
+  display:flex;
+  flex-direction:column;
+}
+#custom-card-editor .editor-field.grow-desc{
+  flex:1 1 0;
+  min-height:170px;
+}
+#custom-card-editor .editor-field.grow-sug{
+  flex:0.8 1 0;
+  min-height:130px;
+  margin-bottom:20px;
+}
+#custom-card-editor textarea.editor-textarea{
+  width:100%;
+  padding:10px 14px;
+  border:1.5px solid #c8ddf0;
+  border-radius:10px;
+  font-family:inherit;
+  font-size:0.9em;
+  line-height:1.7;
+  resize:vertical;
+  box-sizing:border-box;
+  outline:none;
+  min-height:110px;
+}
+#custom-card-editor .editor-field.grow-desc textarea.editor-textarea,
+#custom-card-editor .editor-field.grow-sug textarea.editor-textarea{
+  flex:1 1 auto;
+}
+@media (min-height: 700px){
+  #custom-card-editor .editor-field.grow-desc{ min-height:220px; }
+  #custom-card-editor .editor-field.grow-sug{ min-height:170px; }
+}
+@media (max-height: 620px){
+  #custom-card-editor .editor-scroll-body{ padding:12px 14px; }
+  #custom-card-editor .editor-field.grow-desc{ min-height:140px; }
+  #custom-card-editor .editor-field.grow-sug{ min-height:100px; }
+  #custom-card-editor textarea.editor-textarea{ min-height:88px; }
+}
+
+@keyframes updatePulse {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+
+/* ── TOP BAR ── */
+.top-bar {
+  background: rgba(255,255,255,0.99);
+  backdrop-filter: blur(8px);
+  padding: 10px 12px 9px;
+  border-bottom: 1px solid #e7dcf3;
+  box-shadow: 0 2px 10px rgba(58,0,104,0.06);
+  display: flex; gap: 8px; align-items: center;
+  position: relative;
+  top: auto;
+  z-index: auto;
+}
+#search {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 16px;
+  border-radius: 18px;
+  border: 1.8px solid #d9ccec;
+  font-size: 1em; /* 모바일 줌 방지: 16px 이상 */
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s, background 0.2s;
+  background: #fbfbfe;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.85);
+}
+#search:focus { border-color: var(--s); background: white; box-shadow: 0 0 0 3px rgba(106,27,154,0.08); }
+#search.search-pending {
+  border-color: #f0a43c;
+  background: #fffdf8;
+}
+
+#top-ref-btn {
+  background: linear-gradient(135deg, #3a0068, #6a1b9a); color: white;
+  border: none; border-radius: 14px;
+  width: 40px; height: 40px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: transform 0.15s, background 0.2s;
+  box-shadow: 0 3px 10px rgba(58,0,104,0.18);
+}
+#top-ref-btn:active { background: var(--s); transform: scale(0.96); }
+.count-badge {
+  background: #f5effc; color: var(--p);
+  border: 1px solid #dbc9f2;
+  border-radius: 14px; padding: 8px 11px;
+  font-size: 0.75em; font-weight: 800;
+  white-space: nowrap; flex-shrink: 0;
+  line-height: 1;
+}
+
+/* ── CONTAINER ── */
+.container { padding: 10px 10px calc(80px + var(--safe-bot)); width: 100%; box-sizing: border-box; scroll-margin-top: 110px; }
+
+.quick-action-strip{
+  display:flex;
+  gap:6px;
+  padding:6px 10px 7px;
+  background: rgba(255,255,255,0.99);
+  backdrop-filter: blur(8px);
+  border-bottom:1px solid #e8dff5;
+  box-shadow: 0 2px 8px rgba(58,0,104,0.04);
+  position:relative;
+  top:auto;
+  z-index:auto;
+}
+.quick-action-btn{
+  flex:1;
+  min-width:0;
+  min-height:30px;
+  padding:5px 6px;
+  border-radius:10px;
+  font-size:0.68em;
+  font-weight:800;
+  cursor:pointer;
+  font-family:inherit;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  line-height:1.15;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.quick-action-btn.create{
+  border:none;
+  background:linear-gradient(135deg,#1a5276,#2471a3);
+  color:#fff;
+}
+.quick-action-btn.edit{
+  border:1.5px solid #8d6e63;
+  background:#fff8f0;
+  color:#5d4037;
+}
+.quick-action-btn.list{
+  border:1.5px solid #2471a3;
+  background:#f0f8ff;
+  color:#1a5276;
+}
+.quick-action-btn:active{
+  transform:scale(0.985);
+}
+
+
+/* ── CARD ── */
+.card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 18px 16px 14px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 12px rgba(58,0,104,0.10);
+  border-top: 5px solid var(--s);
+  transition: transform 0.1s, box-shadow 0.1s;
+  width: 100%;
+  box-sizing: border-box;
+}
+.card:active { transform: scale(0.995); }
+
+.card-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+.num {
+  background: var(--p); color: white;
+  border-radius: 50%; min-width: 30px; height: 30px;
+  display: flex; justify-content: center; align-items: center;
+  font-size: 0.76em; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+}
+.card-title { font-size: 1.03em; font-weight: 800; color: var(--p); line-height: 1.4; }
+
+/* ── SCRIPTURE BLOCK ── */
+.scripture-block {
+  background: #fdf8ff;
+  border: 1px solid #e2d5f5;
+  border-left: 5px solid var(--a);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+.ref-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 7px; }
+.v-ref { color: var(--red); font-weight: 700; font-size: 0.88em; }
+.jw-link {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: var(--green); color: white;
+  border-radius: 20px; padding: 5px 12px;
+  font-size: 0.72em; font-weight: 700;
+  text-decoration: none; white-space: nowrap;
+  /* 터치 영역 최소 44px */
+  min-height: 34px;
+}
+.jw-link svg { width: 12px; height: 12px; fill: white; }
+.verse-text {
+  font-style: italic; color: #3a2460;
+  font-size: 0.92em; line-height: 1.65;
+}
+.verse-text.error { color: #999; font-style: normal; font-size: 0.85em; }
+.verse-loading { color: #bbb; font-style: normal; font-size: 0.82em; display: flex; align-items: center; gap: 6px; }
+.v-spinner {
+  display: inline-block; width: 12px; height: 12px; flex-shrink: 0;
+  border: 2px solid #e0d8f0; border-top-color: var(--s);
+  border-radius: 50%; animation: spin 0.7s linear infinite;
+}
+
+/* ── DESC ── */
+.label {
+  font-weight: 700; color: var(--s);
+  display: block; margin: 12px 0 4px;
+  font-size: 0.76em; text-transform: uppercase; letter-spacing: 0.06em;
+}
+.desc { font-size: 0.92em; color: #4a3a60; line-height: 1.7; }
+.suggest {
+  background: #f5eeff; padding: 10px 13px;
+  border-radius: 9px; border: 1px dashed var(--s);
+  font-size: 0.87em; color: #2d1b4e; margin-top: 11px; line-height: 1.6;
+}
+.suggest strong { color: var(--s); }
+
+/* ── MEMO ── */
+.memo-section { margin-top: 13px; }
+.memo-toggle {
+  background: none; border: 1.5px solid var(--border);
+  color: var(--sub); border-radius: 20px;
+  padding: 8px 16px; font-size: 0.82em;
+  cursor: pointer; font-family: inherit;
+  min-height: 38px; /* 터치 영역 */
+  display: inline-flex; align-items: center; gap: 5px;
+  transition: all 0.15s;
+}
+.memo-toggle.has-memo { background: #fff3cd; border-color: var(--a); color: #7a5800; font-weight: 700; }
+/* ── 2열 메인 레이아웃 ── */
+#main-layout {
+  display: block;
+  width: 100%;
+  max-width: 1480px;
+  margin: 0 auto;
+  padding-right: 82px;
+  box-sizing: border-box;
+}
+#cards-col {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+#side-col {
+  width: 72px;
+  position: fixed;
+  top: calc(var(--app-shell-height, 136px) + 54px);
+  right: 6px;
+  z-index: 390;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 4px 6px;
+  margin: 0;
+  background: #f8fbff;
+  border: 1px solid #dfebf7;
+  border-radius: 16px;
+  box-shadow: 0 3px 10px rgba(26,82,118,0.08);
+  height: auto;
+  max-height: calc(100dvh - var(--app-shell-height, 136px) - 60px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  transform: translateZ(0);
+  will-change: transform;
+}
+#side-col::-webkit-scrollbar { display: none; }
+/* 사이드 서적 버튼 */
+.side-book-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 7px 3px;
+  min-height: 58px;
+  border-radius: 13px;
+  text-decoration: none;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+  color: #fff;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.14);
+  transition: transform 0.15s, box-shadow 0.15s;
+  word-break: keep-all;
+  overflow: hidden;
+}
+.side-book-btn .btn-icon {
+  font-size: 1.35em;
+  line-height: 1;
+}
+.side-book-btn .btn-label {
+  font-size: 0.56em;
+  font-weight: 800;
+  line-height: 1.22;
+  word-break: keep-all;
+  white-space: normal;
+}
+.side-book-btn .btn-arrow {
+  display: none;
+}
+.side-book-btn:active {
+  transform: scale(0.94);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+.side-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 7px 3px;
+  min-height: 58px;
+  border-radius: 13px;
+  border: none;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+  color: #fff;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.14);
+  transition: transform 0.15s, box-shadow 0.15s;
+  cursor: pointer;
+  font-family: inherit;
+  width: 100%;
+}
+.side-action-btn .btn-icon { font-size: 1.35em; line-height: 1; }
+.side-action-btn .btn-label { font-size: 0.56em; font-weight: 800; line-height: 1.22; }
+.side-action-btn:active { transform: scale(0.94); }
+.nme-btn {
+  padding: 6px 8px;
+  border: 1px solid #c8e6c9;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.82em;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  color: #333;
+  min-height: 32px;
+}
+.nme-btn:active { background: #e8f5e9; }
+.mpm-adj-btn {
+  width: 28px; height: 28px;
+  border: 1.5px solid #d8c8ef;
+  border-radius: 50%;
+  background: #fff;
+  font-size: 1em; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+  display: flex; align-items: center; justify-content: center;
+  color: #6a1b9a;
+  padding: 0;
+}
+.mpm-adj-btn:active { background: #f0ebf8; }
+#memo-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 500;
+  background: #fff;
+  flex-direction: column;
+  transform-origin: center bottom;
+}
+#memo-overlay.open {
+  display: flex;
+  animation: memoExpand 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+#memo-overlay.closing {
+  animation: memoCollapse 0.25s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+}
+@keyframes memoExpand {
+  0%   { transform: scale(0.08); opacity: 0; border-radius: 24px; }
+  40%  { transform: scale(0.55); opacity: 0.7; border-radius: 18px; }
+  70%  { transform: scale(0.88); opacity: 0.9; border-radius: 10px; }
+  100% { transform: scale(1);    opacity: 1;   border-radius: 0px; }
+}
+@keyframes memoCollapse {
+  0%   { transform: scale(1);    opacity: 1;   border-radius: 0px; }
+  100% { transform: scale(0.08); opacity: 0;   border-radius: 24px; }
+}
+
+#memo-overlay-header {
+  background: linear-gradient(135deg, #3a0068 0%, #6a1b9a 60%, #9c27b0 100%);
+  color: #fff;
+  padding: calc(10px + var(--safe-top)) 16px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+#memo-overlay-title {
+  flex: 1;
+  font-size: 0.88em;
+  font-weight: 700;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#memo-overlay-close {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: #fff;
+  border-radius: 20px;
+  padding: 7px 16px;
+  font-size: 0.85em;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+#memo-overlay-body {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+#memo-overlay textarea {
+  flex: 1;
+  width: 100%;
+  min-height: 260px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  font-family: inherit;
+  font-size: 1em;
+  line-height: 1.8;
+  color: var(--text);
+  resize: none;
+  outline: none;
+  background: #fdfaff;
+}
+#memo-overlay textarea:focus { border-color: var(--s); }
+#memo-overlay-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 16px calc(10px + var(--safe-top));
+  background: #f8f0ff;
+  border-top: 1px solid #e8dff5;
+  flex-shrink: 0;
+}
+#memo-overlay-actions button {
+  flex: 1;
+  min-width: 80px;
+  padding: 12px 8px;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.85em;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+.memo-preview {
+  background: #fdfaff;
+  border: 1px solid #e8dff5;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 0.9em;
+  line-height: 1.9;
+  color: var(--text);
+  white-space: pre-wrap;
+  word-break: break-word;
+  display: none;
+}
+.memo-preview.show { display: block; }
+.memo-preview p {
+  margin-bottom: 10px;
+}
+.memo-tab-btns {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.memo-tab-btn {
+  flex: 1;
+  padding: 8px;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  background: #fff;
+  font-size: 0.82em;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--text2);
+}
+.memo-tab-btn.active {
+  background: var(--p);
+  color: #fff;
+  border-color: var(--p);
+}
+
+.memo-box { margin-top: 10px; display: none; }
+.memo-box.open { display: block; }
+.memo-textarea {
+  width: 100%; min-height: 88px;
+  border: 2px solid var(--border); border-radius: 10px;
+  padding: 12px 14px;
+  font-family: inherit; font-size: 1em; /* 줌 방지 */
+  color: var(--text); resize: vertical; outline: none;
+  background: #fdfaff; transition: border 0.2s;
+}
+.memo-textarea:focus { border-color: var(--s); }
+.memo-actions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; align-items: center; }
+.btn-save {
+  background: var(--p); color: white;
+  border: none; border-radius: 20px;
+  padding: 10px 20px; font-size: 0.85em;
+  cursor: pointer; font-family: inherit; font-weight: 700;
+  min-height: 42px;
+}
+.btn-clear {
+  background: none; border: 1.5px solid #ccc; color: #888;
+  border-radius: 20px; padding: 10px 16px; font-size: 0.85em;
+  cursor: pointer; font-family: inherit; min-height: 42px;
+}
+.memo-saved-msg {
+  font-size: 0.8em; color: var(--green);
+  opacity: 0; transition: opacity 0.3s;
+}
+.memo-saved-msg.show { opacity: 1; }
+
+/* ── 하단 고정 바 ── */
+.bottom-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: white;
+  border-top: 2px solid var(--border);
+  padding: 10px 14px calc(10px + var(--safe-bot));
+  display: flex; gap: 8px; justify-content: center;
+  z-index: 300;
+  box-shadow: 0 -4px 20px rgba(58,0,104,0.12);
+}
+.btn-export {
+  flex: 1; max-width: 200px;
+  background: linear-gradient(135deg, var(--p), var(--s));
+  color: white; border: none; border-radius: 22px;
+  padding: 12px 10px; font-size: 0.82em; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+  min-height: 46px; display: flex; align-items: center; justify-content: center; gap: 5px;
+}
+.btn-copy {
+  flex: 1; max-width: 160px;
+  background: #e8f5e9; border: 1.5px solid #4caf50; color: #2e7d32;
+  border-radius: 22px; padding: 12px 10px; font-size: 0.82em; font-weight: 700;
+  cursor: pointer; font-family: inherit; min-height: 46px;
+}
+
+/* ── MODAL ── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(30,0,60,0.6); z-index: 500;
+  align-items: flex-end; justify-content: center; /* 모바일: 하단에서 올라옴 */
+  padding-bottom: var(--safe-bot);
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: white;
+  border-radius: 24px 24px 0 0; /* 모바일 바텀시트 */
+  padding: 24px 20px 28px;
+  width: 100%; max-width: 520px;
+  animation: slideUp 0.25s ease;
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.modal-handle { width: 40px; height: 4px; background: #ddd; border-radius: 2px; margin: 0 auto 18px; }
+.modal h3 { color: var(--p); margin-bottom: 10px; font-size: 1.05em; font-weight: 800; }
+.modal p  { font-size: 0.88em; color: var(--sub); margin-bottom: 18px; line-height: 1.6; }
+.modal-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+.modal-btns button {
+  flex: 1; padding: 14px 10px; border-radius: 14px;
+  border: none; cursor: pointer; font-family: inherit;
+  font-size: 0.88em; font-weight: 700; min-height: 50px;
+}
+.btn-m-txt  { background: #e8eaf6; color: #1a237e; }
+.btn-m-html { background: linear-gradient(135deg, var(--p), var(--s)); color: white; }
+.btn-m-cancel { background: #f5f5f5; color: #666; max-width: 80px; }
+
+/* ── 홈화면 추가 안내 토스트 ── */
+#ios-toast {
+  display: none; position: fixed; bottom: 90px; left: 50%;
+  transform: translateX(-50%);
+  background: #1a1a2e; color: white;
+  border-radius: 14px; padding: 14px 18px;
+  font-size: 0.82em; line-height: 1.6;
+  width: 88%; max-width: 340px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  z-index: 400; text-align: center;
+  animation: fadeInUp 0.3s ease;
+}
+#ios-toast.show { display: block; }
+@keyframes fadeInUp { from { opacity:0; transform: translateX(-50%) translateY(10px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
+#ios-toast button {
+  margin-top: 10px; background: var(--a); color: #1a1a2e;
+  border: none; border-radius: 20px; padding: 6px 18px;
+  font-weight: 700; cursor: pointer; font-family: inherit;
+}
+
+.footer-info { text-align: center; padding: 16px 16px 0; color: #aaa; font-size: 0.76em; }
+
+/* ── 참조 버튼 ── */
+.btn-ref {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: linear-gradient(135deg, #0d47a1, #1565c0);
+  color: white; border: none; border-radius: 20px;
+  padding: 6px 14px; font-size: 0.76em; font-weight: 700;
+  cursor: pointer; font-family: inherit; min-height: 34px;
+  white-space: nowrap; margin-left: 4px;
+  transition: opacity 0.2s;
+}
+.btn-ref:active { opacity: 0.75; }
+.btn-ref svg { width: 13px; height: 13px; fill: none; stroke: white; stroke-width: 2.5; }
+
+/* ── 참조 드로어 (우측/하단 슬라이드) ── */
+#ref-drawer {
+  position: fixed; inset: 0; z-index: 950;
+  display: none;
+}
+#ref-drawer.open { display: block; }
+#ref-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(10,0,30,0.55);
+}
+#ref-panel {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: #f8f6ff;
+  border-radius: 22px 22px 0 0;
+  max-height: 88vh;
+  display: flex; flex-direction: column;
+  animation: slideUp 0.28s ease;
+  overflow: hidden;
+}
+@media(min-width:600px){
+  #ref-panel {
+    top: 0; bottom: 0; right: 0; left: auto;
+    width: 380px; border-radius: 0;
+    max-height: 100vh;
+    animation: slideRight 0.28s ease;
+  }
+  @keyframes slideRight { from{transform:translateX(100%)} to{transform:translateX(0)} }
+}
+#ref-header {
+  background: linear-gradient(135deg,#0d47a1,#1565c0);
+  color: white; padding: 16px 18px 14px;
+  flex-shrink: 0;
+}
+.ref-handle { width: 36px; height: 4px; background: rgba(255,255,255,0.4); border-radius: 2px; margin: 0 auto 12px; }
+#ref-header h3 { font-size: 1em; font-weight: 800; margin-bottom: 3px; }
+#ref-header p  { font-size: 0.74em; opacity: 0.85; }
+
+#ref-body { flex: 1; overflow-y: auto; padding: 14px 14px 100px; }
+
+#ref-body,
+#memo-viewer-body,
+#custom-list-body,
+#base-edit-list-body {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* 검색 상태 */
+.ref-loading {
+  text-align: center; padding: 40px 20px; color: #7b68ae;
+}
+.ref-loading .spin {
+  width: 32px; height: 32px; border: 3px solid #d0c4f0;
+  border-top-color: #1565c0; border-radius: 50%;
+  animation: spin 0.7s linear infinite; margin: 0 auto 14px;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+
+/* 결과 카드 */
+.ref-item {
+  background: white; border-radius: 14px;
+  padding: 14px 15px; margin-bottom: 12px;
+  box-shadow: 0 2px 10px rgba(13,71,161,0.08);
+  border-left: 4px solid #1565c0;
+  cursor: pointer; transition: transform 0.12s, box-shadow 0.12s;
+  text-decoration: none; display: block; color: inherit;
+}
+.ref-item:active { transform: scale(0.98); box-shadow: 0 1px 5px rgba(0,0,0,0.1); }
+.ref-item-source {
+  font-size: 0.68em; font-weight: 700; color: #1565c0;
+  text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 5px;
+  display: flex; align-items: center; gap: 5px;
+}
+.ref-item-source svg { width: 11px; height: 11px; }
+.ref-item-title { font-size: 0.92em; font-weight: 700; color: #1a1a3e; margin-bottom: 6px; line-height: 1.4; }
+.ref-item-snippet { font-size: 0.82em; color: #555; line-height: 1.6; }
+.ref-item-hint {
+  font-size: 0.72em; color: #1565c0; margin-top: 8px;
+  font-weight: 600; opacity: 0.8;
+}
+.ref-item-actions {
+  display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;
+}
+.ref-action-btn {
+  font-size: 0.74em; font-weight: 700; border: none;
+  border-radius: 16px; padding: 6px 13px; cursor: pointer;
+  font-family: inherit; min-height: 32px;
+}
+.btn-open-link  { background: #e3f2fd; color: #0d47a1; }
+.btn-add-memo   { background: #e8f5e9; color: #1b5e20; }
+.btn-add-memo:active { background: #c8e6c9; }
+
+.ref-empty { text-align:center; padding:30px 20px; color:#999; font-size:0.88em; }
+.ref-keyword-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 0.72em;
+  margin-top: 6px;
+  line-height: 1.2;
+}
+
+/* 메모 추가 성공 토스트 */
+#add-toast {
+  position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+  background: #1b5e20; color: white; border-radius: 20px;
+  padding: 10px 20px; font-size: 0.82em; font-weight: 700;
+  z-index: 800; opacity: 0; transition: opacity 0.3s;
+  white-space: nowrap; pointer-events: none;
+}
+#add-toast.show { opacity: 1; }
+
+/* ── 참조 검색창 ── */
+#ref-search-row {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 30px; padding: 6px 10px 6px 14px;
+}
+.ref-paren {
+  color: rgba(255,255,255,0.7); font-size: 1.2em;
+  font-weight: 300; flex-shrink: 0;
+}
+#ref-input {
+  flex: 1; background: transparent; border: none;
+  color: white; font-size: 1em; outline: none;
+  font-family: inherit; min-width: 0;
+  caret-color: white;
+}
+#ref-input::placeholder { color: rgba(255,255,255,0.55); }
+#ref-input::-webkit-search-cancel-button { display: none; }
+#ref-go-btn {
+  background: white; color: #0d47a1;
+  border: none; border-radius: 20px;
+  padding: 7px 14px; font-size: 0.8em; font-weight: 800;
+  cursor: pointer; font-family: inherit;
+  display: flex; align-items: center; gap: 5px;
+  flex-shrink: 0; white-space: nowrap; min-height: 36px;
+}
+#ref-go-btn:active { opacity: 0.8; }
+#nme-ref-query::placeholder { color: #8aa28c; }
+#nme-ref-query::-webkit-search-cancel-button { display: none; }
+
+/* ── 메모 선택 삭제 ── */
+.memo-line {
+  display: flex; align-items: flex-start; gap: 6px;
+  padding: 4px 0; border-radius: 6px;
+  cursor: pointer; transition: background 0.1s;
+  user-select: none; -webkit-user-select: none;
+}
+.memo-line.selected {
+  background: #c62828; color: white;
+  border-radius: 6px; padding: 4px 6px;
+}
+.memo-line-text { flex: 1; font-size: 0.9em; line-height: 1.55; white-space: pre-wrap; word-break: break-all; }
+.memo-line.selected .memo-line-text { color: white; }
+.memo-del-hint {
+  font-size: 0.72em; color: #999; margin: 4px 0 8px;
+  display: none;
+}
+.memo-del-hint.show { display: block; }
+.btn-clear {
+  background: none; border: 1.5px solid #ccc; color: #888;
+  border-radius: 20px; padding: 10px 14px; font-size: 0.82em;
+  cursor: pointer; font-family: inherit; min-height: 42px;
+  transition: all 0.15s;
+}
+.btn-clear.active {
+  background: #c62828; border-color: #c62828;
+  color: white; font-weight: 700;
+}
+.btn-del-all {
+  background: #fff0f0; border: 1.5px solid #e57373; color: #c62828;
+  border-radius: 20px; padding: 10px 14px; font-size: 0.82em;
+  cursor: pointer; font-family: inherit; font-weight: 700; min-height: 42px;
+  transition: all 0.15s;
+}
+.btn-del-all:active { background: #c62828; color: white; }
+.btn-line-sel {
+  background: #e8eaf6; border: 1.5px solid #9fa8da; color: #1a237e;
+  border-radius: 20px; padding: 10px 14px; font-size: 0.82em;
+  cursor: pointer; font-family: inherit; font-weight: 700; min-height: 42px;
+  transition: all 0.15s;
+}
+.btn-line-sel:active { background: #c5cae9; }
+
+
+@media (max-width: 640px) {
+  #main-layout {
+    padding-right: 76px;
+  }
+  #side-col {
+    width: 68px;
+    top: calc(var(--app-shell-height, 132px) + 52px);
+    right: 4px;
+    padding: 10px 4px 5px;
+    gap: 5px;
+    max-height: calc(100dvh - var(--app-shell-height, 132px) - 58px);
+  }
+  .side-book-btn,
+  .side-action-btn {
+    min-height: 54px;
+    padding: 6px 2px;
+  }
+  .side-book-btn .btn-icon,
+  .side-action-btn .btn-icon {
+    font-size: 1.22em;
+  }
+  .side-book-btn .btn-label,
+  .side-action-btn .btn-label {
+    font-size: 0.53em;
+    line-height: 1.16;
+  }
+}
+
+@media (min-width: 768px) {
+  .side-book-btn,
+  .side-action-btn {
+    padding: 9px 4px;
+    border-radius: 14px;
+    min-height: 62px;
+  }
+  .side-book-btn .btn-icon,
+  .side-action-btn .btn-icon {
+    font-size: 1.5em;
+  }
+  .side-book-btn .btn-label,
+  .side-action-btn .btn-label {
+    font-size: 0.6em;
+    line-height: 1.2;
+  }
+  .nme-btn {
+    font-size: 0.9em;
+    min-height: 36px;
+    padding: 7px 10px;
+  }
+  #nme-title,
+  #nme-ref-query {
+    font-size: 0.95em !important;
+  }
+  #nme-content {
+    font-size: 1.08em !important;
+  }
+  .mpm-adj-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 1.08em;
+  }
+}
+
+@media (min-width: 1024px) {
+  .side-book-btn,
+  .side-action-btn {
+    padding: 10px 5px;
+    border-radius: 15px;
+    min-height: 66px;
+  }
+  .side-book-btn .btn-icon,
+  .side-action-btn .btn-icon {
+    font-size: 1.6em;
+  }
+  .side-book-btn .btn-label,
+  .side-action-btn .btn-label {
+    font-size: 0.62em;
+  }
+  .nme-btn {
+    font-size: 0.95em;
+    min-height: 38px;
+  }
+  #nme-content {
+    font-size: 1.13em !important;
+  }
+  #memo-preview-modal > div {
+    max-width: 620px !important;
+  }
+}
+</style>
+  <script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+</head>
+<body>
+
+<!-- 메모 추가 토스트 -->
+<div id="add-toast">✓ 메모에 추가됨</div>
+
+<!-- 참조 드로어 -->
+<div id="ref-drawer">
+  <div id="ref-backdrop" onclick="closeRef()"></div>
+  <div id="ref-panel">
+    <div id="ref-header">
+      <div class="ref-handle"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <h3 id="ref-title" style="margin:0">📚 참조</h3>
+        <button onclick="closeRef()" style="background:rgba(255,255,255,0.2);border:none;color:white;border-radius:50%;width:30px;height:30px;font-size:1.1em;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
+      </div>
+      <div id="ref-search-row">
+        <span class="ref-paren">(</span>
+        <input type="search" id="ref-input"
+          placeholder="검색어 입력…"
+          autocomplete="off" autocorrect="off" spellcheck="false"
+          onkeydown="if(event.key==='Enter')runRefSearch()">
+        <span class="ref-paren">)</span>
+        <button id="ref-go-btn" onclick="runRefSearch()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="15" height="15"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          참조
+        </button>
+      </div>
+      <p id="ref-subtitle" style="margin-top:8px;font-size:0.74em;opacity:0.82">검색어를 입력하고 참조 버튼을 누르세요</p>
+    </div>
+    <div id="ref-body"></div>
+  </div>
+</div>
+
+
+<input id="other-format-import-file" type="file"
+  accept=".pdf,.docx,.txt,.html,.htm,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,text/html"
+  style="display:none" onchange="handleOtherFormatImport(event)">
+
+<!-- 개인연구목록 오버레이 -->
+<div id="memo-viewer" style="display:none;position:fixed;inset:0;z-index:700;background:#fff;flex-direction:column;">
+  <div style="background:linear-gradient(135deg,#1a3d6e,#2471a3);color:#fff;
+              padding:calc(10px + var(--safe-top)) 16px 10px;
+              display:flex;align-items:center;gap:10px;flex-shrink:0;">
+    <div style="flex:1;font-size:0.95em;font-weight:800;">📋 개인연구목록</div>
+    <button onclick="backupStudyData()"
+      style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.28);color:#fff;
+             border-radius:20px;padding:7px 10px;font-size:0.78em;font-weight:800;cursor:pointer;">백업</button>
+    <button onclick="importStudyData()"
+      style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.28);color:#fff;
+             border-radius:20px;padding:7px 10px;font-size:0.78em;font-weight:800;cursor:pointer;">불러오기</button>
+    <button onclick="openOtherFormatImport()"
+      style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.28);color:#fff;
+             border-radius:20px;padding:7px 10px;font-size:0.78em;font-weight:800;cursor:pointer;">다른 형식</button>
+    <button onclick="closeMemoViewer()"
+      style="background:rgba(255,255,255,0.2);border:none;color:#fff;
+             border-radius:20px;padding:7px 16px;font-size:0.85em;font-weight:700;cursor:pointer;">✕ 닫기</button>
+  </div>
+  <div id="memo-viewer-body" style="flex:1;overflow:auto;padding:14px;"></div>
+</div>
+
+<!-- 개인성서연구 워드 편집기 오버레이 -->
+<div id="new-memo-editor" style="display:none;position:fixed;inset:0;z-index:600;background:#fff;flex-direction:column;">
+  <!-- 헤더 -->
+  <div style="background:linear-gradient(135deg,#27500a,#4caf50);color:#fff;
+              padding:calc(10px + var(--safe-top)) 16px 10px;
+              display:flex;align-items:center;gap:8px;flex-shrink:0;">
+    <div style="flex:1;font-size:0.9em;font-weight:800;">✏️ 개인성서연구</div>
+    <button onclick="closeNewMemo()"
+      style="background:rgba(255,255,255,0.2);border:none;color:#fff;
+             border-radius:20px;padding:7px 14px;font-size:0.82em;font-weight:700;cursor:pointer;">✕ 닫기</button>
+  </div>
+  <!-- 제목 입력란 -->
+  <div style="padding:8px 12px;background:#f0f8f0;border-bottom:1px solid #c8e6c9;flex-shrink:0;
+              display:flex;align-items:center;gap:7px;flex-wrap:wrap;">
+    <input id="nme-title" type="text" placeholder="제목입력"
+      style="flex:1;min-width:160px;padding:9px 14px;border:1.5px solid #c8e6c9;border-radius:10px;
+             font-family:inherit;font-size:0.92em;font-weight:600;color:#222;
+             background:#fff;outline:none;box-sizing:border-box;"
+      onfocus="this.style.borderColor='#4caf50'"
+      onblur="this.style.borderColor='#c8e6c9'">
+    <button onclick="openMemoViewer()"
+      style="padding:9px 11px;border:1.5px solid #c8e6c9;border-radius:10px;background:#fff;
+             color:#27500a;font-size:0.78em;font-weight:800;cursor:pointer;font-family:inherit;white-space:nowrap;">
+      📋 개인연구목록
+    </button>
+    <div style="display:flex;align-items:center;border:1.5px solid #c8e6c9;border-radius:10px;background:#fff;
+                overflow:hidden;min-width:180px;flex:0 1 260px;">
+      <input id="nme-ref-query" type="search" placeholder="검색어"
+        autocomplete="off" autocorrect="off" spellcheck="false"
+        onkeydown="if(event.key==='Enter')openNmeRefSearch()"
+        style="flex:1;min-width:0;padding:9px 10px;border:none;background:#fff;color:#222;outline:none;
+               font-family:inherit;font-size:0.82em;font-weight:600;box-sizing:border-box;">
+      <button onclick="openNmeRefSearch()"
+        style="padding:9px 11px;border:none;border-left:1px solid #c8e6c9;background:#e8f5e9;color:#27500a;
+               font-size:0.78em;font-weight:900;cursor:pointer;font-family:inherit;white-space:nowrap;">
+        🔎 통합검색
+      </button>
+    </div>
+  </div>
+  <!-- 워드 툴바 -->
+  <div style="display:flex;gap:5px;padding:8px 12px;background:#f0f8f0;
+              border-bottom:1px solid #c8e6c9;flex-wrap:wrap;flex-shrink:0;">
+    <button onclick="nmeExec('bold')"      class="nme-btn" style="font-weight:800;">B</button>
+    <button onclick="nmeExec('italic')"    class="nme-btn" style="font-style:italic;">I</button>
+    <button onclick="nmeExec('underline')" class="nme-btn" style="text-decoration:underline;">U</button>
+    <div style="width:1px;background:#c8e6c9;margin:0 2px;"></div>
+    <button onclick="nmeExec('formatBlock','h2')" class="nme-btn">제목</button>
+    <button onclick="nmeExec('formatBlock','p')"  class="nme-btn">본문</button>
+    <div style="width:1px;background:#c8e6c9;margin:0 2px;"></div>
+    <select onchange="nmeSetList(this.value);this.selectedIndex=0;" class="nme-btn"
+      style="min-width:98px;height:34px;padding:0 8px;">
+      <option value="">목록</option>
+      <option value="ul:disc">• 글머리</option>
+      <option value="ul:circle">○ 원형</option>
+      <option value="ul:square">▪ 사각</option>
+      <option value="ol:decimal">1. 번호</option>
+      <option value="ol:lower-alpha">a. 영문</option>
+      <option value="ol:lower-roman">i. 로마자</option>
+    </select>
+    <button onclick="nmeExec('outdent')" class="nme-btn">내어쓰기</button>
+    <button onclick="nmeExec('indent')" class="nme-btn">들여쓰기</button>
+    <button onclick="nmeExec('justifyLeft')"   class="nme-btn">≡</button>
+    <button onclick="nmeExec('justifyCenter')" class="nme-btn">☰</button>
+    <div style="width:1px;background:#c8e6c9;margin:0 2px;"></div>
+    <button type="button" class="nme-btn" onpointerdown="nmeRememberSelection()" onclick="nmeFormat('bold')" title="굵게"
+      style="min-width:42px;height:34px;font-weight:900;font-size:1em;">B</button>
+    <button type="button" class="nme-btn" onpointerdown="nmeRememberSelection()" onclick="nmeFormat('underline')" title="밑줄"
+      style="min-width:42px;height:34px;text-decoration:underline;font-size:1em;">U</button>
+    <select onpointerdown="nmeRememberSelection()" onchange="nmeSetFontSize(this.value);this.selectedIndex=0;" class="nme-btn"
+      style="min-width:88px;height:34px;padding:0 8px;">
+      <option value="">글자크기</option>
+      <option value="8">8pt</option>
+      <option value="9">9pt</option>
+      <option value="10">10pt</option>
+      <option value="11">11pt</option>
+      <option value="12">12pt</option>
+      <option value="14">14pt</option>
+      <option value="16">16pt</option>
+      <option value="18">18pt</option>
+      <option value="20">20pt</option>
+      <option value="24">24pt</option>
+      <option value="28">28pt</option>
+      <option value="32">32pt</option>
+    </select>
+    <select onpointerdown="nmeRememberSelection()" onchange="nmeSetFont(this.value);this.selectedIndex=0;" class="nme-btn"
+      style="min-width:92px;height:34px;padding:0 8px;">
+      <option value="">글씨체</option>
+      <option value="'맑은 고딕','Malgun Gothic',sans-serif">맑은 고딕</option>
+      <option value="'Malgun Gothic Semilight','맑은 고딕',sans-serif">맑은 고딕 Light</option>
+      <option value="'굴림','Gulim',sans-serif">굴림</option>
+      <option value="'돋움','Dotum',sans-serif">돋움</option>
+      <option value="'바탕','Batang',serif">바탕</option>
+      <option value="'바탕체','BatangChe',serif">바탕체</option>
+      <option value="'궁서','Gungsuh',serif">궁서</option>
+      <option value="'궁서체','GungsuhChe',serif">궁서체</option>
+      <option value="'Georgia',serif">Georgia</option>
+      <option value="'Times New Roman',serif">Times New Roman</option>
+      <option value="Arial,sans-serif">Arial</option>
+      <option value="'Arial Black',Arial,sans-serif">Arial Black</option>
+      <option value="'Segoe UI',Arial,sans-serif">Segoe UI</option>
+      <option value="'Tahoma',sans-serif">Tahoma</option>
+      <option value="'Verdana',sans-serif">Verdana</option>
+      <option value="'Trebuchet MS',sans-serif">Trebuchet MS</option>
+      <option value="'Courier New',monospace">Courier New</option>
+      <option value="'Consolas',monospace">Consolas</option>
+      <option value="serif">기본 명조</option>
+      <option value="sans-serif">기본 고딕</option>
+      <option value="monospace">고정폭</option>
+    </select>
+    <div style="width:1px;background:#c8e6c9;margin:0 2px;"></div>
+    <button onclick="nmeExec('hiliteColor','#fff3b0')" class="nme-btn" style="background:#fff3b0;">형광</button>
+  </div>
+  <!-- 편집 영역 -->
+  <div id="nme-content" contenteditable="true"
+    style="flex:1;overflow:auto;padding:16px;font-family:inherit;font-size:1em;
+           line-height:1.8;color:#222;outline:none;"
+    onkeydown="if((event.ctrlKey||event.metaKey)&&event.key==='s'){event.preventDefault();saveNewMemo();}"
+    onpaste="nmePastePlain(event)"
+    oninput="sanitizeNmeLinks();updateNmeCount()"
+    onmouseup="nmeRememberSelection()" onkeyup="nmeRememberSelection()" ontouchend="setTimeout(nmeRememberSelection,0)">
+  </div>
+  <!-- 하단 상태바 + 버튼 통합 -->
+  <div style="padding:10px 12px calc(10px + var(--safe-top));background:#f0f8f0;
+              border-top:1px solid #c8e6c9;display:flex;gap:8px;align-items:center;flex-shrink:0;">
+    <span id="nme-count" style="font-size:0.75em;color:#666;flex:1;">0 글자</span>
+    <button onclick="openMemoPreviewFromNew()"
+      style="padding:10px 20px;border:none;border-radius:10px;
+             background:linear-gradient(135deg,#27ae60,#6a1b9a);
+             color:#fff;font-size:0.85em;font-weight:800;cursor:pointer;font-family:inherit;">
+      👁 미리보기/저장</button>
+  </div>
+</div>
+
+<!-- 개인성서연구 미리보기 -->
+<!-- ════ 통합 미리보기/저장 모달 ════ -->
+<div id="memo-preview-modal" style="display:none;position:fixed;inset:0;z-index:900;
+     background:rgba(0,0,0,0.6);flex-direction:column;align-items:center;justify-content:flex-end;">
+  <div style="background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:520px;
+              max-height:92vh;display:flex;flex-direction:column;">
+
+    <!-- 모달 헤더 -->
+    <div style="display:flex;align-items:center;padding:14px 18px 10px;border-bottom:1px solid #eee;flex-shrink:0;">
+      <div id="mpm-step-indicator" style="display:flex;gap:6px;align-items:center;flex:1;">
+        <span id="mpm-dot1" style="width:8px;height:8px;border-radius:50%;background:#6a1b9a;"></span>
+        <span id="mpm-dot2" style="width:8px;height:8px;border-radius:50%;background:#ddd;"></span>
+        <span id="mpm-dot3" style="width:8px;height:8px;border-radius:50%;background:#ddd;"></span>
+        <span id="mpm-step-title" style="font-size:0.85em;font-weight:700;color:#3a0068;margin-left:6px;">미리보기</span>
+      </div>
+      <button onclick="closeMemoPreviewModal()"
+        style="border:none;background:#f0f0f0;border-radius:20px;padding:6px 14px;
+               cursor:pointer;font-family:inherit;font-size:0.82em;font-weight:600;">✕ 닫기</button>
+    </div>
+
+    <!-- STEP 1: 미리보기 -->
+    <div id="mpm-step1" style="flex:1;overflow:auto;display:flex;flex-direction:column;">
+      <!-- 간격 조정 툴바 -->
+      <div style="display:flex;align-items:stretch;gap:8px;padding:10px 16px;
+                  background:#f8f0ff;border-bottom:1px solid #e8dff5;flex-shrink:0;flex-wrap:wrap;">
+        <div style="flex:1 1 120px;display:flex;align-items:center;justify-content:center;gap:6px;background:#fff;border:1px solid #e8dff5;
+                    border-radius:12px;padding:6px 8px;min-height:36px;">
+          <span style="font-size:0.78em;color:#666;font-weight:800;">글자크기</span>
+          <button onclick="mpmAdjust('fs',-1)" class="mpm-adj-btn">－</button>
+          <span id="mpm-fs-val" style="font-size:0.8em;color:#333;min-width:30px;text-align:center;">8pt</span>
+          <button onclick="mpmAdjust('fs',1)"  class="mpm-adj-btn">＋</button>
+        </div>
+        <div style="flex:1 1 120px;display:flex;align-items:center;justify-content:center;gap:6px;background:#fff;border:1px solid #e8dff5;
+                    border-radius:12px;padding:6px 8px;min-height:36px;">
+          <span style="font-size:0.78em;color:#666;font-weight:800;">줄간격</span>
+          <button onclick="mpmAdjust('lh',-0.1)" class="mpm-adj-btn">－</button>
+          <span id="mpm-lh-val" style="font-size:0.8em;color:#333;min-width:30px;text-align:center;">1.8</span>
+          <button onclick="mpmAdjust('lh',0.1)"  class="mpm-adj-btn">＋</button>
+        </div>
+        <div style="flex:1 1 120px;display:flex;align-items:center;justify-content:center;gap:6px;background:#fff;border:1px solid #e8dff5;
+                    border-radius:12px;padding:6px 8px;min-height:36px;">
+          <span style="font-size:0.78em;color:#666;font-weight:800;">여백</span>
+          <button onclick="mpmAdjust('mg',-5)" class="mpm-adj-btn">－</button>
+          <span id="mpm-mg-val" style="font-size:0.8em;color:#333;min-width:30px;text-align:center;">25mm</span>
+          <button onclick="mpmAdjust('mg',5)"  class="mpm-adj-btn">＋</button>
+        </div>
+        <button onclick="mpmGoStep(2)"
+          style="flex:1 1 120px;min-height:50px;border:none;border-radius:12px;
+                 background:linear-gradient(135deg,#6a1b9a,#9c27b0);
+                 color:#fff;font-size:0.86em;font-weight:900;cursor:pointer;font-family:inherit;">
+          저장 방식 선택
+        </button>
+      </div>
+      <!-- 미리보기 내용 - A4 용지 모양 -->
+      <div style="flex:1;overflow:auto;padding:16px 10px;background:#888;display:flex;justify-content:center;align-items:flex-start;">
+        <div style="position:relative;width:100%;max-width:420px;">
+          <!-- A4 용지 그림자 -->
+          <div style="position:absolute;top:4px;left:4px;right:-4px;bottom:-4px;background:rgba(0,0,0,0.2);border-radius:2px;"></div>
+          <!-- A4 용지 본체 -->
+          <div id="mpm-preview-paper"
+            style="position:relative;background:#fff;border-radius:2px;
+                   box-shadow:0 0 0 1px rgba(0,0,0,0.1);
+                   padding:25mm;
+                   font-family:'맑은 고딕','Malgun Gothic',sans-serif;
+                   font-size:8pt;line-height:1.8;color:#222;
+                   min-height:0;
+                   height:min(62vh,640px);
+                   overflow-y:auto;
+                   overflow-x:hidden;
+                   scroll-behavior:smooth;
+                   word-break:break-word;
+                   aspect-ratio:210/297;">
+          </div>
+        </div>
+      </div>
+      <div id="mpm-page-controls"
+        style="display:flex;align-items:center;gap:8px;padding:9px 12px;
+               background:#fff;border-top:1px solid #e8dff5;flex-shrink:0;">
+        <button id="mpm-prev-page" onclick="mpmChangePage(-1)"
+          style="flex:1;padding:10px;border:1.5px solid #d8c8ef;border-radius:10px;
+                 background:#fff;color:#6a1b9a;font-weight:800;font-family:inherit;cursor:pointer;">
+          ← 이전 페이지
+        </button>
+        <span id="mpm-page-indicator"
+          style="min-width:68px;text-align:center;font-size:0.8em;font-weight:800;color:#555;">1 / 1</span>
+        <button id="mpm-next-page" onclick="mpmChangePage(1)"
+          style="flex:1;padding:10px;border:none;border-radius:10px;
+                 background:#6a1b9a;color:#fff;font-weight:800;font-family:inherit;cursor:pointer;">
+          다음 페이지 →
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 2: 저장방식 선택 -->
+    <div id="mpm-step2" style="display:none;flex-direction:column;">
+      <div style="padding:20px 18px 10px;text-align:center;">
+        <div style="font-size:0.82em;color:#888;margin-bottom:16px;">원하는 저장 형식을 선택하세요</div>
+        <div style="display:flex;gap:10px;justify-content:center;">
+          <button onclick="mpmSelectType('local')"
+            style="flex:1;max-width:120px;padding:18px 8px;border:2px solid #ddd;border-radius:14px;
+                   background:#fff;cursor:pointer;font-family:inherit;transition:all 0.15s;">
+            <div style="font-size:2em;margin-bottom:6px;">💾</div>
+            <div style="font-size:0.85em;font-weight:800;color:#333;">로컬</div>
+            <div style="font-size:0.7em;color:#888;margin-top:3px;">기기에 저장</div>
+          </button>
+          <button onclick="mpmSelectType('doc')"
+            style="flex:1;max-width:120px;padding:18px 8px;border:2px solid #ddd;border-radius:14px;
+                   background:#fff;cursor:pointer;font-family:inherit;transition:all 0.15s;">
+            <div style="font-size:2em;margin-bottom:6px;">📝</div>
+            <div style="font-size:0.85em;font-weight:800;color:#333;">Word</div>
+            <div style="font-size:0.7em;color:#888;margin-top:3px;">문서 파일</div>
+          </button>
+          <button onclick="mpmSelectType('pdf')"
+            style="flex:1;max-width:120px;padding:18px 8px;border:2px solid #ddd;border-radius:14px;
+                   background:#fff;cursor:pointer;font-family:inherit;transition:all 0.15s;">
+            <div style="font-size:2em;margin-bottom:6px;">📕</div>
+            <div style="font-size:0.85em;font-weight:800;color:#333;">PDF</div>
+            <div style="font-size:0.7em;color:#888;margin-top:3px;">인쇄/저장</div>
+          </button>
+        </div>
+      </div>
+      <div style="padding:8px 18px 16px;">
+        <button onclick="mpmGoStep(1)"
+          style="width:100%;padding:11px;border:1.5px solid #ddd;border-radius:10px;
+                 background:#fff;color:#666;font-size:0.85em;font-weight:600;
+                 cursor:pointer;font-family:inherit;">← 미리보기로 돌아가기</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: 저장 위치/인쇄 설정 -->
+    <div id="mpm-step3" style="display:none;flex-direction:column;padding:18px;">
+      <div id="mpm-type-badge"
+        style="text-align:center;font-size:0.82em;color:#888;margin-bottom:14px;"></div>
+
+      <!-- 로컬/Word 저장 위치 -->
+      <div id="mpm-save-actions" style="display:none;gap:8px;flex-direction:column;">
+        <button id="mpm-local-save-btn" onclick="mpmDoLocalSave()"
+          style="width:100%;padding:14px;border:none;border-radius:12px;
+                 background:linear-gradient(135deg,#27500a,#4caf50);
+                 color:#fff;font-size:0.95em;font-weight:800;cursor:pointer;font-family:inherit;display:none;">
+          💾 로컬(기기에) 저장
+        </button>
+        <button id="mpm-download-save-btn" onclick="mpmDoSave()"
+          style="width:100%;padding:14px;border:none;border-radius:12px;
+                 background:linear-gradient(135deg,#27ae60,#2ecc71);
+                 color:#fff;font-size:0.95em;font-weight:800;cursor:pointer;font-family:inherit;">
+          💾 기기에 저장 (다운로드)
+        </button>
+        <div id="mpm-save-help" style="font-size:0.75em;color:#aaa;text-align:center;padding:4px 0;">
+          저장 후 카카오톡·메일·드라이브로 공유 가능
+        </div>
+      </div>
+
+      <!-- PDF 인쇄 설정 -->
+      <div id="mpm-print-actions" style="display:none;flex-direction:column;gap:10px;">
+        <div style="background:#f8f0ff;border-radius:12px;padding:14px;">
+          <div style="font-size:0.82em;font-weight:700;color:#3a0068;margin-bottom:10px;">🖨 인쇄 설정</div>
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+            <span style="font-size:0.8em;color:#555;width:50px;">용지</span>
+            <select id="mpm-paper"
+              style="flex:1;padding:7px;border:1px solid #d8c8ef;border-radius:8px;
+                     font-family:inherit;font-size:0.82em;">
+              <option value="A4">A4</option>
+              <option value="letter">Letter</option>
+              <option value="A5">A5</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span style="font-size:0.8em;color:#555;width:50px;">방향</span>
+            <select id="mpm-orient"
+              style="flex:1;padding:7px;border:1px solid #d8c8ef;border-radius:8px;
+                     font-family:inherit;font-size:0.82em;">
+              <option value="portrait">세로</option>
+              <option value="landscape">가로</option>
+            </select>
+          </div>
+        </div>
+        <button onclick="mpmDoPrint()"
+          style="width:100%;padding:14px;border:none;border-radius:12px;
+                 background:linear-gradient(135deg,#c0392b,#e74c3c);
+                 color:#fff;font-size:0.95em;font-weight:800;cursor:pointer;font-family:inherit;">
+          🖨 인쇄 / PDF 저장
+        </button>
+      </div>
+
+      <div style="margin-top:10px;">
+        <button onclick="mpmGoStep(2)"
+          style="width:100%;padding:11px;border:1.5px solid #ddd;border-radius:10px;
+                 background:#fff;color:#666;font-size:0.85em;font-weight:600;
+                 cursor:pointer;font-family:inherit;">← 형식 선택으로 돌아가기</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════ 카드 만들기 편집기 ════ -->
+<div id="custom-card-editor" style="display:none;position:fixed;inset:0;z-index:600;background:#fff;flex-direction:column;">
+  <div style="background:linear-gradient(135deg,#1a5276,#2471a3);color:#fff;
+              padding:calc(10px + var(--safe-top)) 16px 10px;
+              display:flex;align-items:center;gap:8px;flex-shrink:0;">
+    <div id="cce-header-title" style="flex:1;font-size:0.95em;font-weight:800;">＋ 새 카드 만들기</div>
+    <button onclick="closeCustomCard()"
+      style="background:rgba(255,255,255,0.2);border:none;color:#fff;
+             border-radius:20px;padding:7px 14px;font-size:0.82em;font-weight:700;cursor:pointer;">✕ 닫기</button>
+  </div>
+  <div class="editor-scroll-body">
+    <!-- 제목 -->
+    <div style="margin-bottom:12px;">
+      <label style="font-size:0.78em;font-weight:800;color:#1a5276;display:block;margin-bottom:4px;">📌 제목 *</label>
+      <input id="cce-title" type="text" placeholder="예: 사랑이 전파의 동기"
+        style="width:100%;padding:10px 14px;border:1.5px solid #c8ddf0;border-radius:10px;
+               font-family:inherit;font-size:0.92em;box-sizing:border-box;outline:none;"
+        onfocus="this.style.borderColor='#2471a3'" onblur="this.style.borderColor='#c8ddf0'">
+    </div>
+    <!-- 성구 -->
+    <div style="margin-bottom:12px;">
+      <label style="font-size:0.78em;font-weight:800;color:#1a5276;display:block;margin-bottom:4px;">📖 성구 * <span style="font-weight:400;color:#888;">(예: 마태복음 22:39)</span></label>
+      <input id="cce-ref" type="text" placeholder="책 장:절 형식으로 입력 — 자동으로 불러옵니다"
+        style="width:100%;padding:10px 14px;border:1.5px solid #c8ddf0;border-radius:10px;
+               font-family:inherit;font-size:0.92em;box-sizing:border-box;outline:none;"
+        onfocus="this.style.borderColor='#2471a3'" onblur="this.style.borderColor='#c8ddf0'"
+        oninput="autoFetchVerse(this.value)">
+      <div id="cce-verse-result" style="margin-top:6px;padding:10px 12px;background:#f0f8ff;
+           border:1.5px solid #c8ddf0;border-radius:8px;font-size:0.88em;color:#333;
+           line-height:1.8;display:none;"></div>
+    </div>
+    <!-- 심층 설명 -->
+    <div class="editor-field grow-desc">
+      <label style="font-size:0.78em;font-weight:800;color:#1a5276;display:block;margin-bottom:4px;">💡 심층 설명</label>
+      <textarea id="cce-desc" class="editor-textarea" rows="3" placeholder="이 골자의 핵심 내용을 설명해주세요..."
+        onfocus="this.style.borderColor='#2471a3'" onblur="this.style.borderColor='#c8ddf0'"></textarea>
+    </div>
+    <!-- 실무 제안 -->
+    <div class="editor-field grow-sug">
+      <label style="font-size:0.78em;font-weight:800;color:#1a5276;display:block;margin-bottom:4px;">🛠 실무 제안</label>
+      <textarea id="cce-sug" class="editor-textarea" rows="2" placeholder="실제 전파에서 어떻게 활용할지 제안해주세요..."
+        onfocus="this.style.borderColor='#2471a3'" onblur="this.style.borderColor='#c8ddf0'"></textarea>
+    </div>
+  </div>
+  <!-- 하단 버튼 -->
+  <div style="padding:10px 16px calc(10px + var(--safe-top));background:#f0f8ff;
+              border-top:1px solid #c8ddf0;display:flex;gap:8px;flex-shrink:0;">
+    <button onclick="saveCustomCard()"
+      style="flex:2;padding:12px;border:none;border-radius:12px;
+             background:linear-gradient(135deg,#1a5276,#2471a3);
+             color:#fff;font-size:0.92em;font-weight:800;cursor:pointer;font-family:inherit;">
+      💾 저장
+    </button>
+    <button onclick="deleteCustomCard()"  id="cce-del-btn"
+      style="flex:1;padding:12px;border:1.5px solid #fca5a5;border-radius:12px;
+             background:#fff0f0;color:#c0392b;font-size:0.88em;font-weight:700;
+             cursor:pointer;font-family:inherit;display:none;">
+      🗑 삭제
+    </button>
+  </div>
+</div>
+
+<!-- ════ 내가 만든 카드 리스트 ════ -->
+<div id="custom-list-panel" style="display:none;position:fixed;inset:0;z-index:600;background:#fff;flex-direction:column;">
+  <div style="background:linear-gradient(135deg,#1a5276,#2471a3);color:#fff;
+              padding:calc(10px + var(--safe-top)) 16px 10px;
+              display:flex;align-items:center;gap:8px;flex-shrink:0;">
+    <div style="flex:1;font-size:0.95em;font-weight:800;">📋 내가 만든 카드 리스트</div>
+    <button onclick="backupOutlineData()"
+      style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.28);color:#fff;
+             border-radius:20px;padding:7px 10px;font-size:0.78em;font-weight:800;cursor:pointer;">골자백업</button>
+    <button onclick="importOutlineData()"
+      style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.28);color:#fff;
+             border-radius:20px;padding:7px 10px;font-size:0.78em;font-weight:800;cursor:pointer;">불러오기</button>
+    <button onclick="closeCustomList()"
+      style="background:rgba(255,255,255,0.2);border:none;color:#fff;
+             border-radius:20px;padding:7px 14px;font-size:0.82em;font-weight:700;cursor:pointer;">✕ 닫기</button>
+  </div>
+  <div id="custom-list-body" style="flex:1;overflow:auto;padding:14px;"></div>
+  <div style="padding:10px 16px calc(10px + var(--safe-top));background:#f0f8ff;
+              border-top:1px solid #c8ddf0;flex-shrink:0;">
+    <button onclick="openCustomCard(null);closeCustomList();"
+      style="width:100%;padding:12px;border:none;border-radius:12px;
+             background:linear-gradient(135deg,#1a5276,#2471a3);
+             color:#fff;font-size:0.92em;font-weight:800;cursor:pointer;font-family:inherit;">
+      ＋ 새 카드 만들기
+    </button>
+  </div>
+</div>
+
+<!-- ════ 기본 카드 수정 리스트 ════ -->
+<div id="base-edit-list-panel" style="display:none;position:fixed;inset:0;z-index:600;background:#fff;flex-direction:column;">
+  <div style="background:linear-gradient(135deg,#5d4037,#8d6e63);color:#fff;
+              padding:calc(10px + var(--safe-top)) 16px 10px;
+              display:flex;align-items:center;gap:8px;flex-shrink:0;">
+    <div style="flex:1;font-size:0.95em;font-weight:800;">✏️ 기본 카드 수정하기</div>
+    <button onclick="closeBaseEditList()"
+      style="background:rgba(255,255,255,0.2);border:none;color:#fff;
+             border-radius:20px;padding:7px 14px;font-size:0.82em;font-weight:700;cursor:pointer;">✕ 닫기</button>
+  </div>
+  <div style="padding:10px 14px;background:#fff8f0;border-bottom:1px solid #ead7c5;flex-shrink:0;">
+    <input id="base-edit-search" type="search" placeholder="수정할 골자 검색..."
+      oninput="renderBaseEditList()"
+      style="width:100%;padding:9px 12px;border:1.5px solid #d7ccc8;border-radius:10px;
+             font-family:inherit;font-size:0.9em;box-sizing:border-box;outline:none;">
+  </div>
+  <div id="base-edit-list-body" style="flex:1;overflow:auto;padding:14px;"></div>
+</div>
+
+<input id="outline-import-file" type="file" accept="application/json,.json" style="display:none" onchange="handleImportFile(event,'outline')">
+<input id="study-import-file" type="file" accept="application/json,.json" style="display:none" onchange="handleImportFile(event,'study')">
+
+<!-- 메모 전체화면 오버레이 -->
+<div id="memo-overlay">
+  <div id="memo-overlay-header">
+    <div id="memo-overlay-title">메모</div>
+    <button id="memo-overlay-close" onclick="closeMemoOverlay()">✕ 닫기</button>
+  </div>
+  <div id="memo-overlay-body">
+    <textarea id="memo-overlay-ta" placeholder="메모, 경험, 아이디어를 자유롭게…&#10;&#10;빈 줄로 문단을 나누면 인쇄 미리보기에서 보기 좋게 표시됩니다."></textarea>
+  </div>
+  <div id="memo-overlay-actions">
+    <button style="background:var(--p);color:#fff;" onclick="saveMemoOverlay()">💾 저장</button>
+    <button style="background:#f0ebf8;color:var(--p);border:1.5px solid #d8c8ef;" onclick="saveMemoOverlayAndPreview()">🖨 인쇄</button>
+    <button style="background:#fff0f0;color:#c0392b;border:1.5px solid #fca5a5;" onclick="clearMemoOverlay()">🗑 삭제</button>
+  </div>
+</div>
+
+<!-- 메모 내보내기 모달 (형식+위치 선택) -->
+<div id="memo-save-modal" style="display:none;position:fixed;inset:0;z-index:800;
+     background:rgba(0,0,0,0.55);align-items:flex-end;justify-content:center;">
+  <div style="background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:20px 20px calc(20px + var(--safe-top));">
+    <div style="width:40px;height:4px;background:#e0e0e0;border-radius:2px;margin:0 auto 16px;"></div>
+    <div style="font-size:1em;font-weight:800;color:#3a0068;margin-bottom:4px;">📤 저장 형식 선택</div>
+    <div style="font-size:0.78em;color:#888;margin-bottom:14px;" id="memo-save-modal-title"></div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;">
+      <button onclick="exportMemoAs('doc')"
+        style="flex:1;padding:14px 4px;border:none;border-radius:12px;background:#2b5797;
+               color:#fff;font-weight:800;cursor:pointer;font-family:inherit;font-size:0.88em;">
+        📝<br><span style="font-size:0.82em;">Word</span>
+      </button>
+      <button onclick="exportMemoAs('pdf')"
+        style="flex:1;padding:14px 4px;border:none;border-radius:12px;background:#c0392b;
+               color:#fff;font-weight:800;cursor:pointer;font-family:inherit;font-size:0.88em;">
+        📕<br><span style="font-size:0.82em;">PDF</span>
+      </button>
+    </div>
+    <button onclick="closeMemoSaveModal()"
+      style="width:100%;padding:12px;border:1.5px solid #e0e0e0;border-radius:12px;
+             background:#fff;color:#666;font-weight:700;cursor:pointer;font-family:inherit;">취소</button>
+  </div>
+</div>
+
+<input id="full-backup-import-file" type="file"
+  accept="application/json,.json" style="display:none"
+  onchange="handleFullBackupImport(event)">
+
+<div id="install-banner">
+  <span>📲 홈 화면에 앱으로 추가하세요!</span>
+  <button onclick="doInstall()">추가</button>
+  <button class="close-btn" onclick="hideBanner()">✕</button>
+</div>
+
+<div class="app-sticky-shell">
+<header>
+  <h1>봉사모임사회 PRO</h1>
+  <p>전파활동을 위한 영적 격려와 개인연구</p>
+  <div class="app-meta">
+    <span class="app-version" id="app-version-label">ver 3.5.8 · 2026-07-18</span>
+    <button class="update-btn" id="app-update-btn" onclick="forceAppUpdate()">↻ 업데이트</button>
+    <button class="data-tool-btn" onclick="confirmBackupAndRun()">💾 백업</button>
+    <button class="data-tool-btn" onclick="confirmRestoreAndRun()">📤 불러오기</button>
+  </div>
+</header>
+
+<div class="top-bar">
+  <input type="search" id="search"
+    oninput="markSearchPending()"
+    onkeydown="if(event.key==='Enter'){event.preventDefault();applyKeywordSearch();}else if(event.key==='Escape'){clearKeywordSearch();}"
+    placeholder="🔍 카드주제,성구,키워드,jworg 검색..."
+    autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="search">
+  <button id="top-ref-btn" onclick="applyKeywordSearch()" title="검색 실행">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+  </button>
+  <span class="count-badge" id="count-badge">기본 카드 1-100번</span>
+</div>
+
+<!-- 카드 만들기 / 카드 수정 / 내가 만든 카드 리스트 버튼 -->
+<div class="quick-action-strip">
+  <button class="quick-action-btn create" onclick="openCustomCard(null)">
+    ＋ 카드 만들기
+  </button>
+  <button class="quick-action-btn edit" onclick="openBaseEditList()">
+    ✏️ 카드 수정하기
+  </button>
+  <button class="quick-action-btn list" onclick="openCustomList()" id="custom-list-btn">
+    📋 내가 만든 카드 <span style="margin-left:4px;">(<span id="custom-count">0</span>)</span>
+  </button>
+</div>
+</div>
+
+<!-- 2열 메인 레이아웃 -->
+<div id="main-layout">
+  <!-- 왼쪽: 골자 카드 -->
+  <div id="cards-col">
+    <div class="container" id="card-container"></div>
+  </div>
+  <!-- 오른쪽: 서적 버튼 세로 한 줄 고정 -->
+  <div id="side-col">
+    <a href="https://www.jw.org/ko/%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC/%ED%8C%9C%ED%94%8C%EB%A0%9B/%EC%82%AC%EB%9E%8C%EB%93%A4%EC%9D%84-%EC%82%AC%EB%9E%91%ED%95%98%EA%B3%A0-%EC%A0%9C%EC%9E%90%EB%A1%9C-%EC%82%BC%EC%9C%BC%EC%8B%AD%EC%8B%9C%EC%98%A4/"
+       target="_blank" rel="noopener" class="side-book-btn"
+       style="background:linear-gradient(135deg,#3a0068,#6a1b9a);">
+      <span class="btn-icon">📖</span>
+      <span class="btn-label">사랑하고<br>제자로</span>
+      <span class="btn-arrow">↗</span>
+    </a>
+    <a href="https://www.jw.org/ko/%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC/%ED%8C%9C%ED%94%8C%EB%A0%9B/%EC%9D%BD%EA%B3%A0-%EA%B0%80%EB%A5%B4%EC%B9%98%EB%8A%94-%EA%B8%B0%EC%88%A0/"
+       target="_blank" rel="noopener" class="side-book-btn"
+       style="background:linear-gradient(135deg,#1a5276,#2471a3);">
+      <span class="btn-icon">📚</span>
+      <span class="btn-label">읽고<br>가르치기</span>
+      <span class="btn-arrow">↗</span>
+    </a>
+    <a href="https://www.jw.org/ko/%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC/%EC%84%9C%EC%A0%81/%EA%B7%B8%EB%A6%AC%EC%8A%A4%EB%8F%84%EC%9D%B8-%EC%83%9D%ED%99%9C%EC%9D%84-%EC%9C%84%ED%95%9C-%EC%84%B1%EA%B2%BD-%EA%B5%AC%EC%A0%88%EB%93%A4/"
+       target="_blank" rel="noopener" class="side-book-btn"
+       style="background:linear-gradient(135deg,#1a6b3a,#27ae60);">
+      <span class="btn-icon">📗</span>
+      <span class="btn-label">성경<br>구절들</span>
+      <span class="btn-arrow">↗</span>
+    </a>
+    <a href="https://www.jw.org/ko/%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC/%EC%84%9C%EC%A0%81/%ED%96%89%EB%B3%B5%ED%95%9C-%EC%82%B6%EC%9D%84-%EC%98%81%EC%9B%90%ED%9E%88-%EB%88%84%EB%A6%AC%EC%8B%AD%EC%8B%9C%EC%98%A4/"
+       target="_blank" rel="noopener" class="side-book-btn"
+       style="background:linear-gradient(135deg,#b7770d,#f0a500);">
+      <span class="btn-icon">📙</span>
+      <span class="btn-label">행복한<br>삶</span>
+      <span class="btn-arrow">↗</span>
+    </a>
+
+    <!-- 구분선 -->
+    <div style="border-top:1px solid #e8dff5;margin:4px 0;"></div>
+
+    <!-- 개인성서연구 버튼 -->
+    <button onclick="openNewMemo()" class="side-action-btn"
+      style="background:linear-gradient(135deg,#27500a,#4caf50);">
+      <span class="btn-icon">✏️</span>
+      <span class="btn-label">개인<br>성서<br>연구</span>
+    </button>
+
+    <!-- 개인연구목록 버튼 -->
+    <button onclick="openMemoViewer()" class="side-action-btn"
+      style="background:linear-gradient(135deg,#1a3d6e,#2471a3);">
+      <span class="btn-icon">📋</span>
+      <span class="btn-label">개인<br>연구<br>목록</span>
+    </button>
+  </div>
+</div>
+
+<div class="footer-info">
+  ✦ "이 왕국의 좋은 소식이 모든 민족에게 증거로 전파될 것입니다." — 마태복음 24:14 ✦
+</div>
+
+<!-- 저장 모달 (바텀시트) -->
+<div class="modal-overlay" id="save-modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3>💾 저장 방식 선택</h3>
+    <p>
+      <strong>🌐 HTML</strong> — 전체 앱 (메모 포함) 저장<br>
+      저장 후 파일을 카카오톡·드라이브로 공유하세요
+    </p>
+    <div class="modal-btns">
+      <button class="btn-m-html" onclick="doSave('html')">🌐 HTML 전체</button>
+      <button class="btn-m-cancel" onclick="closeModal()">취소</button>
+    </div>
+  </div>
+</div>
+
+<!-- iOS 홈화면 추가 안내 -->
+<div id="ios-toast">
+  📲 <strong>홈 화면에 앱으로 추가하기</strong><br>
+  하단 <strong>공유 버튼(□↑)</strong> → <strong>"홈 화면에 추가"</strong> 탭
+  <br><button onclick="document.getElementById('ios-toast').classList.remove('show')">확인</button>
+</div>
+
+<!-- 하단 여백 -->
+<div style="height:16px;"></div>
+
+<script>
+
+// ════════════════════════════════════════
+// 앱 버전 / 자동 업데이트 확인
+// ════════════════════════════════════════
+const APP_VERSION = '3.5.8';
+const APP_UPDATED_AT = '2026-07-17';
+
+function renderAppVersion() {
+  const label = document.getElementById('app-version-label');
+  if (label) label.textContent = 'ver ' + APP_VERSION + ' · ' + APP_UPDATED_AT + ' 업데이트';
+}
+
+function compareVersions(a, b) {
+  const pa = String(a || '').split('.').map(Number);
+  const pb = String(b || '').split('.').map(Number);
+  const len = Math.max(pa.length, pb.length);
+  for (let i = 0; i < len; i++) {
+    const av = pa[i] || 0;
+    const bv = pb[i] || 0;
+    if (av > bv) return 1;
+    if (av < bv) return -1;
+  }
+  return 0;
+}
+
+async function checkForAppUpdate(showMessage) {
+  const btn = document.getElementById('app-update-btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = '확인 중…';
+  }
+
+  try {
+    const baseUrl = location.href.split('#')[0].split('?')[0];
+    const res = await fetch(baseUrl + '?update_check=' + Date.now(), {
+      cache: 'no-store',
+      headers: { 'Cache-Control': 'no-cache' }
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+
+    const html = await res.text();
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const latestVersion = doc.querySelector('meta[name="app-version"]')?.content || APP_VERSION;
+    const latestDate = doc.querySelector('meta[name="app-updated"]')?.content || APP_UPDATED_AT;
+
+    if (compareVersions(latestVersion, APP_VERSION) > 0) {
+      if (btn) {
+        btn.disabled = false;
+        btn.classList.add('update-ready');
+        btn.textContent = '새 버전 ' + latestVersion + ' 받기';
+        btn.onclick = forceAppUpdate;
+      }
+      const label = document.getElementById('app-version-label');
+      if (label) label.textContent = '현재 ver ' + APP_VERSION + ' · 최신 ver ' + latestVersion + ' (' + latestDate + ')';
+      return true;
+    }
+
+    if (btn) {
+      btn.disabled = false;
+      btn.classList.remove('update-ready');
+      btn.textContent = '✓ 최신 버전';
+      setTimeout(() => { if (btn) btn.textContent = '↻ 업데이트 확인'; }, 1800);
+    }
+    if (showMessage) showUpdateToast('현재 최신 버전입니다.');
+    return false;
+  } catch (e) {
+    if (btn) {
+      btn.disabled = false;
+      btn.classList.remove('update-ready');
+      btn.textContent = '↻ 다시 확인';
+    }
+    if (showMessage) showUpdateToast('인터넷 연결 후 다시 확인해 주세요.');
+    return false;
+  }
+}
+
+async function forceAppUpdate() {
+  const btn = document.getElementById('app-update-btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = '업데이트 중…';
+  }
+
+  try {
+    if ('caches' in window) {
+      const names = await caches.keys();
+      await Promise.all(names.map(name => caches.delete(name)));
+    }
+  } catch (e) {}
+
+  const baseUrl = location.href.split('#')[0].split('?')[0];
+  location.replace(baseUrl + '?updated=' + Date.now());
+}
+
+function showUpdateToast(msg) {
+  const toast = document.getElementById('add-toast');
+  if (!toast) return;
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+window.addEventListener('load', function() {
+  renderAppVersion();
+  setTimeout(() => checkForAppUpdate(false), 700);
+});
+
+// ════════════════════════════════════════
+// 데이터
+// ════════════════════════════════════════
+const DATA = [
+  { id:1, title:"이웃 사랑이 전파의 동기가 되게 하십시오", ref:"마태복음 22:39", bk:"MAT",ch:22,vs:39, desc:"전파 활동의 목적은 단지 지식을 전달하는 데 있지 않습니다. 이웃의 생명을 소중히 여기고 진심으로 관심을 나타낼 때 우리의 말에 따뜻함이 더해집니다.", sug:"오늘 만나는 사람을 존중하고, 따뜻한 미소와 친절한 말로 대화를 시작해 보십시오." },
+  { id:2, title:"성경의 권위를 잘 활용하십시오", ref:"히브리서 4:12", bk:"HEB",ch:4,vs:12, desc:"우리의 개인적인 의견보다 성경 말씀이 사람의 마음과 양심에 더 깊은 영향을 줄 수 있습니다.", sug:"가능하다면 대화 중에 성경을 직접 펴서 함께 읽어 보십시오." },
+  { id:3, title:"온화한 대답은 긴장을 누그러뜨립니다", ref:"잠언 15:1", bk:"PRO",ch:15,vs:1, desc:"상대방이 거칠게 반응하더라도 온화하고 존중심 있게 말하면 불필요한 긴장을 피할 수 있습니다.", sug:"목소리를 낮추고 차분한 태도를 유지해 보십시오." },
+  { id:4, title:"잘 듣는 전도인이 되십시오", ref:"야고보서 1:19", bk:"JAS",ch:1,vs:19, desc:"상대방의 말을 주의 깊이 들으면 그 사람이 무엇을 염려하고 무엇에 관심이 있는지 더 잘 알 수 있습니다.", sug:"질문을 한 뒤에는 서두르지 말고 충분히 들으십시오." },
+  { id:5, title:"여호와와 예수를 알아 가도록 도우십시오", ref:"요한복음 17:3", bk:"JOH",ch:17,vs:3, desc:"성서 연구의 목적은 단순히 지식을 늘리는 것이 아니라 여호와와 예수 그리스도를 더 잘 알고 가까워지도록 돕는 것입니다.", sug:"대화할 때 하느님과 가까워질 수 있다는 희망을 강조해 보십시오." },
+  { id:6, title:"인내하며 계속 씨를 뿌리십시오", ref:"누가복음 8:15", bk:"LUK",ch:8,vs:15, desc:"즉시 좋은 반응이 없더라도 낙심하지 마십시오. 진리의 씨가 자라는 데는 시간이 필요할 수 있습니다.", sug:"거절을 개인적으로 받아들이지 말고, 다음 기회를 기대하십시오." },
+  { id:7, title:"슬기롭고 순진하게 행동하십시오", ref:"마태복음 10:16", bk:"MAT",ch:10,vs:16, desc:"상황을 잘 살피고 지혜롭게 접근하면서도 정직하고 순수한 동기를 유지해야 합니다.", sug:"상대방의 상황과 관심사에 맞추어 대화를 시작해 보십시오." },
+  { id:8, title:"봉사 짝을 격려하십시오", ref:"전도서 4:9", bk:"ECC",ch:4,vs:9, desc:"함께 봉사할 때 서로를 지원하고 격려하면 기쁨과 힘을 얻을 수 있습니다.", sug:"봉사를 시작하기 전에 짧은 격려의 말을 나누십시오." },
+  { id:9, title:"기도로 여호와를 의지하십시오", ref:"데살로니가전서 5:17", bk:"1TH",ch:5,vs:17, desc:"전파 활동을 시작하기 전이나 어려움을 느낄 때 기도로 여호와의 도움을 구할 수 있습니다.", sug:"봉사 전 잠시 기도하며 마음을 가다듬어 보십시오." },
+  { id:10, title:"품위 있고 단정한 모습을 유지하십시오", ref:"고린도전서 10:31", bk:"1CO",ch:10,vs:31, desc:"우리의 옷차림과 몸가짐은 우리가 전하는 소식에 대한 존중심을 나타낼 수 있습니다.", sug:"봉사 전에 옷차림과 몸가짐을 간단히 점검하십시오." },
+  { id:11, title:"재방문으로 관심을 돌보십시오", ref:"고린도전서 3:6", bk:"1CO",ch:3,vs:6, desc:"관심을 보인 사람에게 다시 찾아가면 진리의 씨가 자라도록 도울 수 있습니다.", sug:"최근 관심을 보인 사람 한 명을 떠올리고 재방문을 계획해 보십시오." },
+  { id:12, title:"여호와를 의지해 담대히 말하십시오", ref:"사도행전 4:31", bk:"ACT",ch:4,vs:31, desc:"담대함은 거칠거나 강압적인 태도가 아니라, 여호와를 신뢰하며 좋은 소식을 확신 있게 전하는 것입니다.", sug:"첫 대화를 시작하기 전에 깊이 숨을 쉬고 차분히 말해 보십시오." },
+  { id:13, title:"언제나 친절하고 은혜롭게 말하십시오", ref:"골로새서 4:6", bk:"COL",ch:4,vs:6, desc:"친절하고 사려 깊은 말은 상대방이 우리의 소식에 귀 기울이도록 도울 수 있습니다.", sug:"대화를 마칠 때에도 따뜻하고 예의 바르게 인사하십시오." },
+  { id:14, title:"봉사 시간을 지혜롭게 사용하십시오", ref:"에베소서 5:16", bk:"EPH",ch:5,vs:16, desc:"미리 계획하면 제한된 시간을 더 잘 활용하고 더 많은 사람에게 좋은 소식을 전할 수 있습니다.", sug:"구역과 방문 순서를 간단히 정한 뒤 시작하십시오." },
+  { id:15, title:"상대방에게 맞게 접근하십시오", ref:"고린도전서 9:22", bk:"1CO",ch:9,vs:22, desc:"사람마다 배경과 관심사가 다르므로 대화 방법을 융통성 있게 조정할 필요가 있습니다.", sug:"상대방의 나이와 상황에 맞는 질문이나 성구를 생각해 보십시오." },
+  { id:16, title:"훌륭한 행실로 빛을 비추십시오", ref:"마태복음 5:16", bk:"MAT",ch:5,vs:16, desc:"우리의 친절하고 정직한 행실은 사람들이 여호와에 대해 좋은 인상을 갖게 할 수 있습니다.", sug:"주변 사람에게 작은 친절을 실천해 보십시오." },
+  { id:17, title:"여호와께서 함께하심을 기억하십시오", ref:"이사야 41:10", bk:"ISA",ch:41,vs:10, desc:"두려움을 느낄 때 여호와께서 우리를 돕고 힘을 주신다는 약속을 떠올릴 수 있습니다.", sug:"어려운 상황 전에 이 성구를 조용히 떠올려 보십시오." },
+  { id:18, title:"왕국을 계속 첫째로 구하십시오", ref:"마태복음 6:33", bk:"MAT",ch:6,vs:33, desc:"왕국 권익을 생활에서 우선순위에 둘 때 영적인 초점을 유지할 수 있습니다.", sug:"이번 주 봉사 계획을 현실적으로 세워 보십시오." },
+  { id:19, title:"성경으로 위로와 희망을 전하십시오", ref:"로마서 15:4", bk:"ROM",ch:15,vs:4, desc:"성경은 고통을 겪는 사람에게 인내할 힘과 진정한 희망을 줄 수 있습니다.", sug:"상대방의 사정을 먼저 듣고 알맞은 위로의 성구를 선택하십시오." },
+  { id:20, title:"겸손하게 여호와와 걸으십시오", ref:"미가 6:8", bk:"MIC",ch:6,vs:8, desc:"겸손한 태도는 우리가 자신의 능력보다 여호와의 지혜와 인도를 의지하게 해 줍니다.", sug:"오늘 대화에서 상대방의 생각을 존중하고 겸손히 말하십시오." },
+  { id:21, title:"마음을 끌어내는 질문을 하십시오", ref:"잠언 20:5", bk:"PRO",ch:20,vs:5, desc:"사려 깊은 질문은 상대방이 자신의 생각과 감정을 표현하도록 도와줍니다.", sug:"‘어떻게 생각하세요?’와 같은 열린 질문을 활용해 보십시오." },
+  { id:22, title:"영의 열매를 나타내십시오", ref:"갈라디아서 5:22", bk:"GAL",ch:5,vs:22, desc:"사랑, 친절, 온화, 자제와 같은 특성은 우리의 전파 활동을 더 호소력 있게 만듭니다.", sug:"오늘 특히 한 가지 특성을 의식적으로 나타내 보십시오." },
+  { id:23, title:"부활 희망으로 위로하십시오", ref:"요한복음 5:28-29", bk:"JOH",ch:5,vs:28, desc:"사랑하는 사람을 잃은 이들에게 부활에 관한 성경의 약속은 큰 위로가 될 수 있습니다.", sug:"상대방의 슬픔을 존중하면서 부활 희망을 부드럽게 소개하십시오." },
+  { id:24, title:"여호와의 이름을 알리십시오", ref:"시편 83:18", bk:"PSA",ch:83,vs:18, desc:"사람들이 하느님의 이름이 여호와라는 사실과 그분의 아름다운 특성을 알도록 돕는 것은 중요합니다.", sug:"대화 중 자연스럽게 여호와의 이름을 사용해 보십시오." },
+  { id:25, title:"모든 일에는 알맞은 때가 있습니다", ref:"전도서 3:1", bk:"ECC",ch:3,vs:1, desc:"사람이 진리에 반응하는 시기는 각기 다를 수 있습니다. 조급해하지 않고 기다리는 태도가 필요합니다.", sug:"좋은 반응이 없더라도 앞으로의 기회를 긍정적으로 보십시오." },
+  { id:26, title:"평화의 좋은 소식을 전하십시오", ref:"로마서 10:15", bk:"ROM",ch:10,vs:15, desc:"왕국의 좋은 소식은 진정한 평화와 안전에 대한 희망을 줍니다.", sug:"대화를 시작할 때 평화에 대한 사람들의 바람을 활용해 보십시오." },
+  { id:27, title:"믿음을 행동으로 나타내십시오", ref:"야고보서 2:26", bk:"JAS",ch:2,vs:26, desc:"전파 활동에 참여하는 것은 여호와와 그분의 약속에 대한 믿음을 행동으로 표현하는 한 가지 방법입니다.", sug:"어려움이 있어도 참여한 자신의 노력을 긍정적으로 보십시오." },
+  { id:28, title:"성경을 직접 조사하도록 권하십시오", ref:"사도행전 17:11", bk:"ACT",ch:17,vs:11, desc:"사람들이 성경의 가르침을 스스로 확인하도록 돕는 것은 매우 중요합니다.", sug:"‘성경에서 직접 확인해 보시겠습니까?’라고 제안해 보십시오." },
+  { id:29, title:"끝까지 충실히 인내하십시오", ref:"마태복음 24:13", bk:"MAT",ch:24,vs:13, desc:"꾸준히 여호와를 섬기고 좋은 소식을 전하는 데는 인내가 필요합니다.", sug:"피곤할 때에도 한 걸음씩 계속 나아가십시오." },
+  { id:30, title:"여호와의 사랑을 반영하십시오", ref:"요한1서 4:8", bk:"1JO",ch:4,vs:8, desc:"하느님은 사랑이시므로, 우리의 말과 행동에도 사랑이 나타나야 합니다.", sug:"오늘 만나는 사람에게 진심 어린 관심과 존중을 보이십시오." },
+  { id:31, title:"추수할 준비가 된 사람을 찾으십시오", ref:"요한복음 4:35", bk:"JOH",ch:4,vs:35, desc:"어디에서든 진리에 반응할 준비가 된 사람을 만날 수 있다는 기대를 가지십시오.", sug:"예상하지 못한 장소에서도 자연스럽게 대화를 시도해 보십시오." },
+  { id:32, title:"긍정적인 기대를 유지하십시오", ref:"시편 126:6", bk:"PSA",ch:126,vs:6, desc:"어려운 구역에서도 여호와께서 우리의 노력을 축복하실 수 있다는 기대를 잃지 마십시오.", sug:"좋은 결과보다 충실한 노력에 초점을 맞추십시오." },
+  { id:33, title:"말씀의 씨를 꾸준히 뿌리십시오", ref:"마가복음 4:14", bk:"MRK",ch:4,vs:14, desc:"우리는 말씀의 씨를 뿌리지만 자라게 하시는 분은 여호와이십니다.", sug:"결과를 지나치게 염려하지 말고 기쁘게 씨를 뿌리십시오." },
+  { id:34, title:"죽음에 관한 중요한 질문을 사용하십시오", ref:"욥기 14:14", bk:"JOB",ch:14,vs:14, desc:"죽음과 부활에 관한 질문은 많은 사람의 마음에 깊은 관심을 불러일으킬 수 있습니다.", sug:"상대방의 상황을 고려해 부활에 관한 질문을 조심스럽게 사용하십시오." },
+  { id:35, title:"참다운 만족을 주는 영적 양식을 나누십시오", ref:"이사야 55:2", bk:"ISA",ch:55,vs:2, desc:"물질적인 것만으로는 채울 수 없는 영적 필요를 성경 진리가 채워 줄 수 있습니다.", sug:"상대방의 염려를 듣고 영적인 희망을 간단히 나누십시오." },
+  { id:36, title:"진심으로 공감하십시오", ref:"로마서 12:15", bk:"ROM",ch:12,vs:15, desc:"상대방의 기쁨과 슬픔에 관심을 보이면 우리의 말이 더 진실하게 전달됩니다.", sug:"먼저 감정을 살피고 그에 맞는 말투를 사용하십시오." },
+  { id:37, title:"창조물을 통해 창조주를 생각하게 하십시오", ref:"로마서 1:20", bk:"ROM",ch:1,vs:20, desc:"자연의 질서와 아름다움은 창조주의 지혜와 능력을 생각하게 할 수 있습니다.", sug:"주변에서 쉽게 볼 수 있는 자연을 대화의 소재로 활용하십시오." },
+  { id:38, title:"하느님의 왕국의 좋은 소식을 전하십시오", ref:"누가복음 4:43", bk:"LUK",ch:4,vs:43, desc:"예수께서는 하느님의 왕국을 전파하는 일을 매우 중요하게 여기셨습니다.", sug:"오늘 대화에서 왕국이 가져올 축복 한 가지를 알려 주십시오." },
+  { id:39, title:"관심을 꾸준히 돌보십시오", ref:"사도행전 20:20", bk:"ACT",ch:20,vs:20, desc:"관심을 보인 사람에게 정기적으로 찾아가고 성경을 사용해 도와주는 것은 중요합니다.", sug:"재방문 목록을 간단히 정리하고 한 사람에게 연락해 보십시오." },
+  { id:40, title:"성경은 생활에 유익한 지침을 줍니다", ref:"디모데후서 3:16", bk:"2TI",ch:3,vs:16, desc:"성경은 가르치고 바로잡고 훈련하는 데 유익하며, 일상생활의 여러 문제에 지혜를 줍니다.", sug:"상대방의 관심사와 관련된 성경 원칙 하나를 보여 주십시오." },
+  { id:41, title:"좋은 소식은 강력한 힘을 발휘합니다", ref:"로마서 1:16", bk:"ROM",ch:1,vs:16, desc:"좋은 소식은 믿음을 나타내는 사람의 생각과 생활을 변화시키는 힘을 발휘할 수 있습니다.", sug:"확신 있게 말하되 겸손하고 존중심 있게 설명하십시오." },
+  { id:42, title:"고통과 죽음이 사라질 희망을 전하십시오", ref:"요한계시록 21:4", bk:"REV",ch:21,vs:4, desc:"여호와께서는 눈물과 고통과 죽음을 없애실 것이라고 약속하셨습니다.", sug:"이 약속을 천천히 읽고 상대방이 느낀 점을 물어보십시오." },
+  { id:43, title:"사랑이 율법의 핵심임을 보여 주십시오", ref:"마태복음 22:37-39", bk:"MAT",ch:22,vs:37, desc:"여호와와 이웃을 사랑하는 것이 성경의 가르침에서 매우 중요한 위치를 차지합니다.", sug:"사랑이 생활에 어떤 변화를 줄 수 있는지 질문해 보십시오." },
+  { id:44, title:"영과 진리로 드리는 숭배를 설명하십시오", ref:"요한복음 4:23", bk:"JOH",ch:4,vs:23, desc:"참숭배는 형식이나 장소만이 아니라 진리와 올바른 동기에 기초해야 합니다.", sug:"‘하느님께서 어떤 숭배를 원하실까요?’라고 질문해 보십시오." },
+  { id:45, title:"마지막 날의 표징을 성경으로 설명하십시오", ref:"마태복음 24:3-8", bk:"MAT",ch:24,vs:3, desc:"세계의 어려운 상황을 성경 예언과 연결할 때는 과장하지 않고 성구가 말하는 범위 안에서 설명해야 합니다.", sug:"최근 사건을 언급한 뒤 관련 성구를 직접 읽어 보십시오." },
+  { id:46, title:"죽은 사람의 상태에 관한 성경의 가르침", ref:"전도서 9:5", bk:"ECC",ch:9,vs:5, desc:"성경은 죽은 사람이 아무것도 의식하지 못한다고 설명하며, 이 진리는 불필요한 두려움에서 벗어나게 해 줍니다.", sug:"사별의 아픔을 존중하면서 조심스럽게 설명하십시오." },
+  { id:47, title:"기도를 들으시는 여호와를 신뢰하십시오", ref:"마태복음 7:7-8", bk:"MAT",ch:7,vs:7, desc:"여호와께서는 진실하게 구하고 찾는 사람의 기도를 들으십니다.", sug:"어려움을 느낄 때 짧게라도 여호와께 도움을 구하십시오." },
+  { id:48, title:"선한 목자의 음성을 듣는 사람을 찾으십시오", ref:"요한복음 10:14", bk:"JOH",ch:10,vs:14, desc:"진리에 진심으로 관심을 보이는 사람에게는 시간과 관심을 더 기울일 가치가 있습니다.", sug:"관심을 보이는 사람의 질문을 잘 기억하고 다음 방문을 준비하십시오." },
+  { id:49, title:"정확한 지식이 사람을 보호합니다", ref:"잠언 11:9", bk:"PRO",ch:11,vs:9, desc:"성경에 근거한 정확한 지식은 잘못된 생각과 해로운 길에서 벗어나도록 도울 수 있습니다.", sug:"한 번에 너무 많은 내용을 말하기보다 핵심 진리 하나를 분명히 설명하십시오." },
+  { id:50, title:"좋은 소식을 전하는 일을 소중히 여기십시오", ref:"이사야 52:7", bk:"ISA",ch:52,vs:7, desc:"평화와 구원의 좋은 소식을 전하는 일은 아름답고 가치 있는 봉사입니다.", sug:"오늘 봉사할 수 있는 특권에 감사하는 마음을 가져 보십시오." },
+  { id:51, title:"여호와께서는 모든 부류의 사람이 구원받기를 원하십니다", ref:"디모데전서 2:4", bk:"1TI",ch:2,vs:4, desc:"여호와께서는 배경과 관계없이 모든 부류의 사람이 정확한 지식에 이르기를 바라십니다.", sug:"편견 없이 모든 사람을 존중하고 관심을 보이십시오." },
+  { id:52, title:"성경의 예언은 신뢰할 수 있습니다", ref:"베드로후서 1:21", bk:"2PE",ch:1,vs:21, desc:"성경의 예언은 사람의 생각에서 나온 것이 아니라 하느님의 인도 아래 기록되었습니다.", sug:"성취된 예언의 한 가지 예를 간단히 준비하십시오." },
+  { id:53, title:"마음을 다해 여호와를 찾도록 도우십시오", ref:"예레미야 29:13", bk:"JER",ch:29,vs:13, desc:"진심으로 여호와를 찾는 사람은 그분을 알아 갈 수 있습니다.", sug:"‘하느님을 더 잘 알고 싶으십니까?’라고 자연스럽게 질문해 보십시오." },
+  { id:54, title:"듣기 전에 대답하지 마십시오", ref:"잠언 18:13", bk:"PRO",ch:18,vs:13, desc:"상대방의 말을 충분히 듣기 전에 결론을 내리면 오해가 생길 수 있습니다.", sug:"말을 끊지 말고 끝까지 들은 뒤 답하십시오." },
+  { id:55, title:"자녀는 여호와께서 주신 소중한 선물입니다", ref:"시편 127:3", bk:"PSA",ch:127,vs:3, desc:"부모가 성경 원칙을 활용하면 자녀를 사랑과 지혜로 양육하는 데 도움을 받을 수 있습니다.", sug:"자녀가 있는 사람에게 가족생활에 유익한 성구를 소개하십시오." },
+  { id:56, title:"왕국이 가져올 참다운 평화를 전하십시오", ref:"미가 4:3", bk:"MIC",ch:4,vs:3, desc:"하느님의 왕국 아래에서는 전쟁이 사라지고 사람들이 평화를 누리게 될 것입니다.", sug:"전쟁이나 갈등에 대한 염려를 이 희망과 연결해 보십시오." },
+  { id:57, title:"여호와는 모든 위로의 하느님이십니다", ref:"고린도후서 1:3-4", bk:"2CO",ch:1,vs:3, desc:"여호와께서는 시련을 겪는 사람을 위로하시며, 우리도 다른 사람을 위로하도록 도와주십니다.", sug:"힘들어 보이는 사람에게 먼저 공감의 말을 건네십시오." },
+  { id:58, title:"분노를 오래 품지 마십시오", ref:"에베소서 4:26", bk:"EPH",ch:4,vs:26, desc:"감정이 상하더라도 자제를 나타내고 분노를 오래 품지 않는 것이 중요합니다.", sug:"대화가 긴장되면 잠시 멈추고 차분하게 반응하십시오." },
+  { id:59, title:"영적 목표를 향해 계속 나아가십시오", ref:"빌립보서 3:14", bk:"PHP",ch:3,vs:14, desc:"분명한 영적 목표는 우리의 봉사와 생활에 방향을 줍니다.", sug:"이번 달에 실천할 수 있는 작은 목표 하나를 정하십시오." },
+  { id:60, title:"어떤 상황에서도 만족하는 법을 배우십시오", ref:"빌립보서 4:11", bk:"PHP",ch:4,vs:11, desc:"환경이 완벽하지 않아도 여호와를 섬기는 데서 기쁨과 만족을 찾을 수 있습니다.", sug:"오늘 감사할 수 있는 한 가지를 떠올려 보십시오." },
+  { id:61, title:"진리는 참다운 자유를 줍니다", ref:"요한복음 8:32", bk:"JOH",ch:8,vs:32, desc:"성경 진리는 잘못된 가르침과 해로운 습관에서 벗어나도록 도와줄 수 있습니다.", sug:"‘사람에게 참다운 자유를 주는 것은 무엇일까요?’라고 질문해 보십시오." },
+  { id:62, title:"이웃 사랑을 행동으로 나타내십시오", ref:"누가복음 10:33-34", bk:"LUK",ch:10,vs:33, desc:"선한 사마리아 사람처럼 실제적인 친절은 우리의 관심이 진실함을 보여 줍니다.", sug:"도움이 필요한 사람에게 가능한 범위에서 친절을 베푸십시오." },
+  { id:63, title:"정직하고 정확하게 말하십시오", ref:"잠언 12:17", bk:"PRO",ch:12,vs:17, desc:"모르는 것을 아는 척하지 않고 사실대로 말하면 신뢰를 얻을 수 있습니다.", sug:"확실하지 않은 질문에는 ‘확인해 보겠습니다’라고 말하십시오." },
+  { id:64, title:"어린이에게도 존중심 있게 말하십시오", ref:"마태복음 18:3", bk:"MAT",ch:18,vs:3, desc:"어린이에게는 단순하고 이해하기 쉬운 표현을 사용하면서도 존중심을 보여야 합니다.", sug:"짧고 쉬운 질문과 그림 자료를 활용하십시오." },
+  { id:65, title:"연로한 사람에게 존중을 나타내십시오", ref:"레위기 19:32", bk:"LEV",ch:19,vs:32, desc:"연로한 사람의 경험과 존엄성을 존중하는 태도는 대화를 더 따뜻하게 만듭니다.", sug:"천천히 또렷하게 말하고 충분히 들으십시오." },
+  { id:66, title:"병과 고통이 사라질 희망을 전하십시오", ref:"요한계시록 21:3-4", bk:"REV",ch:21,vs:3, desc:"하느님의 왕국 아래에서는 더 이상 고통과 질병이 없을 것입니다.", sug:"아픈 사람의 감정을 먼저 존중한 뒤 희망의 성구를 읽어 주십시오." },
+  { id:67, title:"생활의 염려를 여호와께 맡기도록 도우십시오", ref:"마태복음 6:25-26", bk:"MAT",ch:6,vs:25, desc:"여호와께서는 우리의 필요를 알고 계시며, 지나친 염려에 눌리지 않도록 도와주십니다.", sug:"경제적 어려움을 겪는 사람에게 부드럽게 위로를 전하십시오." },
+  { id:68, title:"외로운 사람에게 따뜻한 관심을 나타내십시오", ref:"시편 68:6", bk:"PSA",ch:68,vs:6, desc:"여호와께서는 외로운 사람을 돌보시며, 회중의 사랑을 통해 도움을 주십니다.", sug:"혼자 지내는 사람의 말을 잘 듣고 진심으로 관심을 보이십시오." },
+  { id:69, title:"여호와의 용서는 큰 위로를 줍니다", ref:"시편 103:12", bk:"PSA",ch:103,vs:12, desc:"진심으로 회개하는 사람은 여호와의 자비와 용서를 받을 수 있습니다.", sug:"죄책감으로 힘들어하는 사람에게 용서의 희망을 부드럽게 전하십시오." },
+  { id:70, title:"창조주를 경외하며 그분의 뜻을 따르십시오", ref:"전도서 12:13", bk:"ECC",ch:12,vs:13, desc:"인생의 참된 목적은 여호와를 알고 그분의 뜻에 따라 사는 것과 관련이 있습니다.", sug:"삶의 목적에 대해 생각하는 사람에게 이 성구를 소개하십시오." },
+  { id:71, title:"그리스도인 연합을 소중히 여기십시오", ref:"고린도전서 1:10", bk:"1CO",ch:1,vs:10, desc:"참그리스도인들은 같은 믿음과 사랑 안에서 연합하려고 노력합니다.", sug:"종교적 분열에 실망한 사람에게 성경적 연합을 설명하십시오." },
+  { id:72, title:"사랑은 예수의 제자임을 나타내는 표입니다", ref:"요한복음 13:35", bk:"JOH",ch:13,vs:35, desc:"예수의 참제자들은 서로에 대한 진정한 사랑으로 식별됩니다.", sug:"형제 사랑이 실제로 나타난 경험을 간단히 나누십시오." },
+  { id:73, title:"세상의 빛으로 행동하십시오", ref:"마태복음 5:14", bk:"MAT",ch:5,vs:14, desc:"그리스도인의 훌륭한 행실은 사람들이 여호와께 영광을 돌리게 할 수 있습니다.", sug:"일상에서 정직과 친절을 나타내는 데 유의하십시오." },
+  { id:74, title:"혀를 지혜롭게 사용하십시오", ref:"야고보서 3:5", bk:"JAS",ch:3,vs:5, desc:"말은 큰 영향을 줄 수 있으므로 생각하고 친절하게 말해야 합니다.", sug:"불필요한 논쟁을 피하고 핵심만 간결하게 말하십시오." },
+  { id:75, title:"하느님의 왕국은 영원히 존속할 것입니다", ref:"다니엘 2:44", bk:"DAN",ch:2,vs:44, desc:"하느님의 왕국은 인간 정부와 달리 결코 멸망하지 않으며 온 땅에 축복을 가져올 것입니다.", sug:"왕국 정부가 해결할 문제 한 가지를 설명하십시오." },
+  { id:76, title:"참숭배는 특정 장소에 제한되지 않습니다", ref:"요한복음 4:21", bk:"JOH",ch:4,vs:21, desc:"참숭배는 장소보다 여호와께 영과 진리로 숭배드리는 것과 관련이 있습니다.", sug:"예배 장소보다 하느님이 원하시는 숭배가 무엇인지 강조하십시오." },
+  { id:77, title:"기꺼이 용서하십시오", ref:"마태복음 6:14", bk:"MAT",ch:6,vs:14, desc:"다른 사람을 용서하면 관계를 회복하고 마음의 평화를 얻는 데 도움이 됩니다.", sug:"상처를 입은 사람에게 용서의 유익을 따뜻하게 설명하십시오." },
+  { id:78, title:"여호와께서는 미래를 정확히 예언하십니다", ref:"이사야 46:10", bk:"ISA",ch:46,vs:10, desc:"여호와께서는 미리 자신의 목적을 밝히시며 그 말씀은 반드시 이루어집니다.", sug:"성취된 예언의 한 가지 예를 간단히 보여 주십시오." },
+  { id:79, title:"여호와의 이름이 거룩해질 것입니다", ref:"에스겔 38:23", bk:"EZK",ch:38,vs:23, desc:"성경의 중심 주제에는 여호와의 이름이 거룩해지고 그분의 주권이 입증되는 일이 포함됩니다.", sug:"주기도문의 첫 번째 요청과 연결해 설명해 보십시오." },
+  { id:80, title:"모든 민족의 사람이 여호와를 찾을 수 있습니다", ref:"사도행전 17:26-27", bk:"ACT",ch:17,vs:26, desc:"여호와께서는 모든 민족과 배경의 사람이 자신을 찾고 가까이 오기를 바라십니다.", sug:"문화와 배경이 다른 사람도 편견 없이 존중하십시오." },
+  { id:81, title:"영적 필요를 느끼는 사람을 찾으십시오", ref:"마태복음 5:3", bk:"MAT",ch:5,vs:3, desc:"삶의 의미와 하느님에 대해 알고 싶어 하는 사람은 좋은 소식에 관심을 보일 수 있습니다.", sug:"‘삶에서 더 깊은 의미를 찾고 계십니까?’라고 질문해 보십시오." },
+  { id:82, title:"좋은 소식을 단순하고 분명하게 전하십시오", ref:"고린도전서 2:1-2", bk:"1CO",ch:2,vs:1, desc:"복잡한 설명보다 성경의 핵심 진리를 간단하고 명확하게 전달하는 것이 효과적입니다.", sug:"한 번에 한 가지 요점만 분명히 설명하십시오." },
+  { id:83, title:"믿음의 큰 방패를 사용하십시오", ref:"에베소서 6:16", bk:"EPH",ch:6,vs:16, desc:"강한 믿음은 반대와 낙담 속에서도 영적으로 보호해 줍니다.", sug:"거절을 경험했을 때 여호와의 약속을 떠올리십시오." },
+  { id:84, title:"여호와의 친구가 될 수 있습니다", ref:"야고보서 2:23", bk:"JAS",ch:2,vs:23, desc:"아브라함처럼 우리도 믿음과 순종을 통해 여호와와 가까운 관계를 누릴 수 있습니다.", sug:"‘하느님의 친구가 될 수 있다는 점을 알고 계셨습니까?’라고 질문해 보십시오." },
+  { id:85, title:"함께 모여 서로 격려하십시오", ref:"히브리서 10:24-25", bk:"HEB",ch:10,vs:24, desc:"그리스도인 집회는 사랑과 훌륭한 일을 하도록 서로 격려하는 데 도움을 줍니다.", sug:"집회의 유익을 개인적인 경험과 함께 간단히 설명하십시오." },
+  { id:86, title:"자녀를 여호와의 길로 훈련하십시오", ref:"잠언 22:6", bk:"PRO",ch:22,vs:6, desc:"부모가 어릴 때부터 성경 원칙을 가르치면 자녀가 올바른 길을 걷는 데 도움을 받을 수 있습니다.", sug:"가족 숭배나 성경 교육의 유익을 소개하십시오." },
+  { id:87, title:"모든 민족에게 왕국의 좋은 소식을 전하십시오", ref:"마태복음 24:14", bk:"MAT",ch:24,vs:14, desc:"예수께서는 끝이 오기 전에 왕국의 좋은 소식이 온 땅에 전파될 것이라고 예언하셨습니다.", sug:"전 세계에서 이루어지는 전파 활동의 연합을 설명하십시오." },
+  { id:88, title:"사람보다 하느님께 순종하십시오", ref:"사도행전 5:29", bk:"ACT",ch:5,vs:29, desc:"그리스도인은 인간의 요구보다 여호와의 명령을 우선시해야 할 때가 있습니다.", sug:"존중심을 유지하면서도 믿음에 따른 입장을 설명하십시오." },
+  { id:89, title:"영혼에 관한 성경의 가르침을 설명하십시오", ref:"에스겔 18:4", bk:"EZK",ch:18,vs:4, desc:"성경은 인간이 불멸의 영혼을 가지고 있는 것이 아니라 사람이 곧 영혼임을 알려 줍니다.", sug:"일반적인 생각과 성경의 설명을 차분히 비교하십시오." },
+  { id:90, title:"마지막 날의 사람들의 태도를 살펴보십시오", ref:"디모데후서 3:1-5", bk:"2TI",ch:3,vs:1, desc:"성경은 마지막 날에 나타날 사람들의 태도와 행동을 구체적으로 묘사합니다.", sug:"현대 사회의 특징을 성구와 연결하되 과장하지 마십시오." },
+  { id:91, title:"14만 4000명에 관한 성경의 희망", ref:"요한계시록 7:4", bk:"REV",ch:7,vs:4, desc:"성경은 제한된 수의 사람들이 그리스도와 함께 하늘에서 통치할 것이라고 알려 줍니다.", sug:"하늘 희망과 땅의 희망을 성경에 근거해 간단히 구분하십시오." },
+  { id:92, title:"큰 무리에게 주어진 희망", ref:"요한계시록 7:9", bk:"REV",ch:7,vs:9, desc:"성경은 모든 민족에서 나온 큰 무리가 큰 환난에서 생존할 희망을 가진다고 알려 줍니다.", sug:"땅에서 영원히 살 희망과 연결해 설명하십시오." },
+  { id:93, title:"온유한 사람들이 땅을 소유할 것입니다", ref:"시편 37:11", bk:"PSA",ch:37,vs:11, desc:"하느님의 왕국 아래에서 온유한 사람들은 땅에서 풍성한 평화를 누리게 될 것입니다.", sug:"평화로운 미래에 대해 상대방이 바라는 점을 물어보십시오." },
+  { id:94, title:"왕국 통치 아래 누릴 안전한 삶", ref:"이사야 65:21-22", bk:"ISA",ch:65,vs:21, desc:"성경은 사람들이 자기 집에서 안전하게 살며 일의 열매를 누릴 미래를 묘사합니다.", sug:"그런 세상에서 살고 싶은지 자연스럽게 물어보십시오." },
+  { id:95, title:"동물과 사람 사이에도 평화가 있을 것입니다", ref:"이사야 11:6-9", bk:"ISA",ch:11,vs:6, desc:"하느님의 신세계에서는 동물과 사람 모두가 평화롭게 지내게 될 것입니다.", sug:"가족이나 어린이와 대화할 때 이 아름다운 장면을 활용하십시오." },
+  { id:96, title:"아무도 ‘나는 아프다’고 말하지 않을 것입니다", ref:"이사야 33:24", bk:"ISA",ch:33,vs:24, desc:"하느님의 왕국 아래에서는 질병이 완전히 사라질 것입니다.", sug:"질병으로 힘들어하는 사람에게 이 약속을 부드럽게 읽어 주십시오." },
+  { id:97, title:"여호와의 법이 마음에 새겨질 것입니다", ref:"예레미야 31:33", bk:"JER",ch:31,vs:33, desc:"여호와의 가르침이 마음에 새겨질 때 자발적인 순종과 진정한 변화가 생깁니다.", sug:"외적인 형식보다 마음의 변화가 중요하다는 점을 설명하십시오." },
+  { id:98, title:"여호와께서는 기도를 들으십니다", ref:"시편 65:2", bk:"PSA",ch:65,vs:2, desc:"여호와께서는 진실하게 드리는 기도를 들으시는 분입니다.", sug:"기도에 대해 궁금해하는 사람에게 이 성구를 보여 주십시오." },
+  { id:99, title:"여호와께 가르침받는 사람은 큰 평화를 누립니다", ref:"이사야 54:13", bk:"ISA",ch:54,vs:13, desc:"여호와의 가르침은 자녀와 가족이 참다운 평화를 누리도록 도와줍니다.", sug:"가족의 평화를 바라는 사람에게 이 성구를 소개하십시오." },
+  { id:100, title:"여호와의 힘으로 계속 나아가십시오", ref:"시편 84:7", bk:"PSA",ch:84,vs:7, desc:"지치거나 어려움을 느낄 때에도 여호와께서 주시는 힘으로 계속 전진할 수 있습니다.", sug:"봉사의 마지막까지 기쁨과 감사하는 마음을 유지하십시오." }
+];
+
+// ════════════════════════════════════════
+// 성구 DB (신세계역)
+// ════════════════════════════════════════
+const VDB = {
+  // ── 연구용 신세계역(2018/2024 한국어판) 기준 ──
+  "MAT-22-39":"둘째는 이것과 같습니다. '네 이웃을 네 자신처럼 사랑해야 한다.'",
+  "HEB-4-12":"하느님의 말씀은 살아 있고 힘을 발휘하며 어떤 양날 검보다도 더 예리하여 혼과 영을 가르고, 관절과 골수를 쪼개며, 마음의 생각과 의도를 분별합니다.",
+  "PRO-15-1":"부드러운 대답은 분노를 가라앉히지만, 가혹한 말은 분노를 불러일으킨다.",
+  "JAS-1-19":"사랑하는 형제 여러분, 이것을 알아 두십시오. 모든 사람은 듣기를 빨리 하고, 말하기를 더디 하고, 성내기를 더디 하십시오.",
+  "JOH-17-3":"영원한 생명은 당신만이 참하느님이심을 알고 당신이 보내신 예수 그리스도를 아는 것을 의미합니다.",
+  "LUK-8-15":"그러나 좋은 땅에 있는 것들은 훌륭하고 선한 마음으로 말씀을 듣고, 그것을 굳게 붙잡아 인내로 열매를 맺는 사람들을 나타냅니다.",
+  "MAT-10-16":"보라! 내가 양을 이리 떼 가운데 보내는 것처럼 너희를 보낸다. 그러므로 뱀처럼 슬기로워지고 비둘기처럼 순진해지십시오.",
+  "ECC-4-9":"혼자 있는 것보다 둘이 있는 것이 더 낫다. 그들이 수고하면 좋은 보상을 받기 때문이다.",
+  "1TH-5-17":"끊임없이 기도하십시오.",
+  "1CO-10-31":"그러므로 여러분은 먹든지 마시든지 무슨 일을 하든지, 모든 것을 하느님의 영광을 위해 하십시오.",
+  "1CO-3-6":"나는 심었고 아볼로는 물을 주었지만, 하느님은 자라게 하셨습니다.",
+  "ACT-4-31":"그들이 간청을 마치자 그들이 함께 모여 있던 곳이 흔들리더니, 그들은 모두 성령으로 충만해져서 하느님의 말씀을 담대하게 말하였습니다.",
+  "COL-4-6":"여러분의 말은 언제나 자비롭고 소금으로 맛을 내듯 하십시오. 그래야 각 사람에게 어떻게 대답해야 할지 알게 됩니다.",
+  "EPH-5-16":"때를 최대한 이용하십시오. 이 시대가 악하기 때문입니다.",
+  "1CO-9-22":"힘없는 사람들에게는 힘없는 사람이 되었습니다. 이것은 어떻게 해서든지 몇 사람이라도 구원하기 위한 것입니다.",
+  "MAT-5-16":"마찬가지로 여러분의 빛을 사람들 앞에 비추십시오. 그들이 여러분의 훌륭한 행실을 보고 하늘에 계신 여러분의 아버지께 영광을 돌리게 하십시오.",
+  "ISA-41-10":"두려워하지 마라. 내가 너와 함께 있다. 낙심하지 마라. 나는 네 하느님이다. 내가 너를 강하게 할 것이다. 내가 반드시 너를 도울 것이다.",
+  "MAT-6-33":"먼저 왕국과 그분의 의를 계속 구하십시오. 그러면 이 모든 것들도 여러분에게 덧붙여 줄 것입니다.",
+  "ROM-15-4":"사실 전에 기록된 것들은 모두 우리를 가르치려고 기록된 것입니다. 그것은 우리가 성경에서 오는 인내와 위안을 통해 희망을 갖게 하려는 것입니다.",
+  "MIC-6-8":"여호와께서 네게 요구하시는 것은 정의를 행하고, 충성스러운 사랑을 사랑하고, 네 하느님과 함께 겸손하게 걸어가는 것이다.",
+  "PRO-20-5":"사람의 마음속에 있는 계획은 깊은 물과 같다. 그러나 명철한 사람은 그것을 길어 올린다.",
+  "GAL-5-22":"반면에 영의 열매는 사랑, 기쁨, 평화, 인내, 친절, 선함, 믿음, 온유함, 자제입니다.",
+  "JOH-5-28":"이것에 놀라지 마십시오. 무덤 속에 있는 모든 사람이 그의 목소리를 듣고 나올 때가 오고 있습니다.",
+  "PSA-83-18":"그리하여 사람들이 당신의 이름이 여호와임을 알게 하소서. 당신만이 온 땅의 가장 높으신 분이십니다.",
+  "ECC-3-1":"모든 일에는 정한 때가 있다. 하늘 아래 모든 목적에는 때가 있다.",
+  "ROM-10-15":"기록된 것처럼 '좋은 소식을 전하는 자들의 발이 얼마나 아름다운가!'",
+  "JAS-2-26":"영혼 없는 몸이 죽은 것처럼, 행함 없는 믿음도 죽은 것입니다.",
+  "ACT-17-11":"이 사람들은 데살로니가의 유대인들보다 더 고상한 마음을 가지고 있었습니다. 그들은 매우 기꺼이 말씀을 받아들이고 말씀이 정말 그러한지 날마다 성경을 열심히 조사하였습니다.",
+  "MAT-24-13":"그러나 끝까지 견딘 사람은 구원받을 것입니다.",
+  "1JO-4-8":"사랑하지 않는 사람은 하느님을 알지 못합니다. 하느님은 사랑이시기 때문입니다.",
+  "JOH-4-35":"눈을 들어 밭을 보십시오. 희어져서 이미 추수할 때가 되었습니다.",
+  "PSA-126-6":"씨를 들고 울며 나가는 자는 반드시 기쁨으로 단을 가지고 돌아올 것이다.",
+  "MRK-4-14":"씨를 뿌리는 사람은 말씀을 뿌리는 것입니다.",
+  "JOB-14-14":"사람이 죽으면 다시 살겠습니까? 나를 해방시켜 주실 때까지 나는 내 전쟁 기간 내내 기다릴 것입니다.",
+  "ISA-55-2":"어찌하여 양식이 아닌 것을 위해 은을 쓰고, 만족을 주지 못하는 것을 위해 수고합니까? 내 말을 주의 깊게 듣고 좋은 것을 먹으십시오.",
+  "ROM-12-15":"기뻐하는 사람들과 함께 기뻐하고, 우는 사람들과 함께 우십시오.",
+  "ROM-1-20":"세상이 창조된 때부터 그분의 보이지 않는 특성, 즉 그분의 영원한 능력과 신성은 만들어진 것들을 통해 분명히 보여 왔습니다.",
+  "LUK-4-43":"나는 다른 도시들에도 하느님 왕국의 좋은 소식을 전해야 합니다. 이것이 내가 보내심을 받은 목적이기 때문입니다.",
+  "ACT-20-20":"나는 여러분에게 유익한 것이라면 무엇이든 주저하지 않고 선언하고, 공개적으로 그리고 집집마다 여러분을 가르쳤습니다.",
+  "2TI-3-16":"성경 전체는 하느님의 영감으로 기록되었으며, 가르치는 일과 잘못을 책망하는 일과 잘못을 바로잡는 일과 의로움으로 훈련시키는 일에 유익합니다.",
+  "ROM-1-16":"나는 좋은 소식에 대해 부끄럽게 여기지 않습니다. 그것은 유대인을 비롯하여 믿는 모든 사람을 구원에 이르게 하는 하느님의 능력이기 때문입니다.",
+  "REV-21-4":"그분은 그들의 눈에서 모든 눈물을 닦아 주실 것입니다. 다시는 죽음이 없고, 다시는 슬픔이나 부르짖음이나 고통이 없을 것입니다. 이전 것들이 사라져 버렸기 때문입니다.",
+  "MAT-22-37":"'네 마음을 다하고 네 목숨을 다하고 네 정신을 다하여 여호와 네 하느님을 사랑해야 한다.'",
+  "JOH-4-23":"참 경배자들이 영과 진리로 아버지께 경배드릴 때가 오고 있습니다. 사실 그 때가 이미 왔습니다. 아버지께서는 이렇게 자기에게 경배드리는 사람들을 찾고 계십니다.",
+  "MAT-24-3":"우리에게 말씀해 주십시오. 이 일들은 언제 일어나겠습니까? 그리고 당신의 임재와 이 제도의 끝의 표시는 무엇입니까?",
+  "ECC-9-5":"죽은 자들은 아무것도 의식하지 못합니다. 그들에게는 더 이상 보상이 없습니다. 그들에 대한 기억도 잊혀지기 때문입니다.",
+  "MAT-7-7":"계속 구하십시오. 그러면 주어질 것입니다. 계속 찾으십시오. 그러면 찾을 것입니다. 계속 두드리십시오. 그러면 열릴 것입니다.",
+  "JOH-10-14":"나는 선한 목자입니다. 나는 내 양들을 알고 내 양들도 나를 압니다.",
+  "PRO-11-9":"입으로 불경건한 자는 이웃을 망하게 합니다. 그러나 의로운 사람들은 지식을 통해 구원을 얻습니다.",
+  "ISA-52-7":"좋은 소식을 전하고, 평화를 선포하고, 좋은 것들에 대한 좋은 소식을 전하고, 구원을 선포하며, 시온에 '네 하느님이 왕으로 다스리신다' 하고 말하는 자의 발이 얼마나 아름다운가!",
+  "1TI-2-4":"하느님께서는 모든 종류의 사람이 구원받고 진리에 대한 정확한 지식에 이르기를 원하십니다.",
+  "2PE-1-21":"예언은 사람의 뜻으로 이루어진 적이 한 번도 없습니다. 오히려 사람들이 성령에 이끌려 하느님께서 말씀하신 대로 말하였습니다.",
+  "JER-29-13":"여러분이 마음을 다하여 나를 찾으면, 나를 찾고 발견할 것입니다.",
+  "PRO-18-13":"실상을 파악하기 전에 대답하는 것은 어리석고 수치스러운 일이다.",
+  "PSA-127-3":"보라, 아들들은 여호와로부터 받은 유산이요, 태의 열매는 그분께서 주시는 보상이다.",
+  "MIC-4-3":"그들은 자기 칼을 쳐서 보습을 만들고 자기 창을 쳐서 낫을 만들 것이다. 민족이 민족을 대적하여 칼을 들지 않고, 다시는 전쟁을 익히지 않을 것이다.",
+  "2CO-1-3":"모든 위로의 하느님이신 자비로운 아버지이신 우리 주 예수 그리스도의 하느님 아버지께서 찬양을 받으시기를 바랍니다.",
+  "EPH-4-26":"화를 내더라도 죄를 짓지 마십시오. 분노한 채로 해가 지게 하지 마십시오.",
+  "PHP-3-14":"나는 하느님께서 그리스도 예수 안에서 위에서 부르신 그 상을 얻기 위해 목표를 향해 달려갑니다.",
+  "PHP-4-11":"나는 어떤 형편에 있든지 자족하기를 배웠습니다.",
+  "JOH-8-32":"진리를 알게 될 것이며, 진리가 여러분을 자유롭게 할 것입니다.",
+  "LUK-10-33":"그러나 한 사마리아 사람은 여행 중에 그 사람이 있는 곳에 이르러 그를 보고 측은히 여겼습니다.",
+  "PRO-12-17":"진실한 증인은 진실을 말하고, 거짓 증인은 속임수를 말한다.",
+  "MAT-18-3":"진실로 여러분에게 말합니다. 여러분이 돌이켜 어린아이들처럼 되지 않으면, 결코 하늘 왕국에 들어가지 못할 것입니다.",
+  "LEV-19-32":"흰 머리 앞에서는 일어서고, 노인의 얼굴 앞에서는 공경을 나타내며, 네 하느님을 두려워해야 한다. 나는 여호와이다.",
+  "REV-21-3":"하느님의 장막이 사람들과 함께 있게 될 것입니다. 그분이 그들과 함께 거하시고 그들은 그분의 백성이 될 것입니다.",
+  "MAT-6-25":"그러므로 내가 여러분에게 말합니다. 목숨을 위해 무엇을 먹을까, 무엇을 마실까, 몸을 위해 무엇을 입을까 걱정하지 마십시오.",
+  "PSA-68-6":"하느님은 외로운 사람들을 가정에 거하게 하시고, 죄수들을 데려다가 번영하게 하십니다.",
+  "PSA-103-12":"동쪽이 서쪽에서 먼 것처럼, 그분은 우리의 반역 행위를 우리에게서 그만큼 멀리하셨다.",
+  "ECC-12-13":"모든 말을 다 들었으니, 결론은 이것입니다. 하느님을 두려워하고 그분의 계명을 지키십시오. 이것이 모든 사람의 의무입니다.",
+  "1CO-1-10":"형제 여러분, 우리 주 예수 그리스도의 이름으로 여러분 모두에게 청합니다. 모두 같은 말을 하고 여러분 사이에 분열이 없게 하십시오.",
+  "JOH-13-35":"여러분이 서로 사랑하면, 모든 사람이 그것으로 여러분이 내 제자임을 알게 될 것입니다.",
+  "MAT-5-14":"여러분은 세상의 빛입니다. 산 위에 있는 도시는 숨길 수 없습니다.",
+  "JAS-3-5":"혀도 작은 지체이지만 큰 것들을 자랑합니다. 작은 불이 얼마나 큰 숲을 태우는지 보십시오!",
+  "DAN-2-44":"이 왕들의 시대에 하늘의 하느님이 왕국을 세우실 것인데, 그것은 결코 멸망하지 않을 것이며, 다른 백성에게 넘어가지 않을 것입니다.",
+  "JOH-4-21":"예수께서 그 여자에게 말씀하셨습니다. '여자여, 내 말을 믿으십시오. 이 산에서도 아니고 예루살렘에서도 아닌, 여러분이 아버지께 경배드릴 때가 오고 있습니다.'",
+  "MAT-6-14":"여러분이 남들의 잘못을 용서해 주면, 여러분의 하늘 아버지께서도 여러분을 용서해 주실 것입니다.",
+  "ISA-46-10":"나는 처음부터 결말을 선포하고, 오래전부터 아직 이루어지지 않은 것들을 선포한다.",
+  "EZK-38-23":"이렇게 나는 나의 위대함과 거룩함을 나타내고 많은 나라들의 눈앞에 나를 알릴 것이다. 그러면 그들은 내가 여호와임을 알게 될 것이다.",
+  "ACT-17-26":"그분은 한 사람으로부터 모든 민족을 만드셔서 지구 전체에 살게 하셨으며, 그들이 여호와를 찾기 바라시며 정해진 때와 거주지의 경계를 정해 놓으셨습니다.",
+  "MAT-5-3":"영적으로 필요를 느끼는 사람들은 행복합니다. 하늘 왕국이 그들의 것이기 때문입니다.",
+  "1CO-2-1":"형제 여러분, 내가 여러분에게 갔을 때, 나는 말이나 지혜로 탁월함을 드러내며 하느님의 신성한 비밀을 여러분에게 선포하지 않았습니다.",
+  "EPH-6-16":"모든 일에 믿음의 방패를 사용하십시오. 그 방패로 악한 자의 불화살을 모두 끌 수 있을 것입니다.",
+  "JAS-2-23":"'아브라함이 하느님을 믿으니 하느님이 그것을 그의 의로 여겼다'는 성경 말씀이 이루어졌고, 그는 하느님의 친구라고 불렸습니다.",
+  "HEB-10-24":"서로 마음을 써서 사랑과 훌륭한 행실을 촉구합시다.",
+  "PRO-22-6":"아이에게 마땅히 따라야 할 길을 가르치라. 그러면 그가 늙어서도 그것을 떠나지 않을 것이다.",
+  "MAT-24-14":"그리고 이 왕국의 좋은 소식이 모든 민족에게 증거로 온 세상에 전파될 것이고, 그런 다음에야 끝이 올 것입니다.",
+  "ACT-5-29":"베드로와 다른 사도들이 대답하였습니다. '우리는 사람에게 순종하는 것보다 하느님께 순종해야 합니다.'",
+  "EZK-18-4":"보라, 모든 영혼은 나의 것이다. 아버지의 영혼도 아들의 영혼도 마찬가지다. 죄를 짓는 영혼이 죽을 것이다.",
+  "2TI-3-1":"그러나 마지막 날들에는 심각한 때가 올 것임을 알아 두십시오.",
+  "REV-7-4":"인친 자들의 수를 들었는데, 이스라엘 자손들의 모든 지파에서 인친 십사만 사천 명이었습니다.",
+  "REV-7-9":"이 일 후에 나는 보았습니다. 아무도 셀 수 없을 만큼 큰 무리가 있었는데, 모든 민족과 지파와 백성과 언어에서 나온 사람들이었습니다.",
+  "PSA-37-11":"그러나 온유한 사람들이 땅을 소유할 것이며, 그들은 풍성한 평화로 기쁨을 누릴 것이다.",
+  "ISA-65-21":"그들은 집을 짓고 거기에 살 것이며, 포도원을 심고 그 열매를 먹을 것이다.",
+  "ISA-11-6":"늑대가 어린 양과 함께 살고 표범이 새끼 염소와 함께 누우며 송아지와 어린 사자와 살진 짐승이 함께 있고 어린아이가 그것들을 이끌 것이다.",
+  "ISA-33-24":"거기에 사는 백성은 '나는 아프다'고 말하는 사람이 없을 것이다. 그곳에 사는 백성은 용서를 받을 것이다.",
+  "JER-31-33":"내가 이스라엘 집과 맺을 그 계약은 이러하다. 내가 내 율법을 그들의 속에 두고 그들의 마음에 새길 것이다.",
+  "PSA-65-2":"기도를 들으시는 분이시여, 모든 사람이 당신께 올 것입니다.",
+  "ISA-54-13":"여호와의 가르침을 받은 아들들이 모두 있을 것이며, 네 아들들의 평화는 클 것이다.",
+  "PSA-84-7":"그들은 힘에서 힘으로 나아가며, 시온에서 참하느님 앞에 나타날 것이다.",
+};
+
+// 서적 버튼 고정 위치 계산
+function fixBookBtns(){
+  var header=document.querySelector('header');
+  var topBar=document.querySelector('.top-bar');
+  var sideCol=document.getElementById('side-col');
+  if(header&&topBar&&sideCol){
+    var top=header.offsetHeight+topBar.offsetHeight;
+    sideCol.style.top=top+'px';
+    sideCol.style.height=(window.innerHeight-top)+'px';
+    sideCol.style.maxHeight=(window.innerHeight-top)+'px';
+  }
+}
+window.addEventListener('load',fixBookBtns);
+window.addEventListener('resize',fixBookBtns);
+
+// ════════════════════════════════════════
+// 메모 (localStorage)
+// ════════════════════════════════════════
+const saveMemo  = (id,v) => {
+  localStorage.setItem('m'+id, v);
+  if(v.trim()) localStorage.setItem('md'+id, new Date().toLocaleString('ko-KR'));
+  else localStorage.removeItem('md'+id);
+};
+const loadMemoDate = id => localStorage.getItem('md'+id) || '';
+const loadMemo  = id     => localStorage.getItem('m'+id) || '';
+const clearMemo = id     => { localStorage.removeItem('m'+id); localStorage.removeItem('md'+id); };
+
+// ════════════════════════════════════════
+// 성구 표시 (VDB에서 바로 - API 불필요)
+// ════════════════════════════════════════
+const verseCache = {};
+
+const BOOK_NUM = {
+  GEN:1,EXO:2,LEV:3,NUM:4,DEU:5,JOS:6,JDG:7,RUT:8,
+  '1SA':9,'2SA':10,'1KI':11,'2KI':12,'1CH':13,'2CH':14,
+  EZR:15,NEH:16,EST:17,JOB:18,PSA:19,PRO:20,ECC:21,SNG:22,
+  ISA:23,JER:24,LAM:25,EZK:26,DAN:27,HOS:28,JOL:29,AMO:30,
+  OBA:31,JON:32,MIC:33,NAM:34,HAB:35,ZEP:36,HAG:37,ZEC:38,MAL:39,
+  MAT:40,MRK:41,LUK:42,JOH:43,ACT:44,ROM:45,
+  '1CO':46,'2CO':47,GAL:48,EPH:49,PHP:50,COL:51,
+  '1TH':52,'2TH':53,'1TI':54,'2TI':55,TIT:56,PHM:57,
+  HEB:58,JAS:59,'1PE':60,'2PE':61,'1JO':62,'2JO':63,'3JO':64,
+  JUD:65,REV:66
+};
+
+async function loadVersesFor(list) {
+  list.forEach(d => fetchVerse(d));
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function fetchVerse(d) {
+  const key = d.bk + '-' + d.ch + '-' + d.vs;
+  const el  = document.getElementById('vt' + d.id);
+  if (!el) return;
+
+  // VDB(하드코딩) 에서 바로 표시
+  if (VDB[key]) {
+    showVerse(el, VDB[key]);
+    return;
+  }
+
+  if (d.verse) {
+    showVerse(el, d.verse);
+    return;
+  }
+
+  // VDB에 없으면 jw.org 링크 표시
+  const n   = BOOK_NUM[d.bk] || 40;
+  const url = 'https://wol.jw.org/ko/wol/b/r8/lp-ko/nwtsty/' + n + '/' + d.ch + '#v=' + n + ':' + d.ch + ':' + d.vs;
+  el.className = 'verse-text error';
+  el.innerHTML = '<a href="' + url + '" target="_blank" style="color:var(--green)">📖 JW.ORG 연구용에서 읽기</a>';
+}
+
+function showVerse(el, text) {
+  el.className = 'verse-text';
+  el.textContent = '"' + text + '"';
+}
+
+function jwUrl(bk, ch, vs) {
+  // wol.jw.org 연구용 신세계역(nwtsty) 직접 링크
+  const bookNum = {
+    GEN:1,EXO:2,LEV:3,NUM:4,DEU:5,JOS:6,JDG:7,RUT:8,
+    '1SA':9,'2SA':10,'1KI':11,'2KI':12,'1CH':13,'2CH':14,
+    EZR:15,NEH:16,EST:17,JOB:18,PSA:19,PRO:20,ECC:21,SNG:22,
+    ISA:23,JER:24,LAM:25,EZK:26,DAN:27,HOS:28,JOL:29,AMO:30,
+    OBA:31,JON:32,MIC:33,NAM:34,HAB:35,ZEP:36,HAG:37,ZEC:38,MAL:39,
+    MAT:40,MRK:41,LUK:42,JOH:43,ACT:44,ROM:45,
+    '1CO':46,'2CO':47,GAL:48,EPH:49,PHP:50,COL:51,
+    '1TH':52,'2TH':53,'1TI':54,'2TI':55,TIT:56,PHM:57,
+    HEB:58,JAS:59,'1PE':60,'2PE':61,'1JO':62,'2JO':63,'3JO':64,
+    JUD:65,REV:66
+  };
+  const n = bookNum[bk] || 40;
+  return `https://wol.jw.org/ko/wol/b/r8/lp-ko/nwtsty/${n}/${ch}#v=${n}:${ch}:${vs}`;
+}
+
+
+// ════════════════════════════════════════
+// 참조 검색 (jw.org 직접 링크)
+// ════════════════════════════════════════
+let refCurrentId = null;
+const refStore = {};
+
+function openRef(id) {
+  refCurrentId = id;
+  const d = getBaseCard(DATA.find(x => x.id === id));
+  if (!d) return;
+  document.getElementById('ref-input').value = d.title;
+  document.getElementById('ref-title').textContent = '📚 참조';
+  document.getElementById('ref-subtitle').textContent = '검색어를 수정하거나 그대로 참조 버튼을 누르세요';
+  document.getElementById('ref-body').innerHTML = '';
+  document.getElementById('ref-drawer').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeRef() {
+  document.getElementById('ref-drawer').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function runRefSearch() {
+  const q = document.getElementById('ref-input').value.trim();
+  if (!q) { document.getElementById('ref-input').focus(); return; }
+  renderFallback(q);
+}
+
+function renderFallback(q) {
+  const eq = encodeURIComponent(q);
+  const links = [
+    { src:'JW.ORG 통합검색',    title:'jw.org에서 "' + q + '" 검색',       snippet:'jw.org 한국어 검색 결과 보기',         url:'https://www.jw.org/ko/검색/?q=' + eq },
+    { src:'워치타워 라이브러리', title:'wol에서 "' + q + '" 검색',           snippet:'워치타워 온라인 라이브러리 검색',        url:'https://wol.jw.org/ko/wol/s/r8/lp-ko?q=' + eq + '&p=par' },
+  ];
+  links.forEach((it, i) => { refStore[q + '_' + i] = it; });
+  document.getElementById('ref-subtitle').textContent = '"' + q + '" · jw.org 검색 링크';
+  document.getElementById('ref-body').innerHTML =
+    '<div style="padding:8px 0 12px;text-align:center;color:#888;font-size:0.83em">아래 링크를 터치하면 jw.org로 이동합니다</div>' +
+    links.map((it, i) => {
+      const key = escAttr(q + '_' + i);
+      return '<div class="ref-item" data-rkey="' + escHtml(key) + '">' +
+        '<div class="ref-item-source">🌐 ' + escHtml(it.src) + '</div>' +
+        '<div class="ref-item-title">' + escHtml(it.title) + '</div>' +
+        '<div class="ref-item-snippet">' + escHtml(it.snippet) + '</div>' +
+        '<div class="ref-item-hint">터치하면 jw.org 페이지로 이동 ↗</div>' +
+        '</div>';
+    }).join('');
+  document.getElementById('ref-body').onclick = function(e){
+    var el=e.target.closest('.ref-item');
+    if(el) tapRef(el.dataset.rkey);
+  };
+}
+
+function tapRef(key) {
+  const it = refStore[key];
+  if (!it) return;
+  openExternalLink(it.url);
+}
+
+function openExternalLink(url) {
+  if (!url) return;
+  window.location.href = url;
+}
+
+function appendMemo(id, text) {
+  const cur    = loadMemo(id);
+  const sep    = cur.trim() ? '\n\n' : '';
+  const newVal = cur + sep + '─ 📚 참조 ─\n' + text;
+  saveMemo(id, newVal);
+  const ta = document.getElementById('ta' + id);
+  if (ta) { ta.value = newVal; ta.style.display = 'block'; }
+  const mlA = document.getElementById('ml' + id);
+  if (mlA) mlA.style.display = 'none';
+  const btn = document.getElementById('mt' + id);
+  if (btn) { btn.textContent = '📝 메모 있음'; btn.classList.add('has-memo'); }
+  const mb = document.getElementById('mb' + id);
+  if (mb && !mb.classList.contains('open')) mb.classList.add('open');
+}
+
+// ════════════════════════════════════════
+// 메모 선택 삭제
+// ════════════════════════════════════════
+
+// refreshLines: 줄목록이 열려있을 때만 갱신
+function refreshLines(id) {
+  const ml = document.getElementById('ml' + id);
+  if (!ml || ml.style.display === 'none') return;
+  buildLines(id);
+  const bc = document.getElementById('bc' + id);
+  if (bc) { bc.classList.remove('active'); bc.textContent = '🗑 삭제'; }
+}
+
+// 줄 터치 → 선택(반전) 토글
+function handleLineClick(e, id) {
+  const line = e.target.closest('.memo-line');
+  if (!line) return;
+  line.classList.toggle('selected');
+
+  const ml  = document.getElementById('ml' + id);
+  const bc  = document.getElementById('bc' + id);
+  const dh  = document.getElementById('dh' + id);
+  const cnt = ml.querySelectorAll('.memo-line.selected').length;
+
+  if (bc) {
+    if (cnt > 0) {
+      bc.classList.add('active');
+      bc.textContent = '🗑 선택 ' + cnt + '줄 삭제';
+    } else {
+      bc.classList.remove('active');
+      bc.textContent = '🗑 삭제';
+    }
+  }
+  if (dh) { dh.classList.toggle('show', cnt > 0); }
+}
+
+// 선택된 줄 삭제
+// 전체 삭제 — 인라인 확인 UI (confirm 불필요)
+function doDelAll(id) {
+  showConfirmToast('메모를 삭제할까요?', function(){ execDelAll(id); });
+}
+
+function clearMemoOverlay() {
+  showConfirmToast('메모를 전체 삭제할까요?', function(){ execClearOverlay(); });
+}
+
+function showConfirmToast(msg, onConfirm) {
+  // 기존 확인 박스가 있으면 제거
+  var old = document.getElementById('confirm-box');
+  if (old) old.remove();
+
+  var box = document.createElement('div');
+  box.id = 'confirm-box';
+  box.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);'
+    + 'background:#1a202c;color:#fff;padding:12px 16px;border-radius:16px;'
+    + 'font-size:0.88em;font-weight:600;z-index:99999;'
+    + 'display:flex;align-items:center;gap:10px;white-space:nowrap;'
+    + 'box-shadow:0 4px 20px rgba(0,0,0,0.35);';
+
+  var msgSpan = document.createElement('span');
+  msgSpan.textContent = msg;
+
+  var confirmBtn = document.createElement('button');
+  confirmBtn.textContent = '삭제';
+  confirmBtn.style.cssText = 'padding:5px 12px;border:none;border-radius:10px;'
+    + 'background:#e53e3e;color:#fff;font-weight:800;cursor:pointer;font-size:0.9em;font-family:inherit;';
+  confirmBtn.addEventListener('click', function(){
+    onConfirm();
+    box.remove();
+  });
+
+  var cancelBtn = document.createElement('button');
+  cancelBtn.textContent = '취소';
+  cancelBtn.style.cssText = 'padding:5px 12px;border:none;border-radius:10px;'
+    + 'background:rgba(255,255,255,0.15);color:#fff;cursor:pointer;font-size:0.9em;font-family:inherit;';
+  cancelBtn.addEventListener('click', function(){ box.remove(); });
+
+  box.appendChild(msgSpan);
+  box.appendChild(confirmBtn);
+  box.appendChild(cancelBtn);
+  document.body.appendChild(box);
+
+  // 5초 후 자동 사라짐
+  setTimeout(function(){ if(box.parentNode) box.remove(); }, 5000);
+}
+
+function execDelAll(id) {
+  clearMemo(id);
+  // 카드 textarea 초기화
+  const ta = document.getElementById('ta' + id);
+  if (ta) ta.value = '';
+  // 메모추가 버튼 상태 복구
+  const btn = document.getElementById('mt' + id);
+  if (btn) {
+    btn.textContent = '＋ 메모 추가';
+    btn.classList.remove('has-memo');
+    // 삭제 버튼 제거 (버튼 옆에 있는 형제 버튼)
+    const delBtn = btn.nextElementSibling;
+    if (delBtn && delBtn.tagName === 'BUTTON') delBtn.remove();
+  }
+  // 메모박스 닫기
+  const mb = document.getElementById('mb' + id);
+  if (mb) mb.classList.remove('open');
+}
+
+function doDelSelected(id) {
+  const ml  = document.getElementById('ml' + id);
+  const ta  = document.getElementById('ta' + id);
+  const bc  = document.getElementById('bc' + id);
+  if (!ml || !ta) return;
+
+  const selected = new Set();
+  ml.querySelectorAll('.memo-line.selected').forEach(el => {
+    selected.add(parseInt(el.dataset.idx));
+  });
+
+  if (selected.size === 0) {
+    // 선택된 줄 없으면 안내
+    const dh = document.getElementById('dh' + id);
+    if (dh) { dh.textContent = '먼저 줄을 터치해서 선택하세요'; dh.classList.add('show'); }
+    return;
+  }
+
+  const lines    = ta.value.split('\n');
+  const newLines = lines.filter((_, i) => !selected.has(i));
+  const newVal   = newLines.join('\n');
+  ta.value       = newVal;
+  saveMemo(id, newVal);
+  refreshLines(id);
+
+  if (bc) { bc.classList.remove('active'); bc.textContent = '🗑 삭제'; }
+  // 줄선택 후 삭제 완료 → 텍스트 모드로 복귀
+  showTextMode(id);
+
+  const btn = document.getElementById('mt' + id);
+  if (btn) {
+    btn.textContent = newVal.trim() ? '📝 메모 있음' : '＋ 메모 추가';
+    btn.classList.toggle('has-memo', !!newVal.trim());
+  }
+}
+
+// textarea 입력 시 (저장 안내만, 줄목록 갱신 안 함)
+function onMemoInput(id) { /* 실시간 저장 원하면 여기서 saveMemo */ }
+
+// 줄선택삭제 모드: textarea 숨기고 줄목록 보이기
+function showLineMode(id) {
+  const ta = document.getElementById('ta' + id);
+  const ml = document.getElementById('ml' + id);
+  const dh = document.getElementById('dh' + id);
+  if (!ta || !ml) return;
+  // 줄목록 채우기
+  buildLines(id);
+  ta.style.display = 'none';
+  ml.style.display = 'block';
+  if (dh) dh.classList.add('show');
+}
+
+// textarea로 돌아가기
+function showTextMode(id) {
+  const ta = document.getElementById('ta' + id);
+  const ml = document.getElementById('ml' + id);
+  const dh = document.getElementById('dh' + id);
+  if (!ta || !ml) return;
+  ta.style.display = 'block';
+  ml.style.display = 'none';
+  if (dh) dh.classList.remove('show');
+  ta.focus();
+}
+
+// 줄목록 생성
+function buildLines(id) {
+  const ta = document.getElementById('ta' + id);
+  const ml = document.getElementById('ml' + id);
+  if (!ta || !ml) return;
+  const lines = ta.value.split('\n');
+  ml.innerHTML = lines.map((ln, i) =>
+    '<div class="memo-line" data-idx="' + i + '">' +
+    '<span class="memo-line-text">' + escHtml(ln || '\u00a0') + '</span>' +
+    '</div>'
+  ).join('');
+}
+
+// ════════════════════════════════════════
+// HTML 이스케이프
+// ════════════════════════════════════════
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escAttr(s) {
+  return String(s).replace(/'/g,'&#39;').replace(/"/g,'&quot;');
+}
+
+// ════════════════════════════════════════
+// 렌더
+
+// ════════════════════════════════════════
+const cont = document.getElementById('card-container');
+
+function getBaseEdit(id) {
+  try { return JSON.parse(localStorage.getItem('ed_' + id)); } catch(e) { return null; }
+}
+
+function getBaseCard(orig) {
+  if (!orig) return null;
+  var edit = getBaseEdit(orig.id);
+  if (!edit) return orig;
+  var parsed = parseRefStr(edit.ref || orig.ref);
+  return Object.assign({}, orig, edit, {
+    id: orig.id,
+    bk: (parsed && parsed.bk) || edit.bk || orig.bk,
+    ch: (parsed && parsed.ch) || edit.ch || orig.ch,
+    vs: (parsed && parsed.vs) || edit.vs || orig.vs,
+    edited: true
+  });
+}
+
+function render(list) {
+  const viewList = list.map(d => getBaseCard(d));
+  cont.innerHTML = viewList.map(d => {
+    const memo = loadMemo(d.id);
+    const has  = memo.trim() !== '';
+    const url  = jwUrl(d.bk, d.ch, d.vs);
+    const verse= VDB[`${d.bk}-${d.ch}-${d.vs}`];
+    return `
+    <div class="card" id="c${d.id}">
+      <div class="card-header">
+        <div class="num">${d.id}</div>
+        <div class="card-title">${escHtml(d.title)}${d.edited ? ' <span style="font-size:0.72em;color:#8d6e63;">수정됨</span>' : ''}</div>
+        <button class="btn-ref" onclick="openRef(${d.id})" title="jw.org 참조 검색">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          참조
+        </button>
+      </div>
+      <div class="scripture-block">
+        <div class="ref-row">
+          <span class="v-ref">📖 ${escHtml(d.ref)}</span>
+          <a class="jw-link" href="${url}" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            JW.ORG
+          </a>
+        </div>
+        <div class="verse-text verse-loading" id="vt${d.id}">
+          <span class="v-spinner"></span> 성구 불러오는 중…
+        </div>
+      </div>
+      <span class="label">심층 설명</span>
+      <p class="desc">${escHtml(d.desc)}</p>
+      <div class="suggest"><strong>💡 실무 제안:</strong> ${escHtml(d.sug)}</div>
+      <div class="memo-section">
+        <div style="display:flex;gap:6px;align-items:center;">
+          <button class="memo-toggle ${has?'has-memo':''}" id="mt${d.id}"
+            onclick="toggleMemo(${d.id})" style="flex:1;">
+            ${has ? '📝 메모 있음' : '＋ 메모 추가'}
+          </button>
+          ${has ? '<button onclick="if(confirm(\'메모를 삭제할까요?\'))doDelAll('+d.id+')" style="padding:8px 12px;border:1px solid #fca5a5;border-radius:20px;background:#fff0f0;color:#c0392b;font-size:0.78em;font-weight:700;cursor:pointer;font-family:inherit;">🗑</button>' : ''}
+        </div>
+        <div class="memo-box ${has?'open':''}" id="mb${d.id}">
+          <textarea class="memo-textarea" id="ta${d.id}"
+            placeholder="메모, 경험, 아이디어를 자유롭게…"
+            oninput="onMemoInput(${d.id})">${escHtml(memo)}</textarea>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('count-badge').textContent =
+    (list.length === DATA.length) ? '기본 카드 1-100번' : '검색 결과 ' + list.length + '개';
+  // 성구 비동기 로드 (처음 화면에 보이는 카드부터 순차적으로)
+  loadVersesFor(viewList);
+}
+
+// ════════════════════════════════════════
+// 검색
+// ════════════════════════════════════════
+// 상단 검색창 → 카드 필터 + jw.org 참조 패널 열기
+
+let lastAppliedKeyword = '';
+
+function markSearchPending() {
+  const el = document.getElementById('search');
+  if (!el) return;
+  const current = el.value.trim();
+  el.classList.toggle('search-pending', current !== lastAppliedKeyword);
+}
+
+function applyKeywordSearch() {
+  const el = document.getElementById('search');
+  if (!el) return;
+  lastAppliedKeyword = el.value.trim();
+  el.classList.remove('search-pending');
+  filterCards();
+  el.blur();
+}
+
+function clearKeywordSearch() {
+  const el = document.getElementById('search');
+  if (!el) return;
+  el.value = '';
+  lastAppliedKeyword = '';
+  el.classList.remove('search-pending');
+  render(DATA);
+  el.blur();
+}
+
+function topSearch() {
+  const q = document.getElementById('search').value.trim();
+  openRefSearchPanel(q, '📚 참조');
+}
+
+function openRefSearchPanel(q, titleText) {
+  refCurrentId = null;
+  document.getElementById('ref-drawer').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  const inp = document.getElementById('ref-input');
+  inp.value = q || '';
+  if (!q) {
+    document.getElementById('ref-title').textContent = titleText || '📚 참조';
+    document.getElementById('ref-subtitle').textContent = '검색어를 입력하고 참조 버튼을 누르세요';
+    document.getElementById('ref-body').innerHTML = '';
+    setTimeout(() => inp.focus(), 250);
+    return;
+  }
+  document.getElementById('ref-title').textContent = titleText || '📚 참조';
+  renderFallback(q);
+}
+
+function openGlobalRefSearch() {
+  var search = document.getElementById('search');
+  var q = search ? search.value.trim() : '';
+  openRefSearchPanel(q, '🔎 통합검색');
+}
+
+function openNmeRefSearch() {
+  var field = document.getElementById('nme-ref-query');
+  var q = field ? field.value.trim() : '';
+  openRefSearchPanel(q, '🔎 통합검색');
+}
+
+function filterCards() {
+  const v = (lastAppliedKeyword || '').toLowerCase().trim();
+  if (!v) { render(DATA); return; }
+
+  // 숫자만 입력하면 해당 번호의 기본 카드 1개만 표시
+  if (/^\d+$/.test(v)) {
+    const id = Number(v);
+    const exact = DATA.filter(orig => Number(orig.id) === id);
+    render(exact);
+    return;
+  }
+
+  // 일반 검색어는 제목·성구·설명·제안에서 검색
+  render(DATA.filter(orig => {
+    const d = getBaseCard(orig);
+    return (d.title||'').toLowerCase().includes(v) ||
+      (d.ref||'').toLowerCase().includes(v) ||
+      (d.desc||'').toLowerCase().includes(v) ||
+      (d.sug||'').toLowerCase().includes(v);
+  }));
+}
+
+// ════════════════════════════════════════
+// 메모 핸들러
+// ════════════════════════════════════════
+var memoOverlayId = null;
+
+// ════════════════════════════════════════
+// 통합 미리보기/저장 모달
+// ════════════════════════════════════════
+var mpmState = {
+  sourceId: null,   // null=개인성서연구, 숫자=골자메모
+  type: '',         // txt/doc/pdf
+  fs: 8,            // 글자크기 pt
+  lh: 1.8,          // 줄간격
+  mg: 25            // 여백 mm (Word 기본 시작 위치와 유사)
+};
+
+function openMemoPreview(sourceId) {
+  mpmState.sourceId = sourceId;
+  mpmState.type = '';
+  mpmState._nmeKey = null;
+  // 내용 준비
+  let html = '';
+  if (sourceId === null) {
+    // 개인성서연구 편집기 내용
+    saveNewMemo(true);
+    html = document.getElementById('nme-content').innerHTML;
+  } else {
+    // 골자 메모
+    const memo = loadMemo(sourceId);
+    const d = getBaseCard(DATA.find(x => x.id === sourceId));
+    const title = d ? '<h3 style="margin-bottom:8px;color:#3a0068;">[' + sourceId + '] ' + (d.title||'') + '</h3>' : '';
+    html = title + memo.split(/\n{2,}/)
+      .map(p => p.trim() ? '<p>' + p.replace(/\n/g,'<br>').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</p>' : '')
+      .filter(Boolean).join('');
+  }
+  document.getElementById('mpm-preview-paper').innerHTML = html;
+  mpmUpdateStyles();
+  mpmGoStep(1);
+  qPushAppView('memo-preview-modal');
+  document.getElementById('memo-preview-modal').style.display = 'flex';
+
+  // Word에서 새 문서를 열었을 때처럼 첫 입력 위치가 보이도록
+  // 미리보기 용지와 내부 스크롤을 항상 맨 위로 맞춤
+  requestAnimationFrame(function() {
+    const step = document.getElementById('mpm-step1');
+    const paper = document.getElementById('mpm-preview-paper');
+    if (step) step.scrollTop = 0;
+    if (paper) paper.scrollTop = 0;
+    const paperWrap = paper && paper.parentElement && paper.parentElement.parentElement;
+    if (paperWrap) paperWrap.scrollTop = 0;
+  });
+
+  document.body.style.overflow = 'hidden';
+}
+
+function closeMemoPreviewModal() {
+  document.getElementById('memo-preview-modal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+
+function mpmGetPageMetrics() {
+  const paper = document.getElementById('mpm-preview-paper');
+  if (!paper) return { page: 1, total: 1, height: 1 };
+  const height = Math.max(1, paper.clientHeight);
+  const total = Math.max(1, Math.ceil(paper.scrollHeight / height));
+  const page = Math.min(total, Math.max(1, Math.round(paper.scrollTop / height) + 1));
+  return { page: page, total: total, height: height };
+}
+
+function mpmUpdatePageControls() {
+  const m = mpmGetPageMetrics();
+  const indicator = document.getElementById('mpm-page-indicator');
+  const prev = document.getElementById('mpm-prev-page');
+  const next = document.getElementById('mpm-next-page');
+  if (indicator) indicator.textContent = m.page + ' / ' + m.total;
+  if (prev) {
+    prev.disabled = m.page <= 1;
+    prev.style.opacity = prev.disabled ? '0.45' : '1';
+  }
+  if (next) {
+    next.disabled = m.page >= m.total;
+    next.style.opacity = next.disabled ? '0.45' : '1';
+  }
+}
+
+function mpmChangePage(direction) {
+  const paper = document.getElementById('mpm-preview-paper');
+  if (!paper) return;
+  const m = mpmGetPageMetrics();
+  const target = Math.min(m.total, Math.max(1, m.page + direction));
+  paper.scrollTo({ top: (target - 1) * m.height, behavior: 'smooth' });
+  setTimeout(mpmUpdatePageControls, 280);
+}
+
+function mpmGoStep(n) {
+  [1,2,3].forEach(i => {
+    const el = document.getElementById('mpm-step'+i);
+    if (el) el.style.display = (i===n) ? 'flex' : 'none';
+  });
+  const titles = {1:'👁 미리보기', 2:'📦 저장 형식 선택', 3:'💾 저장 / 🖨 인쇄'};
+  document.getElementById('mpm-step-title').textContent = titles[n];
+  [1,2,3].forEach(i => {
+    document.getElementById('mpm-dot'+i).style.background = i<=n ? '#6a1b9a' : '#ddd';
+  });
+  document.getElementById('mpm-step1').style.display = n===1 ? 'flex' : 'none';
+  document.getElementById('mpm-step2').style.display = n===2 ? 'block' : 'none';
+  document.getElementById('mpm-step3').style.display = n===3 ? 'block' : 'none';
+
+  if (n === 1) {
+    requestAnimationFrame(function() {
+      const paper = document.getElementById('mpm-preview-paper');
+      if (paper) {
+        paper.scrollTop = 0;
+        paper.removeEventListener('scroll', mpmUpdatePageControls);
+        paper.addEventListener('scroll', mpmUpdatePageControls, { passive: true });
+      }
+      mpmUpdatePageControls();
+      setTimeout(mpmUpdatePageControls, 120);
+    });
+  }
+}
+
+function mpmAdjust(prop, delta) {
+  if (prop === 'fs') { mpmState.fs = Math.max(8, Math.min(18, mpmState.fs + delta)); }
+  if (prop === 'lh') { mpmState.lh = Math.max(1.2, Math.min(3.0, +(mpmState.lh + delta).toFixed(1))); }
+  if (prop === 'mg') { mpmState.mg = Math.max(5, Math.min(40, mpmState.mg + delta)); }
+  mpmUpdateStyles();
+}
+
+function mpmUpdateStyles() {
+  const paper = document.getElementById('mpm-preview-paper');
+  paper.style.fontSize = mpmState.fs + 'pt';
+  paper.style.lineHeight = mpmState.lh;
+  paper.style.padding = mpmState.mg + 'mm';
+  document.getElementById('mpm-fs-val').textContent = mpmState.fs + 'pt';
+  document.getElementById('mpm-lh-val').textContent = mpmState.lh.toFixed(1);
+  document.getElementById('mpm-mg-val').textContent = mpmState.mg + 'mm';
+}
+
+function mpmSelectType(type) {
+  mpmState.type = type;
+  const labels = {local:'💾 로컬(기기에) 저장', doc:'📝 Word 문서 파일', pdf:'📕 PDF / 인쇄'};
+  document.getElementById('mpm-type-badge').textContent = '선택: ' + labels[type];
+  document.getElementById('mpm-save-actions').style.display  = type !== 'pdf' ? 'flex' : 'none';
+  document.getElementById('mpm-print-actions').style.display = type === 'pdf' ? 'flex' : 'none';
+  var isLocal = type === 'local';
+  document.getElementById('mpm-local-save-btn').style.display = isLocal ? 'block' : 'none';
+  document.getElementById('mpm-download-save-btn').style.display = isLocal ? 'none' : 'block';
+  document.getElementById('mpm-save-help').textContent = isLocal
+    ? '개인연구목록에서 바로 불러올 수 있도록 이 기기에 저장합니다'
+    : '저장 후 카카오톡·메일·드라이브로 공유 가능';
+  mpmGoStep(3);
+}
+
+function mpmDoLocalSave() {
+  if (mpmState._nmeKey) {
+    var stored = JSON.parse(localStorage.getItem(mpmState._nmeKey) || 'null');
+    if (stored) {
+      stored.date = Date.now();
+      stored.dateStr = new Date().toLocaleString('ko-KR');
+      localStorage.setItem(mpmState._nmeKey, JSON.stringify(stored));
+    }
+  } else if (mpmState.sourceId === null) {
+    saveNewMemo(true);
+  } else {
+    var d = getBaseCard(DATA.find(function(x){ return x.id === mpmState.sourceId; }));
+    var title = d ? '[' + mpmState.sourceId + '] ' + d.title : '개인성서연구';
+    var memo = loadMemo(mpmState.sourceId);
+    var html = memo.split(/\n{2,}/)
+      .map(function(p){ return p.trim() ? '<p>' + p.replace(/\n/g,'<br>').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</p>' : ''; })
+      .filter(Boolean).join('');
+    var key = 'nme_' + Date.now();
+    localStorage.setItem(key, JSON.stringify({
+      key: key,
+      title: title,
+      html: html || '<p><br></p>',
+      text: memo,
+      date: Date.now(),
+      dateStr: new Date().toLocaleString('ko-KR')
+    }));
+  }
+  closeMemoPreviewModal();
+  var toast = document.getElementById('add-toast');
+  if (toast) {
+    toast.textContent = '✓ 로컬에 저장됨 · 개인연구목록에서 불러올 수 있습니다';
+    toast.classList.add('show');
+    setTimeout(function(){ toast.classList.remove('show'); }, 2200);
+  }
+}
+
+function mpmDoSave() {
+  const date = new Date().toLocaleDateString('ko-KR').replace(/\.\s*/g,'-').replace(/-$/,'');
+  let text = '', html = '', fileName = '메모_' + date;
+  if (mpmState._nmeKey) {
+    var savedNme = JSON.parse(localStorage.getItem(mpmState._nmeKey) || 'null') || {};
+    text = savedNme.text || '';
+    html = savedNme.html || '';
+    fileName = (savedNme.title || '개인성서연구') + '_' + date;
+  } else if (mpmState.sourceId === null) {
+    text = document.getElementById('nme-content').innerText || '';
+    html = document.getElementById('nme-content').innerHTML;
+    var nmeTitle = (document.getElementById('nme-title').value||'').trim() || '개인성서연구';
+    fileName = nmeTitle + '_' + date;
+  } else {
+    const d = getBaseCard(DATA.find(x => x.id === mpmState.sourceId));
+    text = loadMemo(mpmState.sourceId);
+    html = text.split(/\n{2,}/).map(p=>p.trim()?'<p>'+p.replace(/\n/g,'<br>')+'</p>':'').join('');
+    fileName = (d ? '['+mpmState.sourceId+']'+d.title : '메모') + '_' + date;
+  }
+  if (mpmState.type === 'txt') {
+    const blob = new Blob(['\uFEFF'+text], {type:'text/plain;charset=utf-8'});
+    const a = Object.assign(document.createElement('a'), {href:URL.createObjectURL(blob), download:fileName+'.txt'});
+    document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);
+  } else if (mpmState.type === 'doc') {
+    const docHtml = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word">'
+      + '<head><meta charset="UTF-8"><style>body{font-family:\'맑은 고딕\',sans-serif;font-size:'+mpmState.fs+'pt;line-height:'+mpmState.lh+';margin:'+mpmState.mg+'mm;}'
+      + 'p{margin-bottom:'+Math.round(mpmState.fs*0.6)+'pt;}</style></head><body>'+html+'</body></html>';
+    const blob = new Blob(['\uFEFF'+docHtml], {type:'application/msword;charset=utf-8'});
+    const a = Object.assign(document.createElement('a'), {href:URL.createObjectURL(blob), download:fileName+'.doc'});
+    document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);
+  }
+  closeMemoPreviewModal();
+  const toast = document.getElementById('add-toast');
+  if (toast) { toast.textContent='✓ 저장 완료!'; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),1800); }
+}
+
+function mpmDoPrint() {
+  let html = '';
+  if (mpmState._nmeKey) {
+    var savedNme = JSON.parse(localStorage.getItem(mpmState._nmeKey) || 'null') || {};
+    html = savedNme.html || '';
+  } else if (mpmState.sourceId === null) {
+    html = document.getElementById('nme-content').innerHTML;
+  } else {
+    const memo = loadMemo(mpmState.sourceId);
+    html = memo.split(/\n{2,}/).map(p=>p.trim()?'<p>'+p.replace(/\n/g,'<br>').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</p>':'').join('');
+  }
+  const paper = document.getElementById('mpm-paper').value;
+  const orient = document.getElementById('mpm-orient').value;
+  const printHtml = '<!DOCTYPE html><html><head><meta charset="UTF-8">'
+    + '<style>'
+    + 'body{font-family:\'맑은 고딕\',sans-serif;font-size:'+mpmState.fs+'pt;line-height:'+mpmState.lh+';margin:0;padding:'+mpmState.mg+'mm;}'
+    + 'p{margin-bottom:'+Math.round(mpmState.fs*0.6)+'pt;}'
+    + '@media print{@page{size:'+paper+' '+orient+';margin:0;}body{padding:'+mpmState.mg+'mm;}}'
+    + '</style>'
+    + '</head><body>' + html
+    + '<script>window.onload=function(){window.print();window.onafterprint=function(){window.close();};};<\/script>'
+    + '</body></html>';
+
+  const w = window.open('', '_blank', 'width=700,height=900');
+  if (w) { w.document.write(printHtml); w.document.close(); }
+  else {
+    // 팝업 차단 시 현재 페이지에서 인쇄
+    const old = document.getElementById('print-area'); if (old) old.remove();
+    const old2 = document.getElementById('print-style'); if (old2) old2.remove();
+    const div = document.createElement('div'); div.id = 'print-area';
+    div.innerHTML = '<div style="font-family:\'맑은 고딕\',sans-serif;font-size:'+mpmState.fs+'pt;line-height:'+mpmState.lh+';padding:'+mpmState.mg+'mm;">' + html + '</div>';
+    document.body.appendChild(div);
+    const style = document.createElement('style'); style.id = 'print-style';
+    style.textContent = '@media print{body>*:not(#print-area){display:none!important;}#print-area{display:block!important;}'
+      + '@page{size:'+paper+' '+orient+';margin:0;}}#print-area{display:none;}';
+    document.head.appendChild(style);
+    setTimeout(()=>{ window.print(); setTimeout(()=>{ div.remove(); style.remove(); },1000); },100);
+  }
+  closeMemoPreviewModal();
+}
+// ════════════════════════════════════════
+// ════════════════════════════════════════
+// 카드 만들기
+// ════════════════════════════════════════
+var cceCurrentKey = null;
+var cceMode = 'custom';
+var cceBaseId = null;
+var CUSTOM_CARD_START_ID = 101;
+
+function getCustomCards() {
+  var keys = Object.keys(localStorage).filter(function(k){ return k.startsWith('cc_'); });
+  return keys.map(function(k){
+    try { return JSON.parse(localStorage.getItem(k)); } catch(e){ return null; }
+  }).filter(Boolean).sort(function(a,b){ return a.id - b.id; });
+}
+
+function getNextCustomId() {
+  var cards = getCustomCards();
+  if (!cards.length) return CUSTOM_CARD_START_ID;
+  var max = Math.max.apply(null, cards.map(function(c){ return c.id; }));
+  return Math.max(max + 1, CUSTOM_CARD_START_ID);
+}
+
+function updateCustomCount() {
+  var cnt = getCustomCards().length;
+  var el = document.getElementById('custom-count');
+  if (el) el.textContent = cnt;
+  var badge = document.getElementById('count-badge');
+  if (badge && !lastAppliedKeyword) badge.textContent = '기본 카드 1-100번';
+}
+
+
+// ════════════════════════════════════════
+// 모바일 뒤로가기: 앱 내부 이전 화면으로 이동
+// ════════════════════════════════════════
+
+function updateAppShellHeight() {
+  const shell = document.querySelector('.app-sticky-shell');
+  if (!shell) return;
+  const h = Math.ceil(shell.getBoundingClientRect().height);
+  document.documentElement.style.setProperty('--app-shell-height', h + 'px');
+
+  const side = document.getElementById('side-col');
+  if (side) {
+    side.scrollTop = 0;
+  }
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+  updateAppShellHeight();
+  const shell = document.querySelector('.app-sticky-shell');
+  if (shell && window.ResizeObserver) {
+    const observer = new ResizeObserver(updateAppShellHeight);
+    observer.observe(shell);
+  }
+});
+
+window.addEventListener('resize', updateAppShellHeight);
+window.addEventListener('orientationchange', function() {
+  setTimeout(updateAppShellHeight, 150);
+});
+
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    updateAppShellHeight();
+    const side = document.getElementById('side-col');
+    if (side) side.scrollTop = 0;
+  }, 250);
+});
+
+const Q_APP_VIEW_IDS = [
+  'custom-card-editor',
+  'custom-list-panel',
+  'base-edit-list-panel',
+  'memo-viewer',
+  'new-memo-editor',
+  'nme-preview-modal',
+  'memo-overlay',
+  'memo-preview-modal',
+  'memo-save-modal'
+];
+
+let qApplyingHistory = false;
+
+function qCurrentViewId() {
+  const s = history.state;
+  return s && s.qAppView ? s.qAppView : null;
+}
+
+function qPushAppView(id) {
+  if (qApplyingHistory || !id) return;
+  if (qCurrentViewId() === id) return;
+  history.pushState({ qApp: true, qAppView: id }, '', location.href);
+}
+
+function qHideAllAppViews() {
+  Q_APP_VIEW_IDS.forEach(function(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.style.display = 'none';
+    if (id === 'memo-overlay') {
+      el.classList.remove('open', 'closing');
+    }
+  });
+  const drawer = document.getElementById('ref-drawer');
+  if (drawer) drawer.classList.remove('open');
+}
+
+function qShowHistoryView(id) {
+  qApplyingHistory = true;
+  qHideAllAppViews();
+
+  if (id) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.style.display = 'flex';
+      if (id === 'memo-overlay') el.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  } else {
+    document.body.style.overflow = '';
+  }
+
+  qApplyingHistory = false;
+}
+
+// 현재 문서를 앱의 기본 화면으로 표시
+if (!history.state || !history.state.qApp) {
+  history.replaceState({ qApp: true, qAppView: null }, '', location.href);
+}
+
+window.addEventListener('popstate', function(event) {
+  const state = event.state;
+  const target = state && state.qApp ? state.qAppView : null;
+  qShowHistoryView(target);
+});
+
+
+function openCustomCard(key) {
+  cceMode = 'custom';
+  cceBaseId = null;
+  cceCurrentKey = key;
+  var del = document.getElementById('cce-del-btn');
+  var headerTitle = document.getElementById('cce-header-title');
+  if (key) {
+    try {
+      var data = JSON.parse(localStorage.getItem(key));
+      document.getElementById('cce-title').value = data.title || '';
+      document.getElementById('cce-ref').value = data.ref || '';
+      document.getElementById('cce-desc').value = data.desc || '';
+      document.getElementById('cce-sug').value = data.sug || '';
+      var vr = document.getElementById('cce-verse-result');
+      if (data.verse) { vr.textContent = data.verse; vr.style.display = 'block'; }
+      else vr.style.display = 'none';
+      if (del) del.style.display = 'block';
+      if (del) del.textContent = '🗑 삭제';
+      if (headerTitle) headerTitle.textContent = '✏️ 카드 수정하기 [' + data.id + ']';
+    } catch(e){}
+  } else {
+    document.getElementById('cce-title').value = '';
+    document.getElementById('cce-ref').value = '';
+    document.getElementById('cce-desc').value = '';
+    document.getElementById('cce-sug').value = '';
+    document.getElementById('cce-verse-result').style.display = 'none';
+    if (del) del.style.display = 'none';
+    if (del) del.textContent = '🗑 삭제';
+    if (headerTitle) headerTitle.textContent = '＋ 새 카드 만들기';
+  }
+  qPushAppView('custom-card-editor');
+  document.getElementById('custom-card-editor').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCustomCard() {
+  document.getElementById('custom-card-editor').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function saveCustomCard() {
+  var title = (document.getElementById('cce-title').value || '').trim();
+  if (!title) { alert('제목을 입력해주세요.'); return; }
+  var ref = (document.getElementById('cce-ref').value || '').trim();
+  var desc = (document.getElementById('cce-desc').value || '').trim();
+  var sug = (document.getElementById('cce-sug').value || '').trim();
+  var verseEl = document.getElementById('cce-verse-result');
+  var verse = '';
+  if (verseEl.style.display !== 'none' && verseEl.style.borderColor === 'rgb(36, 113, 163)') {
+    var lines = verseEl.innerText.split('\n');
+    verse = lines.slice(1).join(' ').trim();
+  }
+  // bk/ch/vs 파싱해서 저장
+  var parsed = parseRefStr(ref);
+  if (cceMode === 'base' && cceBaseId) {
+    var orig = DATA.find(function(x){ return x.id === cceBaseId; });
+    var data = {
+      key: 'ed_' + cceBaseId,
+      id: cceBaseId,
+      title: title,
+      ref: ref,
+      desc: desc,
+      sug: sug,
+      verse: verse,
+      bk: parsed ? parsed.bk : (orig ? orig.bk : ''),
+      ch: parsed ? parsed.ch : (orig ? orig.ch : 0),
+      vs: parsed ? parsed.vs : (orig ? orig.vs : 0),
+      date: Date.now(),
+      dateStr: new Date().toLocaleString('ko-KR')
+    };
+    localStorage.setItem('ed_' + cceBaseId, JSON.stringify(data));
+    filterCards();
+    renderCustomCards();
+    renderBaseEditList();
+    var toastBase = document.getElementById('add-toast');
+    if (toastBase) { toastBase.textContent='✓ ['+cceBaseId+'] 기본 카드 수정됨'; toastBase.classList.add('show'); setTimeout(function(){ toastBase.classList.remove('show'); },1800); }
+    closeCustomCard();
+    return;
+  }
+  var key = cceCurrentKey || ('cc_' + Date.now());
+  var existing = cceCurrentKey ? (JSON.parse(localStorage.getItem(cceCurrentKey)||'null')||{}) : {};
+  var id = existing.id || getNextCustomId();
+  var data = { key:key, id:id, title:title, ref:ref, desc:desc, sug:sug, verse:verse,
+               bk: parsed?parsed.bk:'', ch: parsed?parsed.ch:0, vs: parsed?parsed.vs:0,
+               date:Date.now(), dateStr:new Date().toLocaleString('ko-KR') };
+  localStorage.setItem(key, JSON.stringify(data));
+  cceCurrentKey = key;
+  updateCustomCount();
+  renderCustomCards();
+  var toast = document.getElementById('add-toast');
+  if (toast) { toast.textContent='✓ ['+id+'] '+title+' 저장됨'; toast.classList.add('show'); setTimeout(function(){ toast.classList.remove('show'); },1800); }
+  closeCustomCard();
+}
+
+function deleteCustomCard() {
+  if (cceMode === 'base' && cceBaseId) {
+    restoreBaseCard(cceBaseId, true);
+    closeCustomCard();
+    return;
+  }
+  if (!cceCurrentKey) return;
+  showConfirmToast('이 골자를 삭제할까요?', function(){
+    localStorage.removeItem(cceCurrentKey);
+    cceCurrentKey = null;
+    updateCustomCount();
+    renderCustomCards();
+    closeCustomCard();
+  });
+}
+
+// 성구 자동 불러오기 (타이핑 중 디바운스)
+var autoFetchTimer = null;
+function autoFetchVerse(val) {
+  clearTimeout(autoFetchTimer);
+  var vr = document.getElementById('cce-verse-result');
+  // 장:절 패턴이 완성됐을 때만 실행
+  if (!val.match(/[가-힣]+\s*\d+:\d+/)) {
+    vr.style.display = 'none';
+    return;
+  }
+  vr.innerHTML = '<span style="color:#888;">🔍 찾는 중...</span>';
+  vr.style.display = 'block';
+  autoFetchTimer = setTimeout(function(){ fetchCustomVerse(); }, 600);
+}
+
+function fetchCustomVerse() {
+  var ref = (document.getElementById('cce-ref').value || '').trim();
+  if (!ref) return;
+  var vr = document.getElementById('cce-verse-result');
+
+  // 1. VDB에서 먼저 찾기
+  var found = searchVerseInVDB(ref);
+  if (found) {
+    vr.innerHTML = '<span style="font-size:0.78em;color:#2471a3;font-weight:700;display:block;margin-bottom:4px;">'
+      + '📖 ' + ref + ' — 연구용 신세계역</span>'
+      + found;
+    vr.style.display = 'block';
+    vr.style.borderColor = '#2471a3';
+    return;
+  }
+
+  // 2. VDB에 없으면 wol.jw.org 링크 안내
+  var eq = encodeURIComponent(ref);
+  vr.innerHTML = '<span style="font-size:0.78em;color:#888;display:block;margin-bottom:6px;">'
+    + '⚠️ VDB에 없는 성구입니다.</span>'
+    + '<a href="https://wol.jw.org/ko/wol/s/r8/lp-ko?q='+eq+'&p=pub-nwtsty" target="_blank" '
+    + 'style="color:#2471a3;font-weight:700;font-size:0.9em;">📖 wol.jw.org 연구용 신세계역에서 "'+ref+'" 찾기 ↗</a><br>'
+    + '<span style="font-size:0.82em;color:#888;">직접 찾은 내용을 심층설명란에 붙여넣어 주세요.</span>';
+  vr.style.display = 'block';
+  vr.style.borderColor = '#f0a500';
+}
+
+function searchVerseInVDB(refStr) {
+  var parsed = parseRefStr(refStr);
+  if (!parsed) return null;
+  var key = parsed.bk + '-' + parsed.ch + '-' + parsed.vs;
+  return (typeof VDB !== 'undefined' && VDB[key]) ? VDB[key] : null;
+}
+
+function renderCustomCards() {
+  var old = document.getElementById('custom-cards-container');
+  if (old) old.remove();
+  var cards = getCustomCards();
+  if (!cards.length) return;
+  var container = document.createElement('div');
+  container.id = 'custom-cards-container';
+
+  var verseList = []; // 성구 비동기 로드용
+
+  cards.forEach(function(d){
+    var has = !!loadMemo(d.id);
+    // 성구 파싱 (bk/ch/vs 추출)
+    var bk = d.bk || null, ch = d.ch || 0, vs = d.vs || 0;
+    if (!bk && d.ref) {
+      var parsed = parseRefStr(d.ref);
+      if (parsed) { bk = parsed.bk; ch = parsed.ch; vs = parsed.vs; }
+    }
+    var url = (bk && ch && vs) ? jwUrl(bk, ch, vs) : ('https://wol.jw.org/ko/wol/s/r8/lp-ko?q=' + encodeURIComponent(d.ref||''));
+    var vtId = 'vt' + d.id;
+
+    var div = document.createElement('div');
+    div.className = 'card';
+    div.id = 'c' + d.id;
+    div.innerHTML =
+      '<div class="card-header">'
+      +'<div class="num">'+d.id+'</div>'
+      +'<div class="card-title">'+escH(d.title||'')+'</div>'
+      +'<button class="btn-ref" onclick="openRefCustom(\''+escH(d.key||'')+'\','+d.id+')" title="jw.org 참조 검색">'
+      +'<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>참조</button>'
+      +'<button onclick="openCustomCard(\''+d.key+'\')" style="margin-left:4px;padding:5px 10px;'
+      +'border:1px solid #c8ddf0;border-radius:20px;background:#f0f8ff;color:#1a5276;'
+      +'font-size:0.75em;font-weight:700;cursor:pointer;font-family:inherit;">✏️</button>'
+      +'</div>'
+      +'<div class="scripture-block">'
+      +'<div class="ref-row">'
+      +'<span class="v-ref">📖 '+escH(d.ref||'')+'</span>'
+      +'<a class="jw-link" href="'+url+'" target="_blank" rel="noopener">'
+      +'<svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>JW.ORG</a>'
+      +'</div>'
+      +'<div class="verse-text verse-loading" id="'+vtId+'"><span class="v-spinner"></span> 성구 불러오는 중…</div>'
+      +'</div>'
+      +'<span class="label">심층 설명</span>'
+      +'<p class="desc">'+escH(d.desc||'')+'</p>'
+      +(d.sug?'<div class="suggest"><strong>💡 실무 제안:</strong> '+escH(d.sug)+'</div>':'')
+      +'<div class="memo-section">'
+      +'<div style="display:flex;gap:6px;align-items:center;">'
+      +'<button class="memo-toggle'+(has?' has-memo':'')+'" id="mt'+d.id+'" onclick="toggleMemo('+d.id+')" style="flex:1;">'
+      +(has?'📝 메모 있음':'＋ 메모 추가')+'</button>'
+      +(has?'<button onclick="doDelAll('+d.id+')" style="padding:8px 12px;border:1px solid #fca5a5;'
+        +'border-radius:20px;background:#fff0f0;color:#c0392b;font-size:0.78em;font-weight:700;'
+        +'cursor:pointer;font-family:inherit;">🗑</button>':'')
+      +'</div>'
+      +'<div class="memo-box'+(has?' open':'')+'" id="mb'+d.id+'">'
+      +'<textarea class="memo-textarea" id="ta'+d.id+'" placeholder="메모..." '
+      +'oninput="onMemoInput('+d.id+')">'+(loadMemo(d.id)||'')+'</textarea>'
+      +'</div></div>';
+    container.appendChild(div);
+
+    // 성구 로드 목록에 추가
+    var verseKey = bk ? (bk+'-'+ch+'-'+vs) : null;
+    var verseEl = document.getElementById(vtId) || div.querySelector('#'+vtId);
+    if (verseKey && VDB[verseKey]) {
+      // VDB에 있으면 바로 표시
+      setTimeout(function(vid, vkey){
+        var el = document.getElementById(vid);
+        if (el) showVerse(el, VDB[vkey]);
+      }.bind(null, vtId, verseKey), 50);
+    } else if (d.verse) {
+      // 저장된 성구 텍스트 사용
+      setTimeout(function(vid, vtext){
+        var el = document.getElementById(vid);
+        if (el) showVerse(el, vtext);
+      }.bind(null, vtId, d.verse), 50);
+    } else {
+      // 없으면 wol 링크로 대체
+      setTimeout(function(vid, vurl, vref){
+        var el = document.getElementById(vid);
+        if (el) {
+          el.className = 'verse-text';
+          el.innerHTML = '<a href="'+vurl+'" target="_blank" style="color:var(--green);font-size:0.9em;">📖 JW.ORG에서 읽기</a>';
+        }
+      }.bind(null, vtId, url, d.ref), 50);
+    }
+  });
+
+  document.getElementById('card-container').after(container);
+}
+
+// 성구 문자열 파싱 (bk/ch/vs 추출)
+function parseRefStr(refStr) {
+  if (!refStr) return null;
+  var bookMap = {
+    '마태복음':'MAT','마가복음':'MRK','누가복음':'LUK','요한복음':'JOH',
+    '사도행전':'ACT','로마서':'ROM','고린도전서':'1CO','고린도후서':'2CO',
+    '갈라디아서':'GAL','에베소서':'EPH','빌립보서':'PHP','골로새서':'COL',
+    '데살로니가전서':'1TH','데살로니가후서':'2TH','디모데전서':'1TI','디모데후서':'2TI',
+    '디도서':'TIT','빌레몬서':'PHM','히브리서':'HEB','야고보서':'JAS',
+    '베드로전서':'1PE','베드로후서':'2PE','요한일서':'1JO','요한이서':'2JO',
+    '요한삼서':'3JO','유다서':'JUD','요한계시록':'REV',
+    '창세기':'GEN','출애굽기':'EXO','레위기':'LEV','민수기':'NUM','신명기':'DEU',
+    '여호수아':'JOS','사사기':'JDG','룻기':'RUT','시편':'PSA','잠언':'PRO',
+    '이사야':'ISA','예레미야':'JER','에스겔':'EZK','다니엘':'DAN',
+    '마태':'MAT','마가':'MRK','누가':'LUK','요한':'JOH'
+  };
+  var m = refStr.match(/([가-힣]+)\s*(\d+):(\d+)/);
+  if (!m) return null;
+  var bkName = m[1], ch = parseInt(m[2]), vs = parseInt(m[3]);
+  var bk = null;
+  for (var name in bookMap) {
+    if (bkName === name || bkName.indexOf(name) === 0) { bk = bookMap[name]; break; }
+  }
+  return bk ? {bk:bk, ch:ch, vs:vs} : null;
+}
+
+// 사용자 골자용 참조 버튼
+function openRefCustom(key, id) {
+  refCurrentId = id;
+  var d = null;
+  try { d = JSON.parse(localStorage.getItem(key)); } catch(e){}
+  if (!d) return;
+  document.getElementById('ref-input').value = d.title || '';
+  document.getElementById('ref-title').textContent = '📚 참조';
+  document.getElementById('ref-subtitle').textContent = '검색어를 수정하거나 그대로 참조 버튼을 누르세요';
+  document.getElementById('ref-body').innerHTML = '';
+  document.getElementById('ref-drawer').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function escH(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function openCustomList() {
+  var cards = getCustomCards();
+  var body = document.getElementById('custom-list-body');
+  if (!cards.length) {
+    body.innerHTML = '<div style="text-align:center;padding:40px;color:#bbb;font-size:0.9em;">만든 골자가 없습니다<br><br>아래 버튼으로 새 카드를 만들어보세요!</div>';
+  } else {
+    body.innerHTML = cards.map(function(d){
+      return '<div style="border:1px solid #c8ddf0;border-radius:12px;padding:12px 14px;margin-bottom:8px;background:#f0f8ff;">'
+        +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">'
+        +'<div style="font-size:0.88em;font-weight:800;color:#1a5276;">['+d.id+'] '+escH(d.title||'')+'</div>'
+        +'<div style="font-size:0.72em;color:#aaa;white-space:nowrap;margin-left:8px;">🕐 '+(d.dateStr||'')+'</div>'
+        +'</div>'
+        +'<div style="font-size:0.8em;color:#666;margin-bottom:8px;">📖 '+escH(d.ref||'')+'</div>'
+        +'<div style="display:flex;gap:6px;">'
+        +'<button onclick="openCustomCard(\''+d.key+'\');closeCustomList();" '
+        +'style="flex:1;padding:7px;border:1px solid #c8ddf0;border-radius:10px;'
+        +'background:#fff;color:#1a5276;font-size:0.8em;font-weight:700;cursor:pointer;font-family:inherit;">✏️ 수정</button>'
+        +'<button onclick="showConfirmToast(\'삭제할까요?\',function(){localStorage.removeItem(\''+d.key+'\');updateCustomCount();renderCustomCards();openCustomList();});" '
+        +'style="padding:7px 12px;border:1px solid #fca5a5;border-radius:10px;'
+        +'background:#fff0f0;color:#c0392b;font-size:0.8em;font-weight:700;cursor:pointer;font-family:inherit;">🗑</button>'
+        +'</div></div>';
+    }).join('');
+  }
+  qPushAppView('custom-list-panel');
+  document.getElementById('custom-list-panel').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCustomList() {
+  document.getElementById('custom-list-panel').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+
+// ════════════════════════════════════════
+// 전체 개인 자료 백업 / 복원
+// ════════════════════════════════════════
+const FULL_BACKUP_APP = '봉사모임사회 PRO';
+const FULL_BACKUP_SCHEMA = 1;
+
+function isPersonalDataKey(key) {
+  return /^m\d+$/.test(key) ||
+         /^md\d+$/.test(key) ||
+         key.startsWith('nme_') ||
+         key.startsWith('cc_') ||
+         key.startsWith('ed_');
+}
+
+function collectAllPersonalData() {
+  const items = {};
+  Object.keys(localStorage).forEach(function(key) {
+    if (isPersonalDataKey(key)) items[key] = localStorage.getItem(key);
+  });
+  return {
+    app: FULL_BACKUP_APP,
+    schemaVersion: FULL_BACKUP_SCHEMA,
+    appVersion: APP_VERSION,
+    createdAt: new Date().toISOString(),
+    createdAtKo: new Date().toLocaleString('ko-KR'),
+    itemCount: Object.keys(items).length,
+    items: items
+  };
+}
+
+function makeFullBackupFileName() {
+  const d = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  return '봉사모임사회PRO_전체자료백업_' +
+    d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '_' +
+    pad(d.getHours()) + pad(d.getMinutes()) + '.json';
+}
+
+
+function confirmBackupAndRun() {
+  const ok = confirm(
+    '개인 메모·개인 연구·직접 만든 골자·수정한 골자만 백업됩니다.\n\n' +
+    '기본 100문 자료는 백업되지 않습니다.\n\n' +
+    '백업을 계속할까요?'
+  );
+  if (ok) backupAllPersonalData();
+}
+
+function confirmRestoreAndRun() {
+  const ok = confirm(
+    '선택한 백업 파일의 개인 자료를 이 기기에 합쳐서 불러옵니다.\n\n' +
+    '기본 100문 자료는 앱에 그대로 유지됩니다.\n\n' +
+    '백업 자료를 불러올까요?'
+  );
+  if (ok) restoreAllPersonalData();
+}
+
+async function backupAllPersonalData() {
+  const payload = collectAllPersonalData();
+  const json = JSON.stringify(payload, null, 2);
+  const fileName = makeFullBackupFileName();
+
+  try {
+    if (window.showSaveFilePicker) {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: fileName,
+        types: [{
+          description: '봉사모임사회 PRO 백업 파일',
+          accept: { 'application/json': ['.json'] }
+        }]
+      });
+      const writable = await handle.createWritable();
+      await writable.write(json);
+      await writable.close();
+      showBackupToast('✓ 선택한 위치에 전체 자료를 백업했습니다');
+      return;
+    }
+  } catch (e) {
+    if (e && e.name === 'AbortError') return;
+  }
+
+  const blob = new Blob(['\uFEFF' + json], { type: 'application/json;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function() {
+    URL.revokeObjectURL(a.href);
+    a.remove();
+  }, 500);
+  showBackupToast('✓ 다운로드 위치에 전체 자료를 백업했습니다');
+}
+
+async function restoreAllPersonalData() {
+  try {
+    if (window.showOpenFilePicker) {
+      const handles = await window.showOpenFilePicker({
+        multiple: false,
+        types: [{
+          description: '봉사모임사회 PRO 백업 파일',
+          accept: { 'application/json': ['.json'] }
+        }]
+      });
+      if (!handles || !handles[0]) return;
+      const file = await handles[0].getFile();
+      await importFullBackupFile(file);
+      return;
+    }
+  } catch (e) {
+    if (e && e.name === 'AbortError') return;
+  }
+
+  const input = document.getElementById('full-backup-import-file');
+  if (input) input.click();
+}
+
+async function handleFullBackupImport(event) {
+  const file = event.target.files && event.target.files[0];
+  event.target.value = '';
+  if (!file) return;
+  await importFullBackupFile(file);
+}
+
+async function importFullBackupFile(file) {
+  try {
+    const raw = await file.text();
+    const payload = JSON.parse(raw.replace(/^\uFEFF/, ''));
+
+    if (!payload || payload.app !== FULL_BACKUP_APP ||
+        !payload.items || typeof payload.items !== 'object' ||
+        Array.isArray(payload.items)) {
+      alert('봉사모임사회 PRO의 올바른 전체 백업 파일이 아닙니다.');
+      return;
+    }
+
+    const validEntries = Object.entries(payload.items)
+      .filter(function(entry) {
+        return isPersonalDataKey(entry[0]) && typeof entry[1] === 'string';
+      });
+
+    if (!validEntries.length) {
+      alert('불러올 개인 자료가 없습니다.');
+      return;
+    }
+
+    showConfirmToast(
+      '백업 자료 ' + validEntries.length + '개를 이 기기에 불러올까요?',
+      function() {
+        validEntries.forEach(function(entry) {
+          localStorage.setItem(entry[0], entry[1]);
+        });
+        refreshAfterFullRestore();
+        showBackupToast('✓ 개인 자료 ' + validEntries.length + '개를 불러왔습니다');
+      }
+    );
+  } catch (e) {
+    alert('백업 파일을 읽지 못했습니다. JSON 백업 파일인지 확인해 주세요.');
+  }
+}
+
+function refreshAfterFullRestore() {
+  if (typeof updateCustomCount === 'function') updateCustomCount();
+  if (typeof filterCards === 'function') filterCards();
+  if (typeof renderCustomCards === 'function') renderCustomCards();
+
+  const viewer = document.getElementById('memo-viewer');
+  if (viewer && viewer.style.display !== 'none' &&
+      typeof openMemoViewer === 'function') {
+    openMemoViewer();
+  }
+}
+
+
+var BACKUP_APP_NAME = '봉사모임사회 PRO. ver3';
+var BACKUP_MAIN_DIR = '봉사모임프로';
+var BACKUP_STORE_NAME = 'bongsa_backup_handles';
+var BACKUP_DB_NAME = 'bongsa_pro_backup_db';
+var BACKUP_SPECS = {
+  outline: {
+    type: 'outline',
+    label: '골자',
+    subdir: '봉사모임골자',
+    file: 'bongsa-outlines-backup.json',
+    importInput: 'outline-import-file',
+    keys: function(k){ return k.startsWith('cc_') || k.startsWith('ed_'); }
+  },
+  study: {
+    type: 'study',
+    label: '개인연구',
+    subdir: '개인연구',
+    file: 'bongsa-study-backup.json',
+    importInput: 'study-import-file',
+    keys: function(k){ return k.startsWith('nme_'); }
+  }
+};
+
+function backupOutlineData() { backupData('outline'); }
+function backupStudyData() { backupData('study'); }
+function importOutlineData() { importData('outline'); }
+function importStudyData() { importData('study'); }
+
+async function backupData(type) {
+  var spec = BACKUP_SPECS[type];
+  var payload = buildBackupPayload(type);
+  if (!payload.items.length) { alert('백업할 ' + spec.label + ' 자료가 없습니다.'); return; }
+  try {
+    if (window.showDirectoryPicker) {
+      await saveBackupToFolder(spec, payload);
+    } else {
+      downloadBackupFile(spec, payload);
+    }
+  } catch(e) {
+    if (e && e.name === 'AbortError') return;
+    downloadBackupFile(spec, payload);
+  }
+}
+
+function buildBackupPayload(type) {
+  var spec = BACKUP_SPECS[type];
+  var items = Object.keys(localStorage).filter(spec.keys).map(function(k){
+    var raw = localStorage.getItem(k);
+    var data = raw;
+    try { data = JSON.parse(raw); } catch(e) {}
+    return { key: k, data: data };
+  }).sort(function(a,b){ return a.key.localeCompare(b.key); });
+  return {
+    app: BACKUP_APP_NAME,
+    version: 1,
+    type: type,
+    createdAt: new Date().toISOString(),
+    createdAtKo: new Date().toLocaleString('ko-KR'),
+    items: items
+  };
+}
+
+async function saveBackupToFolder(spec, payload) {
+  var root = await getUsableBackupRoot(spec.type, 'readwrite');
+  if (!root) {
+    root = await window.showDirectoryPicker({
+      id: 'bongsa-' + spec.type + '-backup',
+      mode: 'readwrite',
+      startIn: 'documents'
+    });
+    await saveBackupRootHandle(spec.type, root);
+  }
+  var main = await root.getDirectoryHandle(BACKUP_MAIN_DIR, { create: true });
+  var folder = await main.getDirectoryHandle(spec.subdir, { create: true });
+  var fileHandle = await folder.getFileHandle(spec.file, { create: true });
+  var writable = await fileHandle.createWritable();
+  await writable.write(JSON.stringify(payload, null, 2));
+  await writable.close();
+  showBackupToast('✓ ' + BACKUP_MAIN_DIR + '/' + spec.subdir + '에 백업됨');
+}
+
+function downloadBackupFile(spec, payload) {
+  dlWithBom(JSON.stringify(payload, null, 2), spec.file, 'application/json');
+  showBackupToast('✓ ' + spec.label + ' 백업 파일을 다운로드했습니다');
+}
+
+async function importData(type) {
+  var spec = BACKUP_SPECS[type];
+  try {
+    if (window.showDirectoryPicker) {
+      var root = await window.showDirectoryPicker({
+        id: 'bongsa-' + spec.type + '-import',
+        mode: 'read',
+        startIn: 'documents'
+      });
+      var folder = await findBackupFolder(root, spec);
+      var file = await findBackupFile(folder, spec);
+      if (!file) { alert('백업 파일을 찾지 못했습니다. JSON 파일 선택 방식으로 다시 시도해 주세요.'); return; }
+      await applyBackupPayload(JSON.parse(await file.text()), type);
+    } else {
+      document.getElementById(spec.importInput).click();
+    }
+  } catch(e) {
+    if (e && e.name === 'AbortError') return;
+    document.getElementById(spec.importInput).click();
+  }
+}
+
+async function findBackupFolder(root, spec) {
+  try {
+    var main = await root.getDirectoryHandle(BACKUP_MAIN_DIR);
+    return await main.getDirectoryHandle(spec.subdir);
+  } catch(e) {}
+  try { return await root.getDirectoryHandle(spec.subdir); } catch(e) {}
+  return root;
+}
+
+async function findBackupFile(folder, spec) {
+  try {
+    var exact = await folder.getFileHandle(spec.file);
+    return await exact.getFile();
+  } catch(e) {}
+  var found = [];
+  if (folder.values) {
+    for await (var handle of folder.values()) {
+      if (handle.kind === 'file' && /\.json$/i.test(handle.name)) {
+        var file = await handle.getFile();
+        found.push(file);
+      }
+    }
+  }
+  found.sort(function(a,b){ return b.lastModified - a.lastModified; });
+  return found[0] || null;
+}
+
+function handleImportFile(event, type) {
+  var file = event.target.files && event.target.files[0];
+  event.target.value = '';
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(){
+    try { applyBackupPayload(JSON.parse(reader.result), type); }
+    catch(e) { alert('백업 파일을 읽지 못했습니다.'); }
+  };
+  reader.readAsText(file, 'utf-8');
+}
+
+async function applyBackupPayload(payload, type) {
+  var spec = BACKUP_SPECS[type];
+  if (!payload || !Array.isArray(payload.items)) { alert('올바른 백업 파일이 아닙니다.'); return; }
+  var count = 0;
+  payload.items.forEach(function(item){
+    if (!item || !item.key || !spec.keys(item.key)) return;
+    localStorage.setItem(item.key, typeof item.data === 'string' ? item.data : JSON.stringify(item.data));
+    count++;
+  });
+  if (type === 'outline') {
+    updateCustomCount();
+    filterCards();
+    renderCustomCards();
+    if (document.getElementById('custom-list-panel').style.display !== 'none') openCustomList();
+  } else {
+    if (document.getElementById('memo-viewer').style.display !== 'none') openMemoViewer();
+  }
+  showBackupToast('✓ ' + spec.label + ' ' + count + '개 불러옴');
+}
+
+function openBackupDb() {
+  return new Promise(function(resolve, reject){
+    var req = indexedDB.open(BACKUP_DB_NAME, 1);
+    req.onupgradeneeded = function(){ req.result.createObjectStore(BACKUP_STORE_NAME); };
+    req.onsuccess = function(){ resolve(req.result); };
+    req.onerror = function(){ reject(req.error); };
+  });
+}
+
+async function getBackupRootHandle(type) {
+  var db = await openBackupDb();
+  return new Promise(function(resolve, reject){
+    var req = db.transaction(BACKUP_STORE_NAME, 'readonly').objectStore(BACKUP_STORE_NAME).get(type);
+    req.onsuccess = function(){ resolve(req.result || null); };
+    req.onerror = function(){ reject(req.error); };
+  });
+}
+
+async function saveBackupRootHandle(type, handle) {
+  var db = await openBackupDb();
+  return new Promise(function(resolve, reject){
+    var req = db.transaction(BACKUP_STORE_NAME, 'readwrite').objectStore(BACKUP_STORE_NAME).put(handle, type);
+    req.onsuccess = function(){ resolve(); };
+    req.onerror = function(){ reject(req.error); };
+  });
+}
+
+async function getUsableBackupRoot(type, mode) {
+  var handle = await getBackupRootHandle(type);
+  if (!handle) return null;
+  var opts = { mode: mode || 'read' };
+  if (handle.queryPermission && (await handle.queryPermission(opts)) === 'granted') return handle;
+  if (handle.requestPermission && (await handle.requestPermission(opts)) === 'granted') return handle;
+  return null;
+}
+
+function showBackupToast(msg) {
+  var toast = document.getElementById('add-toast');
+  if (toast) { toast.textContent = msg; toast.classList.add('show'); setTimeout(function(){ toast.classList.remove('show'); }, 2200); }
+}
+
+function openBaseEditList() {
+  renderBaseEditList();
+  qPushAppView('base-edit-list-panel');
+  document.getElementById('base-edit-list-panel').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeBaseEditList() {
+  document.getElementById('base-edit-list-panel').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function renderBaseEditList() {
+  var body = document.getElementById('base-edit-list-body');
+  if (!body) return;
+  var qEl = document.getElementById('base-edit-search');
+  var q = qEl ? qEl.value.toLowerCase().trim() : '';
+  var list = DATA.map(function(orig){ return getBaseCard(orig); }).filter(function(d){
+    if (!q) return true;
+    return (d.title||'').toLowerCase().includes(q) || (d.ref||'').toLowerCase().includes(q) ||
+      (d.desc||'').toLowerCase().includes(q) || (d.sug||'').toLowerCase().includes(q) || String(d.id) === q;
+  });
+  body.innerHTML = list.map(function(d){
+    return '<div style="border:1px solid #d7ccc8;border-radius:12px;padding:12px 14px;margin-bottom:8px;background:'+(d.edited?'#fff8e1':'#fff8f0')+';">'
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;gap:8px;">'
+      +'<div style="font-size:0.88em;font-weight:800;color:#5d4037;flex:1;">['+d.id+'] '+escH(d.title||'')+(d.edited?' <span style="font-size:0.76em;color:#c07b00;">수정됨</span>':'')+'</div>'
+      +'<div style="font-size:0.72em;color:#aaa;white-space:nowrap;">'+(d.dateStr?'🕐 '+escH(d.dateStr):'원본')+'</div>'
+      +'</div>'
+      +'<div style="font-size:0.8em;color:#666;margin-bottom:8px;">📖 '+escH(d.ref||'')+'</div>'
+      +'<div style="display:flex;gap:6px;">'
+      +'<button onclick="editBaseCard('+d.id+')" '
+      +'style="flex:1;padding:7px;border:1px solid #d7ccc8;border-radius:10px;'
+      +'background:#fff;color:#5d4037;font-size:0.8em;font-weight:800;cursor:pointer;font-family:inherit;">✏️ 수정</button>'
+      +(d.edited?'<button onclick="restoreBaseCard('+d.id+')" '
+      +'style="padding:7px 12px;border:1px solid #f0b36a;border-radius:10px;'
+      +'background:#fffaf0;color:#9a5a00;font-size:0.8em;font-weight:800;cursor:pointer;font-family:inherit;">↩ 원본복구</button>':'')
+      +'</div></div>';
+  }).join('') || '<div style="text-align:center;padding:40px;color:#bbb;font-size:0.9em;">검색 결과가 없습니다</div>';
+}
+
+function editBaseCard(id) {
+  var orig = DATA.find(function(x){ return x.id === id; });
+  var data = getBaseCard(orig);
+  if (!data) return;
+  cceMode = 'base';
+  cceBaseId = id;
+  cceCurrentKey = null;
+  document.getElementById('cce-title').value = data.title || '';
+  document.getElementById('cce-ref').value = data.ref || '';
+  document.getElementById('cce-desc').value = data.desc || '';
+  document.getElementById('cce-sug').value = data.sug || '';
+  var vr = document.getElementById('cce-verse-result');
+  if (data.verse) { vr.textContent = data.verse; vr.style.display = 'block'; }
+  else vr.style.display = 'none';
+  var del = document.getElementById('cce-del-btn');
+  if (del) {
+    del.style.display = getBaseEdit(id) ? 'block' : 'none';
+    del.textContent = '↩ 원본복구';
+  }
+  var headerTitle = document.getElementById('cce-header-title');
+  if (headerTitle) headerTitle.textContent = '✏️ 기본 카드 수정 [' + id + ']';
+  closeBaseEditList();
+  qPushAppView('custom-card-editor');
+  document.getElementById('custom-card-editor').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function restoreBaseCard(id, skipConfirm) {
+  var run = function(){
+    localStorage.removeItem('ed_' + id);
+    filterCards();
+    renderCustomCards();
+    renderBaseEditList();
+    var toast = document.getElementById('add-toast');
+    if (toast) { toast.textContent='✓ ['+id+'] 원본으로 복구됨'; toast.classList.add('show'); setTimeout(function(){ toast.classList.remove('show'); },1800); }
+  };
+  if (skipConfirm) run();
+  else showConfirmToast('원본으로 복구할까요?', run);
+}
+
+function openMemoViewer() {
+  const body = document.getElementById('memo-viewer-body');
+
+  // 개인성서연구 목록만 표시
+  const nmeList = getNmeMemoList();
+  let html = '';
+
+  html += '<div style="font-size:0.82em;font-weight:800;color:#27500a;'
+    + 'padding:10px 0 6px;border-bottom:2px solid #c8e6c9;margin-bottom:10px;">'
+    + '✏️ 개인성서연구 (' + nmeList.length + '개)</div>';
+
+  if (!nmeList.length) {
+    html += '<div style="text-align:center;padding:40px;color:#bbb;font-size:0.9em;">저장된 개인성서연구가 없습니다</div>';
+  } else {
+    html += nmeList.map(function(m) {
+      var preview = (m.text||'').replace(/\n/g,' ').slice(0,60) + ((m.text||'').length>60?'…':'');
+      return '<div style="border:1px solid #c8e6c9;border-radius:12px;padding:12px 14px;margin-bottom:8px;background:#f0f8f0;">'
+        + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">'
+        + '<div style="font-size:0.88em;font-weight:800;color:#27500a;flex:1;">' + (m.title||'제목없음') + '</div>'
+        + '<div style="font-size:0.72em;color:#aaa;white-space:nowrap;margin-left:8px;">🕐 ' + m.dateStr + '</div>'
+        + '</div>'
+        + '<div style="font-size:0.8em;color:#666;margin-bottom:8px;">' + preview + '</div>'
+        + '<div style="display:flex;gap:6px;">'
+        + '<button onclick="openNmeMemo(\''+m.key+'\');closeMemoViewer();" '
+        + 'style="flex:1;padding:7px;border:1px solid #c8e6c9;border-radius:10px;'
+        + 'background:#fff;color:#27500a;font-size:0.8em;font-weight:700;cursor:pointer;font-family:inherit;">✏️ 편집</button>'
+        + '<button onclick="openMemoPreviewForNme(\''+m.key+'\');closeMemoViewer();" '
+        + 'style="flex:1;padding:7px;border:1px solid #c8e6c9;border-radius:10px;'
+        + 'background:#fff;color:#6a1b9a;font-size:0.8em;font-weight:700;cursor:pointer;font-family:inherit;">👁 미리보기</button>'
+        + '<button onclick="deleteNmeMemo(\''+m.key+'\');" '
+        + 'style="padding:7px 10px;border:1px solid #fca5a5;border-radius:10px;'
+        + 'background:#fff0f0;color:#c0392b;font-size:0.8em;font-weight:700;cursor:pointer;font-family:inherit;">🗑</button>'
+        + '</div>'
+        + '</div>';
+    }).join('');
+  }
+
+  body.innerHTML = html;
+  const el = document.getElementById('memo-viewer');
+  qPushAppView('memo-viewer');
+  el.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+// 개인성서연구 목록에서 미리보기
+function openMemoPreviewForNme(key) {
+  try {
+    var data = JSON.parse(localStorage.getItem(key));
+    if (!data) return;
+    var html = '<div style="font-size:1.05em;font-weight:800;color:#27500a;margin-bottom:10px;">✏️ ' + (data.title||'') + '</div>' + (data.html||'');
+    document.getElementById('mpm-preview-paper').innerHTML = html;
+    mpmState.sourceId = 'nme_' + key;
+    mpmState.type = '';
+    mpmState._nmeKey = key;
+    mpmUpdateStyles();
+    mpmGoStep(1);
+    qPushAppView('memo-preview-modal');
+    document.getElementById('memo-preview-modal').style.display = 'flex';
+  } catch(e){}
+}
+
+function closeMemoViewer() {
+  document.getElementById('memo-viewer').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+// 개인연구목록에서 편집 — 개인성서연구와 같은 워드 편집기 형식
+var memoEditorId = null;
+function openMemoEditorFromViewer(id) {
+  memoEditorId = id;
+  const d = getBaseCard(DATA.find(x => x.id === id));
+  const memo = loadMemo(id);
+  // 내용을 nme-content(개인성서연구 편집기)에 로드
+  const content = document.getElementById('nme-content');
+  // 줄바꿈을 p 태그로 변환
+  content.innerHTML = textToMemoHtml(memo);
+  updateNmeCount();
+  // 제목 변경
+  const header = document.querySelector('#new-memo-editor > div:first-child > div');
+  if (header) header.textContent = '✏️ 메모 편집 — ' + (d ? d.title : id);
+  closeMemoViewer();
+  const el = document.getElementById('new-memo-editor');
+  qPushAppView('new-memo-editor');
+  el.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => content.focus(), 200);
+}
+
+// 내보내기 모달
+var exportMemoTargetId = null; // null = 개인성서연구, 숫자 = 골자 메모
+
+function openMemoSaveModal() {
+  // 메모 오버레이에서 호출 (현재 편집 중인 메모)
+  exportMemoTargetId = memoOverlayId;
+  const d = memoOverlayId ? getBaseCard(DATA.find(x => x.id === memoOverlayId)) : null;
+  document.getElementById('memo-save-modal-title').textContent =
+    d ? '[' + memoOverlayId + '] ' + d.title : '현재 메모';
+  qPushAppView('memo-save-modal');
+  document.getElementById('memo-save-modal').style.display = 'flex';
+}
+
+function openMemoSaveModalFor(id) {
+  // 개인연구목록에서 특정 메모 저장
+  exportMemoTargetId = id;
+  const d = getBaseCard(DATA.find(x => x.id === id));
+  document.getElementById('memo-save-modal-title').textContent =
+    d ? '[' + id + '] ' + d.title : '메모';
+  qPushAppView('memo-save-modal');
+  document.getElementById('memo-save-modal').style.display = 'flex';
+}
+
+function closeMemoSaveModal() {
+  document.getElementById('memo-save-modal').style.display = 'none';
+}
+
+function exportMemoAs(type) {
+  const date = new Date().toLocaleDateString('ko-KR').replace(/\.\s*/g,'-').replace(/-$/,'');
+  let text = '', html = '', fileName = '메모_' + date;
+
+  if (exportMemoTargetId === null) {
+    // 개인성서연구 편집기 내용
+    const content = document.getElementById('nme-content');
+    text = content.innerText || '';
+    html = content.innerHTML;
+    fileName = '개인성서연구_' + date;
+  } else {
+    // 골자 메모
+    const d = getBaseCard(DATA.find(x => x.id === exportMemoTargetId));
+    text = loadMemo(exportMemoTargetId);
+    html = textToMemoHtml(text);
+    fileName = (d ? '[' + exportMemoTargetId + ']' + d.title : '메모') + '_' + date;
+  }
+
+  if (type === 'txt') {
+    const blob = new Blob(['\uFEFF' + text], {type:'text/plain;charset=utf-8'});
+    const a = Object.assign(document.createElement('a'), {href:URL.createObjectURL(blob), download:fileName+'.txt'});
+    document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);
+
+  } else if (type === 'doc') {
+    const docHtml = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word">'
+      + '<head><meta charset="UTF-8"><style>body{font-family:\'맑은 고딕\',sans-serif;font-size:11pt;line-height:1.8;margin:2cm;}'
+      + 'p{margin-bottom:8pt;}</style></head><body>' + html + '</body></html>';
+    const blob = new Blob(['\uFEFF'+docHtml], {type:'application/msword;charset=utf-8'});
+    const a = Object.assign(document.createElement('a'), {href:URL.createObjectURL(blob), download:fileName+'.doc'});
+    document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);
+
+  } else if (type === 'pdf') {
+    // PDF는 인쇄 다이얼로그 이용
+    const printHtml = '<html><head><meta charset="UTF-8">'
+      + '<style>body{font-family:\'맑은 고딕\',sans-serif;font-size:11pt;line-height:1.8;margin:2cm;}'
+      + 'p{margin-bottom:8pt;}@media print{@page{margin:2cm;}}</style>'
+      + '</head><body>' + html
+      + '<script>window.onload=function(){window.print();window.onafterprint=function(){window.close();};}<\/script>'
+      + '</body></html>';
+    const w = window.open('','_blank','width=700,height=900');
+    if (w) { w.document.write(printHtml); w.document.close(); }
+    else {
+      // 팝업 차단 시 현재 페이지에서 인쇄
+      const old = document.getElementById('print-area');
+      if (old) old.remove();
+      const div = document.createElement('div');
+      div.id = 'print-area';
+      div.innerHTML = '<div style="font-family:\'맑은 고딕\',sans-serif;font-size:11pt;line-height:1.8;padding:2cm;">' + html + '</div>';
+      document.body.appendChild(div);
+      const style = document.createElement('style');
+      style.id = 'print-style';
+      style.textContent = '@media print{body>*:not(#print-area){display:none!important;}#print-area{display:block!important;}@page{margin:0;}}#print-area{display:none;}';
+      document.head.appendChild(style);
+      setTimeout(() => {
+        window.print();
+        setTimeout(() => { div.remove(); style.remove(); }, 1000);
+      }, 100);
+    }
+  }
+
+  closeMemoSaveModal();
+  const toast = document.getElementById('add-toast');
+  if (toast && type !== 'pdf') {
+    toast.textContent = '✓ ' + (type==='txt'?'TXT':type==='doc'?'Word':'PDF') + ' 저장 완료!';
+    toast.classList.add('show');
+    setTimeout(()=>toast.classList.remove('show'), 1800);
+  }
+}
+
+// ════════════════════════════════════════
+// 개인성서연구 워드 편집기 (제목+날짜별 목록)
+// ════════════════════════════════════════
+var nmeCurrentKey = null; // 현재 편집 중인 메모 키 (null=개인성서연구)
+
+
+function sanitizeNmeHtml(html) {
+  const box = document.createElement('div');
+  box.innerHTML = html || '';
+
+  box.querySelectorAll('script,style,iframe,object,embed').forEach(function(el) {
+    el.remove();
+  });
+
+  box.querySelectorAll('a').forEach(function(a) {
+    const frag = document.createDocumentFragment();
+    while (a.firstChild) frag.appendChild(a.firstChild);
+    a.replaceWith(frag);
+  });
+
+  box.querySelectorAll('*').forEach(function(el) {
+    Array.from(el.attributes).forEach(function(attr) {
+      const n = attr.name.toLowerCase();
+      if (n.startsWith('on') || n === 'href' || n === 'target') {
+        el.removeAttribute(attr.name);
+      }
+    });
+  });
+
+  return box.innerHTML;
+}
+
+function sanitizeNmeLinks() {
+  const content = document.getElementById('nme-content');
+  if (!content || !content.querySelector('a')) return;
+
+  const sel = window.getSelection();
+  let offset = 0;
+  if (sel && sel.rangeCount && content.contains(sel.anchorNode)) {
+    const pre = document.createRange();
+    pre.selectNodeContents(content);
+    pre.setEnd(sel.anchorNode, sel.anchorOffset);
+    offset = pre.toString().length;
+  }
+
+  content.innerHTML = sanitizeNmeHtml(content.innerHTML);
+
+  try {
+    const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT);
+    let node, count = 0;
+    while ((node = walker.nextNode())) {
+      const next = count + node.nodeValue.length;
+      if (offset <= next) {
+        const range = document.createRange();
+        range.setStart(node, Math.max(0, offset - count));
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
+        break;
+      }
+      count = next;
+    }
+  } catch (e) {}
+}
+
+function nmePastePlain(event) {
+  event.preventDefault();
+  const plain = (event.clipboardData || window.clipboardData).getData('text/plain');
+  const safe = plain.replace(/\r\n?/g, '\n');
+  document.execCommand('insertText', false, safe);
+}
+
+function textToMemoHtml(value) {
+  const esc = String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  return esc
+    .split(/\n{2,}/)
+    .map(function(p) {
+      return p.trim() ? '<p>' + p.replace(/\n/g, '<br>') + '</p>' : '';
+    })
+    .filter(Boolean)
+    .join('') || '<p><br></p>';
+}
+
+
+
+function openOtherFormatImport() {
+  const input = document.getElementById('other-format-import-file');
+  if (input) input.click();
+}
+
+async function handleOtherFormatImport(event) {
+  const input = event.target;
+  const file = input.files && input.files[0];
+  input.value = '';
+  if (!file) return;
+
+  const name = file.name || '가져온 문서';
+  const ext = name.includes('.') ? name.split('.').pop().toLowerCase() : '';
+  const title = name.replace(/\.[^.]+$/, '') || '가져온 문서';
+
+  try {
+    showBackupToast('문서를 읽는 중입니다…');
+
+    let importedText = '';
+
+    if (ext === 'docx') {
+      if (!window.mammoth) throw new Error('Word reader unavailable');
+      const result = await window.mammoth.extractRawText({
+        arrayBuffer: await file.arrayBuffer()
+      });
+      importedText = result.value || '';
+
+    } else if (ext === 'pdf') {
+      if (!window.pdfjsLib) throw new Error('PDF reader unavailable');
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+        'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+
+      const pdf = await window.pdfjsLib.getDocument({
+        data: await file.arrayBuffer()
+      }).promise;
+
+      const pages = [];
+      for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
+        const page = await pdf.getPage(pageNo);
+        const content = await page.getTextContent();
+        const pageText = content.items
+          .map(function(item) { return item.str || ''; })
+          .join(' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+        if (pageText) pages.push(pageText);
+      }
+      importedText = pages.join('\n\n');
+
+    } else if (ext === 'html' || ext === 'htm') {
+      const html = await file.text();
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      importedText = (doc.body && doc.body.innerText) || '';
+
+    } else if (ext === 'txt') {
+      importedText = await file.text();
+
+    } else {
+      alert('지원되는 형식은 PDF, Word(.docx), TXT, HTML입니다.');
+      return;
+    }
+
+    importedText = String(importedText || '')
+      .replace(/\u0000/g, '')
+      .replace(/\r\n?/g, '\n')
+      .trim();
+
+    if (!importedText) {
+      alert('이 문서에서 가져올 수 있는 글자를 찾지 못했습니다.\n스캔 이미지 PDF는 글자 인식이 되지 않을 수 있습니다.');
+      return;
+    }
+
+    const key = 'nme_' + Date.now();
+    const data = {
+      key: key,
+      title: title,
+      html: textToMemoHtml(importedText),
+      text: importedText,
+      date: Date.now(),
+      dateStr: new Date().toLocaleString('ko-KR'),
+      importedFrom: name,
+      importedType: ext
+    };
+
+    localStorage.setItem(key, JSON.stringify(data));
+    openMemoViewer();
+    showBackupToast('✓ "' + title + '" 문서를 개인연구목록에 추가했습니다');
+
+  } catch (error) {
+    console.error(error);
+    alert(
+      '문서를 불러오지 못했습니다.\n\n' +
+      'PDF와 Word(.docx) 문서 읽기는 인터넷 연결이 필요하며,\n' +
+      '암호가 걸렸거나 스캔 이미지로만 된 문서는 불러오지 못할 수 있습니다.'
+    );
+  }
+}
+
+
+// 개인성서연구 목록 불러오기
+function getNmeMemoList() {
+  var keys = Object.keys(localStorage).filter(function(k){ return k.startsWith('nme_'); });
+  return keys.map(function(k){
+    try { return JSON.parse(localStorage.getItem(k)); } catch(e){ return null; }
+  }).filter(Boolean).sort(function(a,b){ return b.date - a.date; });
+}
+
+// 개인성서연구 열기 (신규)
+function openNewMemo() {
+  nmeCurrentKey = null;
+  document.getElementById('nme-title').value = '';
+  document.getElementById('nme-content').innerHTML = '<p><br></p>';
+  updateNmeCount();
+  const el = document.getElementById('new-memo-editor');
+  qPushAppView('new-memo-editor');
+  el.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  setTimeout(function(){ document.getElementById('nme-title').focus(); }, 200);
+}
+
+// 기존 메모 편집
+function openNmeMemo(key) {
+  try {
+    var data = JSON.parse(localStorage.getItem(key));
+    if (!data) return;
+    nmeCurrentKey = key;
+    document.getElementById('nme-title').value = data.title || '';
+    document.getElementById('nme-content').innerHTML = sanitizeNmeHtml(data.html || '<p><br></p>');
+    updateNmeCount();
+    const el = document.getElementById('new-memo-editor');
+    el.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    setTimeout(function(){ document.getElementById('nme-content').focus(); }, 200);
+  } catch(e){}
+}
+
+function closeNewMemo() {
+  saveNewMemo(true);
+  document.getElementById('new-memo-editor').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function saveNewMemo(silent) {
+  var title = (document.getElementById('nme-title').value || '').trim();
+  var html = sanitizeNmeHtml(document.getElementById('nme-content').innerHTML);
+  document.getElementById('nme-content').innerHTML = html;
+  var text = document.getElementById('nme-content').innerText || '';
+  if (!title && !text.trim()) return; // 빈 메모는 저장 안 함
+
+  if (!title) title = '메모 ' + new Date().toLocaleDateString('ko-KR');
+
+  var key = nmeCurrentKey || ('nme_' + Date.now());
+  nmeCurrentKey = key;
+
+  var data = {
+    key: key,
+    title: title,
+    html: html,
+    text: text,
+    date: Date.now(),
+    dateStr: new Date().toLocaleString('ko-KR')
+  };
+  localStorage.setItem(key, JSON.stringify(data));
+
+  if (!silent) {
+    var toast = document.getElementById('add-toast');
+    if (toast) { toast.textContent = '✓ "' + title + '" 저장됨'; toast.classList.add('show'); setTimeout(function(){ toast.classList.remove('show'); }, 1800); }
+  }
+}
+
+// 개인성서연구에서 미리보기/저장 열기
+function openMemoPreviewFromNew() {
+  saveNewMemo(true);
+  var title = (document.getElementById('nme-title').value || '').trim() || '개인성서연구';
+  var html = '<div style="font-size:1.05em;font-weight:800;color:#27500a;margin-bottom:10px;">✏️ ' + title + '</div>'
+    + document.getElementById('nme-content').innerHTML;
+  document.getElementById('mpm-preview-paper').innerHTML = html;
+  mpmState.sourceId = null;
+  mpmState.type = '';
+  mpmState._nmeKey = null;
+  mpmUpdateStyles();
+  mpmGoStep(1);
+  qPushAppView('memo-preview-modal');
+    document.getElementById('memo-preview-modal').style.display = 'flex';
+}
+
+// 개인성서연구 삭제
+function deleteNmeMemo(key) {
+  showConfirmToast('이 메모를 삭제할까요?', function(){
+    localStorage.removeItem(key);
+    openMemoViewer(); // 목록 새로고침
+  });
+}
+
+function nmeExec(cmd, val) {
+  document.getElementById('nme-content').focus();
+  document.execCommand(cmd, false, val || null);
+  updateNmeCount();
+}
+let nmeSavedRange = null;
+
+function nmeRememberSelection() {
+  const editor = document.getElementById('nme-content');
+  const selection = window.getSelection();
+  if (!editor || !selection || selection.rangeCount === 0 || selection.isCollapsed) return;
+
+  const range = selection.getRangeAt(0);
+  if (editor.contains(range.commonAncestorContainer)) {
+    nmeSavedRange = range.cloneRange();
+  }
+}
+
+function nmeRestoreSelection() {
+  const editor = document.getElementById('nme-content');
+  const selection = window.getSelection();
+  if (!editor || !selection || !nmeSavedRange) return false;
+
+  try {
+    selection.removeAllRanges();
+    selection.addRange(nmeSavedRange);
+    editor.focus();
+    return true;
+  } catch (error) {
+    nmeSavedRange = null;
+    return false;
+  }
+}
+
+function nmeNeedSelection() {
+  showBackupToast('먼저 크기를 바꿀 글자를 선택해 주세요');
+}
+
+function nmeSetFont(font) {
+  if (!font) return;
+  if (!nmeRestoreSelection()) {
+    nmeNeedSelection();
+    return;
+  }
+  document.execCommand('fontName', false, font);
+  nmeRememberSelection();
+  updateNmeCount();
+}
+
+function nmeFormat(command) {
+  const editor = document.getElementById('nme-content');
+  if (!editor) return;
+  if (!nmeRestoreSelection()) {
+    nmeNeedSelection();
+    return;
+  }
+  document.execCommand(command, false, null);
+  nmeRememberSelection();
+  updateNmeCount();
+}
+
+function nmeSetFontSize(pt) {
+  if (!pt) return;
+  const editor = document.getElementById('nme-content');
+  if (!editor) return;
+
+  // 선택한 글자에만 적용. 선택이 없으면 문서 전체 크기를 바꾸지 않음.
+  if (!nmeRestoreSelection()) {
+    nmeNeedSelection();
+    return;
+  }
+
+  document.execCommand('fontSize', false, '7');
+
+  editor.querySelectorAll('font[size="7"]').forEach(function(el) {
+    const span = document.createElement('span');
+    span.style.fontSize = pt + 'pt';
+    span.innerHTML = el.innerHTML;
+    el.replaceWith(span);
+  });
+
+  nmeSavedRange = null;
+  updateNmeCount();
+}
+function nmeSetList(value) {
+  if (!value) return;
+  var parts = value.split(':');
+  var tag = parts[0];
+  var styleType = parts[1] || '';
+  var content = document.getElementById('nme-content');
+  content.focus();
+  document.execCommand(tag === 'ol' ? 'insertOrderedList' : 'insertUnorderedList', false, null);
+  var list = nmeGetActiveList();
+  if (list) {
+    list.style.listStyleType = styleType;
+    list.style.margin = '0.45em 0 0.45em 1.6em';
+    list.style.paddingLeft = '1.25em';
+    list.querySelectorAll('li').forEach(function(li){
+      li.style.margin = '0.18em 0';
+      li.style.paddingLeft = '0.15em';
+    });
+  }
+  updateNmeCount();
+}
+function nmeGetActiveList() {
+  var sel = window.getSelection();
+  if (!sel || !sel.rangeCount) return null;
+  var node = sel.anchorNode;
+  if (node && node.nodeType === 3) node = node.parentNode;
+  while (node && node.id !== 'nme-content') {
+    if (node.tagName === 'UL' || node.tagName === 'OL') return node;
+    node = node.parentNode;
+  }
+  return null;
+}
+function updateNmeCount() {
+  var text = document.getElementById('nme-content').innerText || '';
+  document.getElementById('nme-count').textContent = text.replace(/\s/g,'').length + ' 글자';
+}
+function previewNewMemo() {
+  saveNewMemo(true);
+  document.getElementById('nme-preview-body').innerHTML = document.getElementById('nme-content').innerHTML;
+  exportMemoTargetId = null; // 개인성서연구
+  qPushAppView('nme-preview-modal');
+  document.getElementById('nme-preview-modal').style.display = 'flex';
+}
+function closeNmePreview() {
+  document.getElementById('nme-preview-modal').style.display = 'none';
+}
+function saveNewMemoAs(type) {
+  exportMemoTargetId = null;
+  exportMemoAs(type);
+}
+
+function toggleMemo(id) {
+  // 전체화면 오버레이로 열기
+  openMemoOverlay(id);
+}
+
+function openMemoOverlay(id) {
+  memoOverlayId = id;
+  const d = getBaseCard(DATA.find(x => x.id === id));
+  const memo = loadMemo(id);
+
+  // 제목 설정
+  document.getElementById('memo-overlay-title').textContent =
+    (d ? '[' + id + '] ' + d.title : '메모');
+
+  // 내용 설정
+  const ta = document.getElementById('memo-overlay-ta');
+  ta.value = memo;
+
+  // 편집 탭으로 시작
+  switchMemoTab('edit');
+
+  // 버튼 위치 기준으로 애니메이션 시작점 설정
+  const btn = document.getElementById('mt' + id);
+  const overlay = document.getElementById('memo-overlay');
+  if (btn) {
+    const rect = btn.getBoundingClientRect();
+    const originX = Math.round(rect.left + rect.width / 2);
+    const originY = Math.round(rect.top + rect.height / 2);
+    overlay.style.transformOrigin = originX + 'px ' + originY + 'px';
+  } else {
+    overlay.style.transformOrigin = 'center center';
+  }
+
+  // 오버레이 열기
+  qPushAppView('memo-overlay');
+  overlay.style.display = 'flex';
+  overlay.classList.remove('closing');
+  // 다음 프레임에 open 클래스 추가해야 애니메이션 작동
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      overlay.classList.add('open');
+    });
+  });
+  document.body.style.overflow = 'hidden';
+
+  setTimeout(() => ta.focus(), 350);
+}
+
+function closeMemoOverlay() {
+  const overlay = document.getElementById('memo-overlay');
+
+  // 저장
+  if (memoOverlayId !== null) {
+    const ta = document.getElementById('memo-overlay-ta');
+    const v = ta.value;
+    saveMemo(memoOverlayId, v);
+    const btn = document.getElementById('mt' + memoOverlayId);
+    if (btn) {
+      btn.textContent = v.trim() ? '📝 메모 있음' : '＋ 메모 추가';
+      btn.classList.toggle('has-memo', !!v.trim());
+    }
+    const cardTa = document.getElementById('ta' + memoOverlayId);
+    if (cardTa) cardTa.value = v;
+    memoOverlayId = null;
+  }
+
+  // 닫기 애니메이션
+  overlay.classList.add('closing');
+  overlay.classList.remove('open');
+  setTimeout(() => {
+    overlay.classList.remove('closing');
+    overlay.style.display = 'none';
+    document.body.style.overflow = '';
+  }, 250);
+}
+
+function saveMemoOverlay() {
+  if (memoOverlayId === null) return;
+  const ta = document.getElementById('memo-overlay-ta');
+  const v = ta.value;
+  saveMemo(memoOverlayId, v);
+  const btn = document.getElementById('mt' + memoOverlayId);
+  if (btn) {
+    btn.textContent = v.trim() ? '📝 메모 있음' : '＋ 메모 추가';
+    btn.classList.toggle('has-memo', !!v.trim());
+  }
+  const cardTa = document.getElementById('ta' + memoOverlayId);
+  if (cardTa) cardTa.value = v;
+  const toast = document.getElementById('add-toast');
+  if (toast) { toast.textContent = '✓ 저장됐습니다!'; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 1600); }
+}
+
+function saveMemoOverlayAndPreview(){
+  saveMemoOverlay();
+  const id = memoOverlayId;
+  const ta = document.getElementById('memo-overlay-ta');
+  const text = ta ? ta.value : '';
+  const d = getBaseCard(DATA.find(x => x.id === id));
+  const title = d ? '<div style="font-size:1.05em;font-weight:800;color:#3a0068;margin-bottom:10px;">['+id+'] '+(d.title||'')+'</div>' : '';
+  const html = title + text.split(/\n{2,}/)
+    .map(p => p.trim() ? '<p>'+p.replace(/\n/g,'<br>').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</p>' : '')
+    .filter(Boolean).join('');
+  document.getElementById('mpm-preview-paper').innerHTML = html;
+  mpmState.sourceId = id;
+  mpmState.type = '';
+  mpmState._nmeKey = null;
+  mpmUpdateStyles();
+  mpmGoStep(1);
+  qPushAppView('memo-preview-modal');
+    document.getElementById('memo-preview-modal').style.display = 'flex';
+}
+
+function execClearOverlay() {
+  document.getElementById('memo-overlay-ta').value = '';
+  if (memoOverlayId !== null) {
+    clearMemo(memoOverlayId);
+    const btn = document.getElementById('mt' + memoOverlayId);
+    if (btn) { btn.textContent = '＋ 메모 추가'; btn.classList.remove('has-memo'); }
+    const cardTa = document.getElementById('ta' + memoOverlayId);
+    if (cardTa) cardTa.value = '';
+    const delBtn = btn && btn.nextElementSibling;
+    if (delBtn && delBtn.tagName === 'BUTTON') delBtn.remove();
+  }
+}
+
+function switchMemoTab(tab) {
+  // 탭 UI 제거됨 - textarea만 표시
+  const ta = document.getElementById('memo-overlay-ta');
+  if (ta) { ta.style.display = 'block'; setTimeout(() => ta.focus(), 50); }
+}
+
+function doSaveMemo(id) {
+  const ta = document.getElementById('ta'+id);
+  if (ta.style.display === 'none') showTextMode(id);
+  const v = ta.value;
+  saveMemo(id, v);
+  const btn = document.getElementById('mt'+id);
+  btn.textContent = v.trim() ? '📝 메모 있음' : '＋ 메모 추가';
+  btn.classList.toggle('has-memo', !!v.trim());
+  const msg = document.getElementById('ms'+id);
+  msg.classList.add('show');
+  setTimeout(() => msg.classList.remove('show'), 1600);
+}
+function doClearMemo(id) {
+  // 선택된 줄이 있으면 선택 삭제로 위임
+  doDelSelected(id);
+}
+
+// ════════════════════════════════════════
+// 저장 모달
+// ════════════════════════════════════════
+const openModal  = () => document.getElementById('save-modal').classList.add('open');
+const closeModal = () => document.getElementById('save-modal').classList.remove('open');
+
+function doSave(type) {
+  closeModal();
+  type === 'txt' ? exportTxt() : exportHtml();
+}
+
+function getAllMemos() {
+  return DATA.map(d => ({ id:d.id, title:d.title, ref:d.ref, memo:loadMemo(d.id) }))
+             .filter(m => m.memo.trim());
+}
+
+function exportTxt() {
+  const memos = getAllMemos();
+  if (!memos.length) { alert('저장된 메모가 없습니다.'); return; }
+  let t = `봉사모임 사회 골자 100 — 메모\n생성: ${new Date().toLocaleString('ko-KR')}\n${'='.repeat(40)}\n\n`;
+  memos.forEach(m => { t += `[${m.id}] ${m.title} (${m.ref})\n${m.memo}\n${'-'.repeat(30)}\n\n`; });
+  // UTF-8 BOM 추가 — 안드로이드/윈도우 한글 깨짐 방지
+  dlWithBom(t, 'jw_메모.txt', 'text/plain');
+}
+
+function exportHtml() {
+  // 현재 열린 textarea 값 먼저 저장
+  DATA.forEach(d => { const ta = document.getElementById('ta'+d.id); if(ta) saveMemo(d.id, ta.value); });
+  const mj = {};
+  DATA.forEach(d => { const m = loadMemo(d.id); if(m) mj[d.id] = m; });
+  const html = document.documentElement.outerHTML.replace('</body>',
+    `<script>(function(){const s=${JSON.stringify(mj)};Object.keys(s).forEach(k=>localStorage.setItem('m'+k,s[k]));})()<\/script>\n</body>`);
+  dl(html, 'jw_봉사모임_가이드100.html', 'text/html');
+}
+
+function copyMemos() {
+  const memos = getAllMemos();
+  if (!memos.length) { alert('저장된 메모가 없습니다.'); return; }
+  const t = memos.map(m => `[${m.id}] ${m.title}\n${m.memo}`).join('\n\n');
+  if (navigator.share) {
+    navigator.share({ title:'봉사 메모', text: t }).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(t)
+      .then(() => alert('✓ 메모가 복사되었습니다!'))
+      .catch(() => prompt('복사해 주세요:', t));
+  }
+}
+
+function dl(content, name, mime) {
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(new Blob([content], {type: mime+';charset=utf-8'})),
+    download: name
+  });
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+
+// BOM 포함 UTF-8 — 안드로이드/윈도우 한글 깨짐 방지
+function dlWithBom(content, name, mime) {
+  const bom = '\uFEFF'; // UTF-8 BOM
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(new Blob([bom + content], {type: mime+';charset=utf-8'})),
+    download: name
+  });
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+
+// ════════════════════════════════════════
+// PWA / 홈화면 추가
+// ════════════════════════════════════════
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('install-banner').classList.add('show');
+});
+
+function doInstall() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(() => { deferredPrompt = null; hideBanner(); });
+}
+function hideBanner() {
+  document.getElementById('install-banner').classList.remove('show');
+}
+
+// iOS 감지 → 안내 토스트
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+const isInStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+if (isIOS && !isInStandalone && !localStorage.getItem('ios_hint_shown')) {
+  setTimeout(() => {
+    document.getElementById('ios-toast').classList.add('show');
+    localStorage.setItem('ios_hint_shown', '1');
+  }, 2500);
+}
+
+// ════════════════════════════════════════
+// 초기 실행
+// ════════════════════════════════════════
+document.addEventListener('click', function(e) {
+  var a = e.target.closest('a[href^="http"]');
+  if (!a) return;
+  e.preventDefault();
+  openExternalLink(a.href);
+});
+
+render(DATA);
+renderCustomCards();
+updateCustomCount();
+</script>
+</body>
+</html>
