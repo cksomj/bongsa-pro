@@ -17,7 +17,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Bump patch version and stamp KST date
+      - name: Restore combined search and stamp version/date
         shell: python
         run: |
           from pathlib import Path
@@ -26,6 +26,39 @@ jobs:
 
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
+
+          # Narrow, idempotent search-link restoration.
+          # Keep the existing card filter, then open the already-existing
+          # JW.ORG / WOL reference drawer with the same query.
+          old_search = '''function applyKeywordSearch() {
+            const el = document.getElementById('search');
+            if (!el) return;
+            lastAppliedKeyword = el.value.trim();
+            el.classList.remove('search-pending');
+            filterCards();
+            el.blur();
+          }'''
+
+          new_search = '''function applyKeywordSearch() {
+            const el = document.getElementById('search');
+            if (!el) return;
+            lastAppliedKeyword = el.value.trim();
+            el.classList.remove('search-pending');
+            filterCards();
+            const q = lastAppliedKeyword;
+            el.blur();
+            if (q && typeof openRefSearchPanel === 'function') {
+              openRefSearchPanel(q, '🔎 통합검색');
+            }
+          }'''
+
+          if old_search in s:
+              s = s.replace(old_search, new_search, 1)
+              print('Restored: internal card search + JW.ORG/WOL reference search')
+          elif "openRefSearchPanel(q, '🔎 통합검색');" in s:
+              print('Combined JW search already restored')
+          else:
+              raise SystemExit('applyKeywordSearch target not found; refusing broad edit')
 
           m = re.search(r'<meta name="app-version" content="(\d+)\.(\d+)\.(\d+)">', s)
           if not m:
@@ -53,14 +86,14 @@ jobs:
           Path('VERSION').write_text(f'{version}\n{date} KST\n', encoding='utf-8')
           print(f'Stamped bongsa-pro {version} / {date} KST')
 
-      - name: Commit stamp
+      - name: Commit verified narrow update
         run: |
           if git diff --quiet -- index.html VERSION; then
-            echo "No version changes needed"
+            echo "No app changes needed"
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html VERSION
-          git commit -m "chore: auto stamp app version and update date"
+          git commit -m "chore: restore JW search and auto stamp app version"
           git push
