@@ -1,0 +1,66 @@
+name: Auto version stamp
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  stamp:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Bump patch version and stamp KST date
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+          from datetime import datetime, timezone, timedelta
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          m = re.search(r'<meta name="app-version" content="(\d+)\.(\d+)\.(\d+)">', s)
+          if not m:
+              raise SystemExit('app-version meta not found')
+
+          major, minor, patch = map(int, m.groups())
+          version = f'{major}.{minor}.{patch + 1}'
+          now = datetime.now(timezone(timedelta(hours=9)))
+          date = now.strftime('%Y-%m-%d')
+
+          replacements = [
+              (r'<meta name="app-version" content="[^"]+">', f'<meta name="app-version" content="{version}">'),
+              (r'<meta name="app-updated" content="[^"]+">', f'<meta name="app-updated" content="{date}">'),
+              (r"const APP_VERSION = '[^']+';", f"const APP_VERSION = '{version}';"),
+              (r"const APP_UPDATED_AT = '[^']+';", f"const APP_UPDATED_AT = '{date}';"),
+              (r'ver\s+\d+\.\d+\.\d+\s+·\s+\d{4}-\d{2}-\d{2}', f'ver {version} · {date}'),
+          ]
+
+          for pattern, repl in replacements:
+              s, n = re.subn(pattern, repl, s)
+              if n == 0:
+                  print(f'warning: no match for {pattern}')
+
+          p.write_text(s, encoding='utf-8')
+          Path('VERSION').write_text(f'{version}\n{date} KST\n', encoding='utf-8')
+          print(f'Stamped bongsa-pro {version} / {date} KST')
+
+      - name: Commit stamp
+        run: |
+          if git diff --quiet -- index.html VERSION; then
+            echo "No version changes needed"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html VERSION
+          git commit -m "chore: auto stamp app version and update date"
+          git push
