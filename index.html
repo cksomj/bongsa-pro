@@ -18,7 +18,7 @@
     if(!r.ok) throw new Error('HTTP '+r.status);
     return r.text();
   }).then(function(html){
-    var bridge='<script src="jw_search_restore.js?v=20260808-jw-restore"><\\/script>';
+    var bridge='<script src="jw_search_restore.js?v=20260808-jw-restore"></'+'script>';
     if(html.indexOf('</body>')>=0){
       html=html.replace('</body>',bridge+'\n</body>');
     }else{
